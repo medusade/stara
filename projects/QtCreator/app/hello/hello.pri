@@ -44,11 +44,6 @@ hello_SOURCES += \
 
 ########################################################################
 hello_HEADERS += \
-
-hello_SOURCES += \
-
-########################################################################
-hello_HEADERS += \
 $${RETE_SRC}/rete/network/SocketStream.hpp \
 $${RETE_SRC}/rete/network/SocketWriter.hpp \
 $${RETE_SRC}/rete/network/SocketReader.hpp \
@@ -60,6 +55,25 @@ hello_SOURCES += \
 $${RETE_SRC}/rete/network/SocketStream.cpp \
 $${RETE_SRC}/rete/network/SocketWriter.cpp \
 $${RETE_SRC}/rete/network/SocketReader.cpp \
+
+########################################################################
+hello_HEADERS += \
+$${STARA_SRC}/stara/protocol/xttp/request/Line.hpp \
+$${STARA_SRC}/stara/protocol/xttp/request/Method.hpp \
+$${STARA_SRC}/stara/protocol/xttp/request/Parameters.hpp \
+$${STARA_SRC}/stara/protocol/xttp/protocol/Identifier.hpp \
+$${STARA_SRC}/stara/protocol/xttp/protocol/Name.hpp \
+$${STARA_SRC}/stara/protocol/xttp/protocol/Version.hpp \
+$${STARA_SRC}/stara/protocol/xttp/Xttp.hpp \
+
+hello_SOURCES += \
+$${STARA_SRC}/stara/protocol/xttp/request/Line.cpp \
+$${STARA_SRC}/stara/protocol/xttp/request/Method.cpp \
+$${STARA_SRC}/stara/protocol/xttp/request/Parameters.cpp \
+$${STARA_SRC}/stara/protocol/xttp/protocol/Identifier.cpp \
+$${STARA_SRC}/stara/protocol/xttp/protocol/Name.cpp \
+$${STARA_SRC}/stara/protocol/xttp/protocol/Version.cpp \
+$${STARA_SRC}/stara/protocol/xttp/Xttp.cpp \
 
 ########################################################################
 hello_HEADERS += \
