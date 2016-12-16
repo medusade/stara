@@ -34,6 +34,10 @@ typedef ::nadir::char_array CharArray;
 typedef ::nadir::tchar_array TCharArray;
 typedef ::nadir::wchar_array WCharArray;
 
+typedef ::nadir::char_string_implements StringImplements;
+typedef ::nadir::tchar_string_implements TStringImplements;
+typedef ::nadir::wchar_string_implements WStringImplements;
+
 typedef ::nadir::char_string String;
 typedef ::nadir::tchar_string TString;
 typedef ::nadir::wchar_string WString;
