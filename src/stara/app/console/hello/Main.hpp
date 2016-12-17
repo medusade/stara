@@ -23,7 +23,7 @@
 
 #include "stara/console/getopt/Main.hpp"
 #include "stara/app/console/hello/MainOpt.hpp"
-#include "stara/protocol/xttp/request/Line.hpp"
+#include "stara/protocol/xttp/request/Message.hpp"
 #include "rete/network/ip/v6/Endpoint.hpp"
 #include "rete/network/ip/v4/Endpoint.hpp"
 #include "rete/network/ip/tcp/Transport.hpp"
@@ -35,6 +35,14 @@ namespace stara {
 namespace app {
 namespace console {
 namespace hello {
+
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+enum ServerAction {
+    ServerContinue,
+    ServerDone,
+    ServerRestart
+};
 
 typedef stara::console::getopt::MainImplements MainImplements;
 typedef stara::console::getopt::Main MainExtends;
@@ -109,37 +117,80 @@ protected:
     ///////////////////////////////////////////////////////////////////////
     virtual int IpTcpServerRun(int argc, char_t **argv, char_t **env) {
         int err = 0;
-        rete::network::Sockets& sockets = this->Sockets(argc, argv, env);
+        ServerAction action = ServerDone;
+        do {
+            rete::network::Sockets& sockets = this->Sockets(argc, argv, env);
 
-        if ((sockets.Startup())) {
-            rete::network::Endpoint& ep = this->Endpoint(argc, argv, env);
+            if ((sockets.Startup())) {
+                rete::network::Endpoint& ep = this->Endpoint(argc, argv, env);
 
-            if ((ep.Attach(m_port))) {
-                rete::network::Transport& tp = this->Transport(argc, argv, env);
-                rete::network::Socket& sock = this->Socket(argc, argv, env);
+                if ((ep.Attach(m_port))) {
+                    rete::network::Transport& tp = this->Transport(argc, argv, env);
+                    rete::network::Socket& sock = this->Socket(argc, argv, env);
 
-                if ((sock.Open(tp))) {
-                    if ((sock.Listen(ep))) {
-                        rete::network::Socket* accepted = 0;
+                    if ((sock.Open(tp))) {
+                        if ((sock.Listen(ep))) {
+                            rete::network::Socket* accepted = 0;
 
-                        if ((accepted = sock.Accept(ep))) {
-                            Receive(*accepted);
-                            Send(*accepted, m_response);
-                            accepted->Close();
+                            do {
+                                if ((accepted = sock.Accept(ep))) {
+                                    ReceiveRequest(action, *accepted);
+                                }
+                            } while (ServerContinue == action);
                         }
+                        sock.Close();
                     }
-                    sock.Close();
+                    ep.Detach();
                 }
-                ep.Detach();
+                sockets.Cleanup();
             }
-            sockets.Cleanup();
-        }
+        } while (ServerRestart == action);
         return err;
     }
     ///////////////////////////////////////////////////////////////////////
     virtual int DefaultRun(int argc, char_t **argv, char_t **env) {
         int err = Usage(argc, argv, env);
         return err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual bool ReceiveRequest
+    (ServerAction& action, rete::network::Socket& sock) {
+        rete::network::SocketReader reader(sock);
+        bool success = false;
+        ssize_t count = 0;
+        if ((ReadRequest(m_requestMessage, count, reader))) {
+            Send(sock, m_response);
+            if (!(m_requestMessage.Line().Parameters().compare("/hello/"))) {
+                action = ServerContinue;
+            } else {
+                action = ServerDone;
+            }
+            success = true;
+        }
+        sock.Close();
+        return success;
+    }
+    virtual bool ReadRequest
+    (protocol::xttp::request::Message& message,
+     ssize_t& count, rete::io::CharReader& reader) {
+        bool success = false;
+        ssize_t amount = 0;
+        char c = 0;
+        if ((message.Read(amount, c, reader))) {
+            count += amount;
+            do {
+                if (0 < (amount = reader.Read(m_chars, sizeof(m_chars)))) {
+                    this->Out(m_chars, amount);
+                    count += amount;
+                } else {
+                    success = false;
+                }
+            } while (amount >= sizeof(m_chars));
+            success = true;
+        }
+        return success;
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -310,6 +361,7 @@ protected:
     MTransport m_transport;
     short m_port;
     String m_host, m_request, m_response;
+    protocol::xttp::request::Message m_requestMessage;
     rete::network::ip::v4::Endpoint m_ip4;
     rete::network::ip::v6::Endpoint m_ip6;
     rete::network::ip::tcp::Transport m_tcp;

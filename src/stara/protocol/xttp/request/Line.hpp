@@ -136,6 +136,20 @@ public:
         }
         return success;
     }
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual bool Read(ssize_t& count, char& c, io::CharReader& reader) {
+        bool success = false;
+        SetDefault();
+        if ((m_method.Read(count, c, reader))) {
+            if ((m_parameters.Read(count, c, reader))) {
+                if ((m_protocol.Read(count, c, reader))) {
+                    success = Combine();
+                }
+            }
+        }
+        return success;
+    }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////

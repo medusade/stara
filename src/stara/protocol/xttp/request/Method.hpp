@@ -22,8 +22,10 @@
 #define _STARA_PROTOCOL_XTTP_REQUEST_METHOD_HPP
 
 #include "stara/protocol/xttp/Xttp.hpp"
+#include "stara/io/Reader.hpp"
 
 #define STARA_PROTOCOL_XTTP_REQUEST_METHOD_GET "GET"
+#define STARA_PROTOCOL_XTTP_REQUEST_METHOD_SEPARATOR ' '
 
 namespace stara {
 namespace protocol {
@@ -46,15 +48,50 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    MethodT(const char* chars, size_t length): Extends(chars, length) {
+    MethodT(const char* chars, size_t length)
+    : Extends(chars, length),
+      m_separator(STARA_PROTOCOL_XTTP_REQUEST_METHOD_SEPARATOR) {
     }
-    MethodT(const char* chars): Extends(chars) {
+    MethodT(const char* chars)
+    : Extends(chars),
+      m_separator(STARA_PROTOCOL_XTTP_REQUEST_METHOD_SEPARATOR) {
     }
-    MethodT(const MethodT& copy): Extends(copy) {
+    MethodT(const MethodT& copy)
+    : Extends(copy),
+      m_separator(STARA_PROTOCOL_XTTP_REQUEST_METHOD_SEPARATOR) {
     }
-    MethodT(): Extends(STARA_PROTOCOL_XTTP_REQUEST_METHOD_GET) {
+    MethodT()
+    : Extends(STARA_PROTOCOL_XTTP_REQUEST_METHOD_GET),
+      m_separator(STARA_PROTOCOL_XTTP_REQUEST_METHOD_SEPARATOR) {
     }
     virtual ~MethodT() {
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual bool Read(ssize_t& count, char& c, io::CharReader& reader) {
+        bool success = false;
+        ssize_t amount = 0;
+        String chars;
+        SetDefault();
+        do {
+            if (0 < (amount = reader.Read(&c, 1))) {
+                count += amount;
+                if ((m_separator != c)) {
+                    chars.append(&c, 1);
+                } else {
+                    break;
+                }
+            } else {
+                count = amount;
+                return false;
+            }
+        } while (0 < amount);
+        if ((chars.has_chars())) {
+            this->assign(chars);
+            success = true;
+        }
+        return success;
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -74,6 +111,8 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
+protected:
+    const char m_separator;
 };
 typedef MethodT<> Method;
 

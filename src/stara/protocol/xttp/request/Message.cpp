@@ -18,21 +18,14 @@
 /// Author: $author$
 ///   Date: 12/14/2016
 ///////////////////////////////////////////////////////////////////////
-#include "Message.hpp"
+#include "stara/protocol/xttp/request/Message.hpp"
 
 namespace stara {
 namespace protocol {
 namespace xttp {
 namespace request {
 
-
-
-
 } // namespace request 
 } // namespace xttp 
 } // namespace protocol 
 } // namespace stara 
-
-
-        
-

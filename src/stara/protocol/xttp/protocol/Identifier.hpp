@@ -25,8 +25,6 @@
 #include "stara/protocol/xttp/protocol/Name.hpp"
 #include "stara/protocol/xttp/Xttp.hpp"
 
-#define STARA_PROTOCOL_XTTP_PROTOCOL_IDENTIFIER_SEPARATOR '/'
-
 namespace stara {
 namespace protocol {
 namespace xttp {
@@ -50,27 +48,27 @@ public:
     ///////////////////////////////////////////////////////////////////////
     IdentifierT(const char* chars, size_t length)
     : Extends(chars, length),
-      m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_IDENTIFIER_SEPARATOR) {
+      m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_NAME_SEPARATOR) {
         Separate();
     }
     IdentifierT(const char* chars)
     : Extends(chars),
-      m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_IDENTIFIER_SEPARATOR) {
+      m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_NAME_SEPARATOR) {
         Separate();
     }
     IdentifierT
     (const protocol::Name& name, const protocol::Version& version)
-    : m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_IDENTIFIER_SEPARATOR),
+    : m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_NAME_SEPARATOR),
       m_name(name), m_version(version) {
         Combine();
     }
     IdentifierT(const IdentifierT& copy)
     : Extends(copy),
-      m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_IDENTIFIER_SEPARATOR),
+      m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_NAME_SEPARATOR),
       m_name(copy.Name()), m_version(copy.Version()) {
     }
     IdentifierT()
-    : m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_IDENTIFIER_SEPARATOR) {
+    : m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_NAME_SEPARATOR) {
         Combine();
     }
     virtual ~IdentifierT() {

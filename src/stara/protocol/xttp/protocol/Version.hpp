@@ -52,7 +52,9 @@ public:
     VersionT(const char* chars, size_t length)
     : Extends(chars, length),
       m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_VERSION_SEPARATOR),
-      m_cr(STARA_PROTOCOL_XTTP_CR), m_lf(STARA_PROTOCOL_XTTP_LF),
+      m_sp(STARA_PROTOCOL_XTTP_SP),
+      m_cr(STARA_PROTOCOL_XTTP_CR),
+      m_lf(STARA_PROTOCOL_XTTP_LF),
       m_major(STARA_PROTOCOL_XTTP_PROTOCOL_VERSION_MAJOR),
       m_minor(STARA_PROTOCOL_XTTP_PROTOCOL_VERSION_MINOR) {
         Separate();
@@ -60,7 +62,9 @@ public:
     VersionT(const char* chars)
     : Extends(chars),
       m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_VERSION_SEPARATOR),
-      m_cr(STARA_PROTOCOL_XTTP_CR), m_lf(STARA_PROTOCOL_XTTP_LF),
+      m_sp(STARA_PROTOCOL_XTTP_SP),
+      m_cr(STARA_PROTOCOL_XTTP_CR),
+      m_lf(STARA_PROTOCOL_XTTP_LF),
       m_major(STARA_PROTOCOL_XTTP_PROTOCOL_VERSION_MAJOR),
       m_minor(STARA_PROTOCOL_XTTP_PROTOCOL_VERSION_MINOR) {
         Separate();
@@ -68,19 +72,25 @@ public:
     VersionT(const VersionT& copy)
     : Extends(copy),
       m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_VERSION_SEPARATOR),
-      m_cr(STARA_PROTOCOL_XTTP_CR), m_lf(STARA_PROTOCOL_XTTP_LF),
+      m_sp(STARA_PROTOCOL_XTTP_SP),
+      m_cr(STARA_PROTOCOL_XTTP_CR),
+      m_lf(STARA_PROTOCOL_XTTP_LF),
       m_major(STARA_PROTOCOL_XTTP_PROTOCOL_VERSION_MAJOR),
       m_minor(STARA_PROTOCOL_XTTP_PROTOCOL_VERSION_MINOR) {
     }
     VersionT(const char* major, const char* minor)
     : m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_VERSION_SEPARATOR),
-      m_cr(STARA_PROTOCOL_XTTP_CR), m_lf(STARA_PROTOCOL_XTTP_LF),
+      m_sp(STARA_PROTOCOL_XTTP_SP),
+      m_cr(STARA_PROTOCOL_XTTP_CR),
+      m_lf(STARA_PROTOCOL_XTTP_LF),
       m_major(major), m_minor(minor) {
         Combine();
     }
     VersionT()
     : m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_VERSION_SEPARATOR),
-      m_cr(STARA_PROTOCOL_XTTP_CR), m_lf(STARA_PROTOCOL_XTTP_LF),
+      m_sp(STARA_PROTOCOL_XTTP_SP),
+      m_cr(STARA_PROTOCOL_XTTP_CR),
+      m_lf(STARA_PROTOCOL_XTTP_LF),
       m_major(STARA_PROTOCOL_XTTP_PROTOCOL_VERSION_MAJOR),
       m_minor(STARA_PROTOCOL_XTTP_PROTOCOL_VERSION_MINOR) {
         Combine();
@@ -155,7 +165,7 @@ public:
         do {
             if (0 < (amount = reader.Read(&c, 1))) {
                 count += amount;
-                if ((m_cr != c) && (m_lf != c)) {
+                if ((m_sp != c) && (m_cr != c) && (m_lf != c)) {
                     chars.append(&c, 1);
                 } else {
                     break;
@@ -245,7 +255,7 @@ public:
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
 protected:
-    const char m_separator, m_cr, m_lf;
+    const char m_separator, m_sp, m_cr, m_lf;
     String m_major, m_minor;
 };
 typedef VersionT<> Version;
