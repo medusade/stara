@@ -23,15 +23,14 @@
 
 #include "stara/protocol/xttp/protocol/Version.hpp"
 #include "stara/protocol/xttp/protocol/Name.hpp"
-#include "stara/protocol/xttp/Xttp.hpp"
 
 namespace stara {
 namespace protocol {
 namespace xttp {
 namespace protocol {
 
-typedef StringImplements IdentifierTImplements;
-typedef String IdentifierTExtends;
+typedef message::PartTImplements IdentifierTImplements;
+typedef message::Part IdentifierTExtends;
 ///////////////////////////////////////////////////////////////////////
 ///  Class: IdentifierT
 ///////////////////////////////////////////////////////////////////////
@@ -47,28 +46,23 @@ public:
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
     IdentifierT(const char* chars, size_t length)
-    : Extends(chars, length),
-      m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_NAME_SEPARATOR) {
+    : Extends(chars, length) {
         Separate();
     }
     IdentifierT(const char* chars)
-    : Extends(chars),
-      m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_NAME_SEPARATOR) {
+    : Extends(chars) {
         Separate();
     }
     IdentifierT
     (const protocol::Name& name, const protocol::Version& version)
-    : m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_NAME_SEPARATOR),
-      m_name(name), m_version(version) {
+    : m_name(name), m_version(version) {
         Combine();
     }
     IdentifierT(const IdentifierT& copy)
     : Extends(copy),
-      m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_NAME_SEPARATOR),
       m_name(copy.Name()), m_version(copy.Version()) {
     }
-    IdentifierT()
-    : m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_NAME_SEPARATOR) {
+    IdentifierT() {
         Combine();
     }
     virtual ~IdentifierT() {
@@ -82,7 +76,7 @@ public:
         if ((name = m_name.has_chars())
             && (version = m_version.has_chars())) {
             this->assign(name);
-            this->append(&m_separator, 1);
+            this->append('/');
             this->append(version);
             return true;
         }
@@ -102,7 +96,7 @@ public:
             String *part = 0, name, version;
 
             for (part = &name; chars != end; ++chars) {
-                if (m_separator != (c = *chars)) {
+                if ('/' != (c = *chars)) {
                     part->append(&c, 1);
                 } else {
                     if (part != &version) {
@@ -128,6 +122,7 @@ public:
         }
         return success;
     }
+
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
     virtual bool Read(ssize_t& count, char& c, io::CharReader& reader) {
@@ -143,16 +138,6 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual IdentifierT& Set(const IdentifierT& to) {
-        this->assign(to);
-        Separate();
-        return *this;
-    }
-    virtual IdentifierT& Set(const String& to) {
-        this->assign(to);
-        Separate();
-        return *this;
-    }
     virtual IdentifierT& SetDefault() {
         m_name.SetDefault();
         m_version.SetDefault();
@@ -177,7 +162,6 @@ public:
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
 protected:
-    const char m_separator;
     protocol::Name m_name;
     protocol::Version m_version;
 };

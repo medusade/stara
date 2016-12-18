@@ -13,22 +13,19 @@
 /// or otherwise) arising in any way out of the use of this software, 
 /// even if advised of the possibility of such damage.
 ///
-///   File: Xttp.hpp
+///   File: Line.cpp
 ///
 /// Author: $author$
-///   Date: 12/14/2016
+///   Date: 12/17/2016
 ///////////////////////////////////////////////////////////////////////
-#ifndef _STARA_PROTOCOL_XTTP_XTTP_HPP
-#define _STARA_PROTOCOL_XTTP_XTTP_HPP
-
-#include "stara/base/Base.hpp"
+#include "stara/protocol/xttp/message/Line.hpp"
 
 namespace stara {
 namespace protocol {
 namespace xttp {
+namespace message {
 
+} // namespace message 
 } // namespace xttp 
 } // namespace protocol 
 } // namespace stara 
-
-#endif // _STARA_PROTOCOL_XTTP_XTTP_HPP 

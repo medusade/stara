@@ -24,17 +24,15 @@
 #include "stara/protocol/xttp/protocol/Identifier.hpp"
 #include "stara/protocol/xttp/request/Parameters.hpp"
 #include "stara/protocol/xttp/request/Method.hpp"
-#include "stara/protocol/xttp/Xttp.hpp"
-
-#define STARA_PROTOCOL_XTTP_REQUEST_LINE_SEPARATOR ' '
+#include "stara/protocol/xttp/message/Line.hpp"
 
 namespace stara {
 namespace protocol {
 namespace xttp {
 namespace request {
 
-typedef StringImplements LineTImplements;
-typedef String LineTExtends;
+typedef message::LineTImplements LineTImplements;
+typedef message::Line LineTExtends;
 ///////////////////////////////////////////////////////////////////////
 ///  Class: LineT
 ///////////////////////////////////////////////////////////////////////
@@ -50,20 +48,17 @@ public:
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
     LineT(const char* chars, size_t length)
-    : Extends(chars, length),
-      m_separator(STARA_PROTOCOL_XTTP_REQUEST_LINE_SEPARATOR) {
+    : Extends(chars, length) {
         Separate();
     }
     LineT(const char* chars)
-    : Extends(chars),
-      m_separator(STARA_PROTOCOL_XTTP_REQUEST_LINE_SEPARATOR) {
+    : Extends(chars) {
         Separate();
     }
     LineT(const LineT& copy)
-    : Extends(copy),
-      m_separator(STARA_PROTOCOL_XTTP_REQUEST_LINE_SEPARATOR) {
+    : Extends(copy) {
     }
-    LineT(): m_separator(STARA_PROTOCOL_XTTP_REQUEST_LINE_SEPARATOR) {
+    LineT() {
         Combine();
     }
     virtual ~LineT() {
@@ -78,9 +73,9 @@ public:
             && (parameters = m_parameters.has_chars())
             && (protocol = m_protocol.has_chars())) {
             this->assign(method);
-            this->append(&m_separator, 1);
+            this->append(' ');
             this->append(parameters);
-            this->append(&m_separator, 1);
+            this->append(' ');
             this->append(protocol);
             success = true;
         }
@@ -91,14 +86,15 @@ public:
         const char* chars = 0;
         size_t length = 0;
 
-        SetDefault();
+        SetDefaults();
+
         if ((chars = this->has_chars(length))) {
             char c = 0;
             const char* end = chars + length;
             String *part = 0, method, parameters, protocol;
 
             for (part = &method; chars != end; ++chars) {
-                if (m_separator != (c = *chars)) {
+                if (' ' != (c = *chars)) {
                     part->append(&c, 1);
                 } else {
                     if (part == &method) {
@@ -136,7 +132,8 @@ public:
         }
         return success;
     }
-    ///////////////////////////////////////////////////////////////////////
+
+    /*///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
     virtual bool Read(ssize_t& count, char& c, io::CharReader& reader) {
         bool success = false;
@@ -153,21 +150,30 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual LineT& Set(const LineT& to) {
+    virtual bool Set(const LineT& to) {
+        bool success = true;
         this->assign(to);
-        Separate();
-        return *this;
+        success = Separate();
+        return success;
     }
-    virtual LineT& Set(const String& to) {
+    virtual bool Set(const String& to) {
+        bool success = true;
         this->assign(to);
-        Separate();
-        return *this;
-    }
+        success = Separate();
+        return success;
+    }*/
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
     virtual LineT& SetDefault() {
+        SetDefaults();
+        Combine();
+        return *this;
+    }
+    virtual LineT& SetDefaults() {
         m_method.SetDefault();
         m_parameters.SetDefault();
         m_protocol.SetDefault();
-        Combine();
         return *this;
     }
 
@@ -186,7 +192,6 @@ public:
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
 protected:
-    const char m_separator;
     request::Method m_method;
     request::Parameters m_parameters;
     protocol::Identifier m_protocol;

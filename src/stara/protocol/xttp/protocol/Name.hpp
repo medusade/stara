@@ -21,10 +21,8 @@
 #ifndef _STARA_PROTOCOL_XTTP_PROTOCOL_NAME_HPP
 #define _STARA_PROTOCOL_XTTP_PROTOCOL_NAME_HPP
 
-#include "stara/protocol/xttp/Xttp.hpp"
-#include "stara/io/Reader.hpp"
+#include "stara/protocol/xttp/message/Part.hpp"
 
-#define STARA_PROTOCOL_XTTP_PROTOCOL_NAME_SEPARATOR '/'
 #define STARA_PROTOCOL_XTTP_PROTOCOL_NAME_HTTP "HTTP"
 
 namespace stara {
@@ -32,8 +30,8 @@ namespace protocol {
 namespace xttp {
 namespace protocol {
 
-typedef StringImplements NameTImplements;
-typedef String NameTExtends;
+typedef message::PartTImplements NameTImplements;
+typedef message::Part NameTExtends;
 ///////////////////////////////////////////////////////////////////////
 ///  Class: NameT
 ///////////////////////////////////////////////////////////////////////
@@ -49,20 +47,16 @@ public:
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
     NameT(const char* chars, size_t length)
-    : Extends(chars, length),
-      m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_NAME_SEPARATOR) {
+    : Extends(chars, length) {
     }
     NameT(const char* chars)
-    : Extends(chars),
-      m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_NAME_SEPARATOR) {
+    : Extends(chars) {
     }
     NameT(const NameT& copy)
-    : Extends(copy),
-      m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_NAME_SEPARATOR) {
+    : Extends(copy) {
     }
     NameT()
-    : Extends(STARA_PROTOCOL_XTTP_PROTOCOL_NAME_HTTP),
-      m_separator(STARA_PROTOCOL_XTTP_PROTOCOL_NAME_SEPARATOR) {
+    : Extends(STARA_PROTOCOL_XTTP_PROTOCOL_NAME_HTTP) {
     }
     virtual ~NameT() {
     }
@@ -77,7 +71,7 @@ public:
         do {
             if (0 < (amount = reader.Read(&c, 1))) {
                 count += amount;
-                if ((m_separator != c)) {
+                if (('/' != c)) {
                     chars.append(&c, 1);
                 } else {
                     break;
@@ -96,14 +90,6 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual NameT& Set(const NameT& to) {
-        this->assign(to);
-        return *this;
-    }
-    virtual NameT& Set(const String& to) {
-        this->assign(to);
-        return *this;
-    }
     virtual NameT& SetDefault() {
         this->assign(STARA_PROTOCOL_XTTP_PROTOCOL_NAME_HTTP);
         return *this;
@@ -111,8 +97,6 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-protected:
-    const char m_separator;
 };
 typedef NameT<> Name;
 

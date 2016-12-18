@@ -18,7 +18,7 @@
 /// Author: $author$
 ///   Date: 12/14/2016
 ///////////////////////////////////////////////////////////////////////
-#include "Fields.hpp"
+#include "stara/protocol/xttp/message/header/Fields.hpp"
 
 namespace stara {
 namespace protocol {
@@ -26,15 +26,8 @@ namespace xttp {
 namespace message {
 namespace header {
 
-
-
-
 } // namespace header 
 } // namespace message 
 } // namespace xttp 
 } // namespace protocol 
 } // namespace stara 
-
-
-        
-

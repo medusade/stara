@@ -21,19 +21,17 @@
 #ifndef _STARA_PROTOCOL_XTTP_REQUEST_PARAMETERS_HPP
 #define _STARA_PROTOCOL_XTTP_REQUEST_PARAMETERS_HPP
 
-#include "stara/protocol/xttp/Xttp.hpp"
-#include "stara/io/Reader.hpp"
+#include "stara/protocol/xttp/message/Part.hpp"
 
 #define STARA_PROTOCOL_XTTP_REQUEST_PARAMETERS_ROOT "/"
-#define STARA_PROTOCOL_XTTP_REQUEST_PARAMETERS_SEPARATOR ' '
 
 namespace stara {
 namespace protocol {
 namespace xttp {
 namespace request {
 
-typedef StringImplements ParametersTImplements;
-typedef String ParametersTExtends;
+typedef message::PartTImplements ParametersTImplements;
+typedef message::Part ParametersTExtends;
 ///////////////////////////////////////////////////////////////////////
 ///  Class: ParametersT
 ///////////////////////////////////////////////////////////////////////
@@ -49,20 +47,16 @@ public:
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
     ParametersT(const char* chars, size_t length)
-    : Extends(chars, length),
-      m_separator(STARA_PROTOCOL_XTTP_REQUEST_PARAMETERS_SEPARATOR) {
+    : Extends(chars, length) {
     }
     ParametersT(const char* chars)
-    : Extends(chars),
-      m_separator(STARA_PROTOCOL_XTTP_REQUEST_PARAMETERS_SEPARATOR) {
+    : Extends(chars) {
     }
     ParametersT(const ParametersT& copy)
-    : Extends(copy),
-      m_separator(STARA_PROTOCOL_XTTP_REQUEST_PARAMETERS_SEPARATOR) {
+    : Extends(copy) {
     }
     ParametersT()
-    : Extends(STARA_PROTOCOL_XTTP_REQUEST_PARAMETERS_ROOT),
-      m_separator(STARA_PROTOCOL_XTTP_REQUEST_PARAMETERS_SEPARATOR) {
+    : Extends(STARA_PROTOCOL_XTTP_REQUEST_PARAMETERS_ROOT) {
     }
     virtual ~ParametersT() {
     }
@@ -77,7 +71,7 @@ public:
         do {
             if (0 < (amount = reader.Read(&c, 1))) {
                 count += amount;
-                if ((m_separator != c)) {
+                if ((' ' != c)) {
                     chars.append(&c, 1);
                 } else {
                     break;
@@ -96,14 +90,6 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual ParametersT& Set(const ParametersT& to) {
-        this->assign(to);
-        return *this;
-    }
-    virtual ParametersT& Set(const String& to) {
-        this->assign(to);
-        return *this;
-    }
     virtual ParametersT& SetDefault() {
         this->assign(STARA_PROTOCOL_XTTP_REQUEST_PARAMETERS_ROOT);
         return *this;
@@ -111,8 +97,6 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-protected:
-    const char m_separator;
 };
 typedef ParametersT<> Parameters;
 

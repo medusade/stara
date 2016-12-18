@@ -13,96 +13,106 @@
 /// or otherwise) arising in any way out of the use of this software, 
 /// even if advised of the possibility of such damage.
 ///
-///   File: Method.hpp
+///   File: Part.hpp
 ///
 /// Author: $author$
-///   Date: 12/14/2016
+///   Date: 12/17/2016
 ///////////////////////////////////////////////////////////////////////
-#ifndef _STARA_PROTOCOL_XTTP_REQUEST_METHOD_HPP
-#define _STARA_PROTOCOL_XTTP_REQUEST_METHOD_HPP
+#ifndef _STARA_PROTOCOL_XTTP_MESSAGE_PART_HPP
+#define _STARA_PROTOCOL_XTTP_MESSAGE_PART_HPP
 
-#include "stara/protocol/xttp/message/Part.hpp"
-
-#define STARA_PROTOCOL_XTTP_REQUEST_METHOD_GET "GET"
+#include "stara/protocol/xttp/Xttp.hpp"
+#include "stara/io/Reader.hpp"
+#include <algorithm>
 
 namespace stara {
 namespace protocol {
 namespace xttp {
-namespace request {
+namespace message {
 
-typedef message::PartTImplements MethodTImplements;
-typedef message::Part MethodTExtends;
+typedef StringImplements PartTImplements;
+typedef String PartTExtends;
 ///////////////////////////////////////////////////////////////////////
-///  Class: MethodT
+///  Class: PartT
 ///////////////////////////////////////////////////////////////////////
 template
-<class TImplements = MethodTImplements,
- class TExtends = MethodTExtends>
+<class TImplements = PartTImplements, class TExtends = PartTExtends>
 
-class _EXPORT_CLASS MethodT: virtual public TImplements, public TExtends {
+class _EXPORT_CLASS PartT: virtual public TImplements,public TExtends {
 public:
     typedef TImplements Implements;
     typedef TExtends Extends;
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    MethodT(const char* chars, size_t length)
+    PartT(const char* chars, size_t length)
     : Extends(chars, length) {
     }
-    MethodT(const char* chars)
+    PartT(const char* chars)
     : Extends(chars) {
     }
-    MethodT(const MethodT& copy)
+    PartT(const PartT& copy)
     : Extends(copy) {
     }
-    MethodT()
-    : Extends(STARA_PROTOCOL_XTTP_REQUEST_METHOD_GET) {
+    PartT() {
     }
-    virtual ~MethodT() {
+    virtual ~PartT() {
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual bool Combine() {
+        bool success = true;
+        return success;
+    }
+    virtual bool Separate() {
+        bool success = true;
+        return success;
     }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
     virtual bool Read(ssize_t& count, char& c, io::CharReader& reader) {
         bool success = false;
-        ssize_t amount = 0;
-        String chars;
-        SetDefault();
-        do {
-            if (0 < (amount = reader.Read(&c, 1))) {
-                count += amount;
-                if ((' ' != c)) {
-                    chars.append(&c, 1);
-                } else {
-                    break;
-                }
-            } else {
-                count = amount;
-                return false;
-            }
-        } while (0 < amount);
-        if ((chars.has_chars())) {
-            this->assign(chars);
-            success = true;
-        }
         return success;
     }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual MethodT& SetDefault() {
-        this->assign(STARA_PROTOCOL_XTTP_REQUEST_METHOD_GET);
+    virtual bool Set(const String& to) {
+        bool success = true;
+        this->assign(to);
+        success = Separate();
+        return success;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual PartT& SetDefault() {
+        this->clear();
+        return *this;
+    }
+    virtual PartT& SetDefaults() {
         return *this;
     }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-};
-typedef MethodT<> Method;
+    static char to_lower(char c) { return std::tolower(c); }
+    virtual int case_compare(const String& to) const {
+        String lowerTo;
+        std::transform(to.begin(), to.end(), lowerTo.begin(), to_lower);
+        return this->compare(lowerTo);
+    }
 
-} // namespace request
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+};
+typedef PartT<> Part;
+
+} // namespace message
 } // namespace xttp 
 } // namespace protocol 
 } // namespace stara 
 
-#endif // _STARA_PROTOCOL_XTTP_REQUEST_METHOD_HPP 
+#endif // _STARA_PROTOCOL_XTTP_MESSAGE_PART_HPP

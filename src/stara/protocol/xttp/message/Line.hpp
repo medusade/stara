@@ -13,96 +13,92 @@
 /// or otherwise) arising in any way out of the use of this software, 
 /// even if advised of the possibility of such damage.
 ///
-///   File: Method.hpp
+///   File: Line.hpp
 ///
 /// Author: $author$
-///   Date: 12/14/2016
+///   Date: 12/17/2016
 ///////////////////////////////////////////////////////////////////////
-#ifndef _STARA_PROTOCOL_XTTP_REQUEST_METHOD_HPP
-#define _STARA_PROTOCOL_XTTP_REQUEST_METHOD_HPP
+#ifndef _STARA_PROTOCOL_XTTP_MESSAGE_LINE_HPP
+#define _STARA_PROTOCOL_XTTP_MESSAGE_LINE_HPP
 
 #include "stara/protocol/xttp/message/Part.hpp"
-
-#define STARA_PROTOCOL_XTTP_REQUEST_METHOD_GET "GET"
 
 namespace stara {
 namespace protocol {
 namespace xttp {
-namespace request {
+namespace message {
 
-typedef message::PartTImplements MethodTImplements;
-typedef message::Part MethodTExtends;
+typedef message::PartTImplements LineTImplements;
+typedef message::Part LineTExtends;
 ///////////////////////////////////////////////////////////////////////
-///  Class: MethodT
+///  Class: LineT
 ///////////////////////////////////////////////////////////////////////
 template
-<class TImplements = MethodTImplements,
- class TExtends = MethodTExtends>
+<class TImplements = LineTImplements,
+ class TExtends = LineTExtends>
 
-class _EXPORT_CLASS MethodT: virtual public TImplements, public TExtends {
+class _EXPORT_CLASS LineT: virtual public TImplements, public TExtends {
 public:
     typedef TImplements Implements;
     typedef TExtends Extends;
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    MethodT(const char* chars, size_t length)
+    LineT(const char* chars, size_t length)
     : Extends(chars, length) {
     }
-    MethodT(const char* chars)
+    LineT(const char* chars)
     : Extends(chars) {
     }
-    MethodT(const MethodT& copy)
+    LineT(const LineT& copy)
     : Extends(copy) {
     }
-    MethodT()
-    : Extends(STARA_PROTOCOL_XTTP_REQUEST_METHOD_GET) {
+    LineT() {
     }
-    virtual ~MethodT() {
+    virtual ~LineT() {
     }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
     virtual bool Read(ssize_t& count, char& c, io::CharReader& reader) {
         bool success = false;
+        char cr = 0;
         ssize_t amount = 0;
         String chars;
-        SetDefault();
+        this->SetDefault();
         do {
             if (0 < (amount = reader.Read(&c, 1))) {
                 count += amount;
-                if ((' ' != c)) {
-                    chars.append(&c, 1);
+                if (('\r' != c)) {
+                    if (('\n' != c)) {
+                        chars.append(&c, 1);
+                    } else {
+                        success = this->Set(chars);
+                        break;
+                    }
                 } else {
-                    break;
+                    if (cr != c) {
+                        cr = c;
+                    } else {
+                        chars.append(&cr, 1);
+                    }
                 }
             } else {
                 count = amount;
-                return false;
+                break;
             }
         } while (0 < amount);
-        if ((chars.has_chars())) {
-            this->assign(chars);
-            success = true;
-        }
         return success;
     }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual MethodT& SetDefault() {
-        this->assign(STARA_PROTOCOL_XTTP_REQUEST_METHOD_GET);
-        return *this;
-    }
-
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
 };
-typedef MethodT<> Method;
+typedef LineT<> Line;
 
-} // namespace request
+} // namespace message
 } // namespace xttp 
 } // namespace protocol 
 } // namespace stara 
 
-#endif // _STARA_PROTOCOL_XTTP_REQUEST_METHOD_HPP 
+#endif // _STARA_PROTOCOL_XTTP_MESSAGE_LINE_HPP 

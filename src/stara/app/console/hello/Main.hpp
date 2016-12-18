@@ -176,18 +176,26 @@ protected:
     (protocol::xttp::request::Message& message,
      ssize_t& count, rete::io::CharReader& reader) {
         bool success = false;
+        const char* chars = 0;
         ssize_t amount = 0;
+        size_t length = 0;
         char c = 0;
         if ((message.Read(amount, c, reader))) {
             count += amount;
-            do {
-                if (0 < (amount = reader.Read(m_chars, sizeof(m_chars)))) {
-                    this->Out(m_chars, amount);
-                    count += amount;
-                } else {
-                    success = false;
-                }
-            } while (amount >= sizeof(m_chars));
+            if ((chars = message.has_chars(length))) {
+                this->Out(chars, length);
+            }
+            if (0 < (length = message.ContentLength())) {
+                do {
+                    if (0 < (amount = reader.Read(m_chars, sizeof(m_chars)))) {
+                        this->Out(m_chars, amount);
+                        count += amount;
+                        length -= amount;
+                    } else {
+                        success = false;
+                    }
+                } while ((0 < length) && (amount >= sizeof(m_chars)));
+            }
             success = true;
         }
         return success;
