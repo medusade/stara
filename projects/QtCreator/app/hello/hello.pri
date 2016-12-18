@@ -62,6 +62,10 @@ $${STARA_SRC}/stara/protocol/xttp/request/Message.hpp \
 $${STARA_SRC}/stara/protocol/xttp/request/Line.hpp \
 $${STARA_SRC}/stara/protocol/xttp/request/Method.hpp \
 $${STARA_SRC}/stara/protocol/xttp/request/Parameters.hpp \
+$${STARA_SRC}/stara/protocol/xttp/message/header/Fields.hpp \
+$${STARA_SRC}/stara/protocol/xttp/message/header/Field.hpp \
+$${STARA_SRC}/stara/protocol/xttp/message/Line.hpp \
+$${STARA_SRC}/stara/protocol/xttp/message/Part.hpp \
 $${STARA_SRC}/stara/protocol/xttp/protocol/Identifier.hpp \
 $${STARA_SRC}/stara/protocol/xttp/protocol/Name.hpp \
 $${STARA_SRC}/stara/protocol/xttp/protocol/Version.hpp \
@@ -69,9 +73,12 @@ $${STARA_SRC}/stara/protocol/xttp/Xttp.hpp \
 
 hello_SOURCES += \
 $${STARA_SRC}/stara/protocol/xttp/request/Message.cpp \
-$${STARA_SRC}/stara/protocol/xttp/request/Line.cpp \
+$${STARA_SRC}/stara/protocol/xttp/message/Line.cpp \
 $${STARA_SRC}/stara/protocol/xttp/request/Method.cpp \
 $${STARA_SRC}/stara/protocol/xttp/request/Parameters.cpp \
+$${STARA_SRC}/stara/protocol/xttp/message/header/Fields.cpp \
+$${STARA_SRC}/stara/protocol/xttp/message/header/Field.cpp \
+$${STARA_SRC}/stara/protocol/xttp/message/Part.cpp \
 $${STARA_SRC}/stara/protocol/xttp/protocol/Identifier.cpp \
 $${STARA_SRC}/stara/protocol/xttp/protocol/Name.cpp \
 $${STARA_SRC}/stara/protocol/xttp/protocol/Version.cpp \
