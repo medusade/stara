@@ -18,16 +18,13 @@
 /// Author: $author$
 ///   Date: 12/14/2016
 ///////////////////////////////////////////////////////////////////////
-#include "Line.hpp"
+#include "stara/protocol/xttp/response/status/Line.hpp"
 
 namespace stara {
 namespace protocol {
 namespace xttp {
 namespace response {
 namespace status {
-
-
-
 
 } // namespace status 
 } // namespace response 

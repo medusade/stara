@@ -24,6 +24,7 @@
 #include "stara/console/getopt/Main.hpp"
 #include "stara/app/console/hello/MainOpt.hpp"
 #include "stara/protocol/xttp/request/Message.hpp"
+#include "stara/protocol/xttp/response/Message.hpp"
 #include "rete/network/ip/v6/Endpoint.hpp"
 #include "rete/network/ip/v4/Endpoint.hpp"
 #include "rete/network/ip/tcp/Transport.hpp"
@@ -87,10 +88,7 @@ protected:
     virtual int IpTcpClientRun(int argc, char_t **argv, char_t **env) {
         int err = 0;
         rete::network::Sockets& sockets = this->Sockets(argc, argv, env);
-        protocol::xttp::request::Line line;
-        String request(line);
 
-        request.append("\r\n\r\n");
         if ((sockets.Startup())) {
             rete::network::Endpoint& ep = this->Endpoint(argc, argv, env);
 
@@ -102,7 +100,7 @@ protected:
                     if ((sock.Connect(ep))) {
                         ssize_t count = 0;
 
-                        if (0 < (count = Send(sock, request))) {
+                        if (0 < (count = Send(sock, m_requestMessage))) {
                             Receive(sock);
                         }
                     }
@@ -161,6 +159,8 @@ protected:
         bool success = false;
         ssize_t count = 0;
         if ((ReadRequest(m_requestMessage, count, reader))) {
+            m_response.assign(m_responseMessage);
+            m_response.append("Hello\n");
             Send(sock, m_response);
             if (!(m_requestMessage.Line().Parameters().compare("/hello/"))) {
                 action = ServerContinue;
@@ -370,6 +370,7 @@ protected:
     short m_port;
     String m_host, m_request, m_response;
     protocol::xttp::request::Message m_requestMessage;
+    protocol::xttp::response::Message m_responseMessage;
     rete::network::ip::v4::Endpoint m_ip4;
     rete::network::ip::v6::Endpoint m_ip6;
     rete::network::ip::tcp::Transport m_tcp;

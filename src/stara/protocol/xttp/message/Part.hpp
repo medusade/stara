@@ -90,6 +90,7 @@ public:
     ///////////////////////////////////////////////////////////////////////
     virtual PartT& SetDefault() {
         this->clear();
+        SetDefaults();
         return *this;
     }
     virtual PartT& SetDefaults() {

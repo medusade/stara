@@ -20,7 +20,8 @@
 ///////////////////////////////////////////////////////////////////////
 #ifndef _STARA_PROTOCOL_XTTP_RESPONSE_STATUS_REASON_HPP
 #define _STARA_PROTOCOL_XTTP_RESPONSE_STATUS_REASON_HPP
-#include "stara/protocol/xttp/Xttp.hpp"
+
+#include "stara/protocol/xttp/response/status/Code.hpp"
 
 namespace stara {
 namespace protocol {
@@ -28,16 +29,75 @@ namespace xttp {
 namespace response {
 namespace status {
 
+typedef message::PartTImplements ReasonTImplements;
+typedef message::Part ReasonTExtends;
+///////////////////////////////////////////////////////////////////////
+///  Class: ReasonT
+///////////////////////////////////////////////////////////////////////
+template
+<class TImplements = ReasonTImplements, class TExtends = ReasonTExtends>
 
+class _EXPORT_CLASS ReasonT: virtual public TImplements,public TExtends {
+public:
+    typedef TImplements Implements;
+    typedef TExtends Extends;
 
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    ReasonT(const char* chars, size_t length)
+    : Extends(chars, length) {
+    }
+    ReasonT(const char* chars)
+    : Extends(chars) {
+    }
+    ReasonT(const ReasonT& copy)
+    : Extends(copy) {
+    }
+    ReasonT()
+    : Extends(STARA_PROTOCOL_XTTP_RESPONSE_STATUS_OK_REASON) {
+    }
+    virtual ~ReasonT() {
+    }
 
-} // namespace status 
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual bool Read(ssize_t& count, char& c, io::CharReader& reader) {
+        bool success = false;
+        ssize_t amount = 0;
+        this->SetDefault();
+        do {
+            if (0 < (amount = reader.Read(&c, 1))) {
+                count += amount;
+                if (('\r' != c) && ('\n' != c)) {
+                    this->append(c);
+                } else {
+                    success = true;
+                    break;
+                }
+            } else {
+                count = amount;
+                break;
+            }
+        } while (0 < amount);
+        return success;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual ReasonT& SetDefault() {
+        this->assign(STARA_PROTOCOL_XTTP_RESPONSE_STATUS_OK_REASON);
+        return *this;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+};
+typedef ReasonT<> Reason;
+
+} // namespace status
 } // namespace response 
 } // namespace xttp 
 } // namespace protocol 
 } // namespace stara 
 
-
 #endif // _STARA_PROTOCOL_XTTP_RESPONSE_STATUS_REASON_HPP 
-        
-

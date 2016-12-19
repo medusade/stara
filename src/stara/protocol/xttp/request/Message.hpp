@@ -57,6 +57,7 @@ public:
     : Extends(copy) {
     }
     MessageT() {
+        Combine();
     }
     virtual ~MessageT() {
     }

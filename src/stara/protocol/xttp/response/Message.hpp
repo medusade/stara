@@ -20,22 +20,114 @@
 ///////////////////////////////////////////////////////////////////////
 #ifndef _STARA_PROTOCOL_XTTP_RESPONSE_MESSAGE_HPP
 #define _STARA_PROTOCOL_XTTP_RESPONSE_MESSAGE_HPP
-#include "stara/protocol/xttp/Xttp.hpp"
+
+#include "stara/protocol/xttp/response/status/Line.hpp"
+#include "stara/protocol/xttp/message/header/Fields.hpp"
 
 namespace stara {
 namespace protocol {
 namespace xttp {
 namespace response {
 
+typedef message::PartTImplements MessageTImplements;
+typedef message::Part MessageTExtends;
+///////////////////////////////////////////////////////////////////////
+///  Class: MessageT
+///////////////////////////////////////////////////////////////////////
+template
+<class TImplements = MessageTImplements, class TExtends = MessageTExtends>
 
+class _EXPORT_CLASS MessageT: virtual public TImplements,public TExtends {
+public:
+    typedef TImplements Implements;
+    typedef TExtends Extends;
 
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    MessageT(const char* chars, size_t length)
+    : Extends(chars, length) {
+        Separate();
+    }
+    MessageT(const char* chars)
+    : Extends(chars) {
+        Separate();
+    }
+    MessageT(const MessageT& copy)
+    : Extends(copy) {
+    }
+    MessageT() {
+        Combine();
+    }
+    virtual ~MessageT() {
+    }
 
-} // namespace response 
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual bool Combine() {
+        bool success = false;
+        const char* chars = 0;
+        const message::header::Field* h = 0;
+        message::header::Fields::const_iterator i;
+        this->clear();
+        if ((chars = m_line.has_chars())) {
+            this->appendl(chars, "\r\n", NULL);
+            if ((h = m_headers.First(i))) {
+                do {
+                    if ((chars = h->has_chars())) {
+                        this->appendl(chars, "\r\n", NULL);
+                    }
+                } while ((h = m_headers.Next(i)));
+            }
+            this->appendl("\r\n", NULL);
+            success = true;
+        }
+        return success;
+    }
+    virtual bool Separate() {
+        bool success = true;
+        return success;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual bool Read(ssize_t& count, char& c, io::CharReader& reader) {
+        bool success = false;
+        return success;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual bool Set(const String& to) {
+        bool success = true;
+        this->assign(to);
+        success = Separate();
+        return success;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual MessageT& SetDefault() {
+        SetDefaults();
+        Combine();
+        return *this;
+    }
+    virtual MessageT& SetDefaults() {
+        m_line.SetDefault();
+        m_headers.SetDefault();
+        return *this;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+protected:
+    status::Line m_line;
+    message::header::Fields m_headers;
+};
+typedef MessageT<> Message;
+
+} // namespace response
 } // namespace xttp 
 } // namespace protocol 
 } // namespace stara 
 
-
 #endif // _STARA_PROTOCOL_XTTP_RESPONSE_MESSAGE_HPP 
-        
-

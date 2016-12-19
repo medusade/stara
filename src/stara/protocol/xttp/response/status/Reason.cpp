@@ -18,7 +18,7 @@
 /// Author: $author$
 ///   Date: 12/14/2016
 ///////////////////////////////////////////////////////////////////////
-#include "Reason.hpp"
+#include "stara/protocol/xttp/response/status/Reason.hpp"
 
 namespace stara {
 namespace protocol {
@@ -26,15 +26,8 @@ namespace xttp {
 namespace response {
 namespace status {
 
-
-
-
 } // namespace status 
 } // namespace response 
 } // namespace xttp 
 } // namespace protocol 
 } // namespace stara 
-
-
-        
-
