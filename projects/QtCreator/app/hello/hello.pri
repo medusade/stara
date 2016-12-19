@@ -58,6 +58,10 @@ $${RETE_SRC}/rete/network/SocketReader.cpp \
 
 ########################################################################
 hello_HEADERS += \
+$${STARA_SRC}/stara/protocol/xttp/response/Message.hpp \
+$${STARA_SRC}/stara/protocol/xttp/response/status/Line.hpp \
+$${STARA_SRC}/stara/protocol/xttp/response/status/Reason.hpp \
+$${STARA_SRC}/stara/protocol/xttp/response/status/Code.hpp \
 $${STARA_SRC}/stara/protocol/xttp/request/Message.hpp \
 $${STARA_SRC}/stara/protocol/xttp/request/Line.hpp \
 $${STARA_SRC}/stara/protocol/xttp/request/Method.hpp \
@@ -72,8 +76,10 @@ $${STARA_SRC}/stara/protocol/xttp/protocol/Version.hpp \
 $${STARA_SRC}/stara/protocol/xttp/Xttp.hpp \
 
 hello_SOURCES += \
-$${STARA_SRC}/stara/protocol/xttp/request/Message.cpp \
-$${STARA_SRC}/stara/protocol/xttp/message/Line.cpp \
+$${STARA_SRC}/stara/protocol/xttp/response/Message.cpp \
+$${STARA_SRC}/stara/protocol/xttp/response/status/Line.cpp \
+$${STARA_SRC}/stara/protocol/xttp/response/status/Reason.cpp \
+$${STARA_SRC}/stara/protocol/xttp/response/status/Code.cpp \
 $${STARA_SRC}/stara/protocol/xttp/request/Method.cpp \
 $${STARA_SRC}/stara/protocol/xttp/request/Parameters.cpp \
 $${STARA_SRC}/stara/protocol/xttp/message/header/Fields.cpp \
