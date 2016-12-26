@@ -24,6 +24,7 @@
 #include "stara/protocol/xttp/protocol/Identifier.hpp"
 #include "stara/protocol/xttp/response/status/Code.hpp"
 #include "stara/protocol/xttp/response/status/Reason.hpp"
+#include "stara/protocol/xttp/message/Line.hpp"
 
 namespace stara {
 namespace protocol {
@@ -31,8 +32,8 @@ namespace xttp {
 namespace response {
 namespace status {
 
-typedef message::PartTImplements LineTImplements;
-typedef message::Part LineTExtends;
+typedef message::LineTImplements LineTImplements;
+typedef message::Line LineTExtends;
 ///////////////////////////////////////////////////////////////////////
 ///  Class: LineT
 ///////////////////////////////////////////////////////////////////////
@@ -69,49 +70,83 @@ public:
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
     virtual bool Combine() {
-        bool success = false;
         const char* chars = 0;
-        this->clear();
         if ((chars = m_protocol.has_chars())) {
-            this->appendl(chars, " ", NULL);
+            this->assignl(chars, " ", NULL);
             if ((chars = m_code.has_chars())) {
                 this->appendl(chars, " ", NULL);
                 if ((chars = m_reason.has_chars())) {
                     this->appendl(chars, NULL);
                 }
-                success = true;
+                return true;
             }
         }
-        return success;
+        this->clear();
+        return false;
     }
     virtual bool Separate() {
         bool success = true;
-        return success;
-    }
+        const char* chars = 0;
+        size_t length = 0;
 
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-    virtual bool Read(ssize_t& count, char& c, io::CharReader& reader) {
-        bool success = false;
-        return success;
-    }
+        SetDefaults();
 
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-    virtual bool Set(const String& to) {
-        bool success = true;
-        this->assign(to);
-        success = Separate();
+        if ((chars = this->has_chars(length))) {
+            char c = 0;
+            const char* end = chars + length;
+            String *part = 0, protocol, code, reason;
+
+            for (part = &protocol; chars != end; ++chars) {
+                if (' ' != (c = *chars)) {
+                    part->append(&c, 1);
+                } else {
+                    if (part == &protocol) {
+                        if (protocol.has_chars()) {
+                            // ?' '
+                            part = &code;
+                        } else {
+                            // ' '
+                            return false;
+                        }
+                    } else {
+                        if (part != &reason) {
+                            if (code.has_chars()) {
+                                // ?' '?' '
+                                part = &reason;
+                            } else {
+                                // ?' '' '
+                                return false;
+                            }
+                        } else {
+                            // ?' '?'/'*' '
+                            return false;
+                        }
+                    }
+                }
+            }
+            if ((protocol.has_chars())
+                && (code.has_chars())
+                && (reason.has_chars())) {
+                m_protocol.Set(protocol);
+                m_code.Set(code);
+                m_reason.Set(reason);
+                success = true;
+            }
+        }
         return success;
     }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
     virtual LineT& SetDefault() {
-        this->clear();
+        SetDefaults();
+        Combine();
         return *this;
     }
     virtual LineT& SetDefaults() {
+        m_protocol.SetDefault();
+        m_code.SetDefault();
+        m_reason.SetDefault();
         return *this;
     }
 

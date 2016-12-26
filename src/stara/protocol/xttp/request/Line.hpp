@@ -67,19 +67,15 @@ public:
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
     virtual bool Combine() {
-        bool success = false;
         const char *method = 0, *parameters = 0, *protocol = 0;
         if ((method = m_method.has_chars())
             && (parameters = m_parameters.has_chars())
             && (protocol = m_protocol.has_chars())) {
-            this->assign(method);
-            this->append(' ');
-            this->append(parameters);
-            this->append(' ');
-            this->append(protocol);
-            success = true;
+            this->assignl(method, " ", parameters, " ", protocol, NULL);
+            return true;
         }
-        return success;
+        this->clear();
+        return false;
     }
     virtual bool Separate() {
         bool success = false;
@@ -132,36 +128,6 @@ public:
         }
         return success;
     }
-
-    /*///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-    virtual bool Read(ssize_t& count, char& c, io::CharReader& reader) {
-        bool success = false;
-        SetDefault();
-        if ((m_method.Read(count, c, reader))) {
-            if ((m_parameters.Read(count, c, reader))) {
-                if ((m_protocol.Read(count, c, reader))) {
-                    success = Combine();
-                }
-            }
-        }
-        return success;
-    }
-
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-    virtual bool Set(const LineT& to) {
-        bool success = true;
-        this->assign(to);
-        success = Separate();
-        return success;
-    }
-    virtual bool Set(const String& to) {
-        bool success = true;
-        this->assign(to);
-        success = Separate();
-        return success;
-    }*/
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////

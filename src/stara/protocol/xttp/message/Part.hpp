@@ -85,6 +85,12 @@ public:
         success = Separate();
         return success;
     }
+    virtual bool Set(const char* to, size_t length) {
+        bool success = true;
+        this->assign(to, length);
+        success = Separate();
+        return success;
+    }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
@@ -99,11 +105,35 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    static char to_lower(char c) { return std::tolower(c); }
     virtual int case_compare(const String& to) const {
-        String lowerTo;
-        std::transform(to.begin(), to.end(), lowerTo.begin(), to_lower);
-        return this->compare(lowerTo);
+        int unequal = 0;
+        const char *chars = 0, *toChars = 0, *end = 0;
+        size_t length = 0, toLength = 0;
+        if ((chars = this->has_chars(length))) {
+            if ((toChars = to.has_chars(toLength))) {
+                if (((end = (chars + length)) - chars) > toLength) {
+                    end = (chars + toLength);
+                    unequal = 1;
+                } else {
+                    if (toLength > length) {
+                        unequal = -1;
+                    }
+                }
+                for (; chars != end; ++chars, ++toChars) {
+                    char c = std::tolower(*chars), c2 = std::tolower(*toChars);
+                    if (c > c2) { return 1; } else {
+                        if (c < c2) { return -1; }
+                    }
+                }
+            } else {
+                unequal = 1;
+            }
+        } else {
+            if ((toChars = to.has_chars(toLength))) {
+                unequal = -1;
+            }
+        }
+        return unequal;
     }
 
     ///////////////////////////////////////////////////////////////////////

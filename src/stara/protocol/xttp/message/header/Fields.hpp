@@ -22,6 +22,7 @@
 #define _STARA_PROTOCOL_XTTP_MESSAGE_HEADER_FIELDS_HPP
 
 #include "stara/protocol/xttp/message/header/Field.hpp"
+#include "crono/io/Logger.hpp"
 #include <list>
 
 namespace stara {
@@ -112,10 +113,12 @@ public:
     ///////////////////////////////////////////////////////////////////////
     virtual bool Read(ssize_t& count, char& c, io::CharReader& reader) {
         bool success = true;
+        const char* chars = 0;
         Field* field = 0;
         SetDefault();
         while ((field = ReadField(count, c, reader))) {
-            if ((field->has_chars())) {
+            if ((chars = field->has_chars())) {
+                CRONO_LOG_DEBUG("...field = \"" << chars << "\"");
                 m_list.push_back(field);
                 OnField(*field);
             } else {

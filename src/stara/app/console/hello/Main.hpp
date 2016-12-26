@@ -101,7 +101,7 @@ protected:
                         ssize_t count = 0;
 
                         if (0 < (count = Send(sock, m_requestMessage))) {
-                            Receive(sock);
+                            ReceiveResponse(sock);
                         }
                     }
                     sock.Close();
@@ -181,6 +181,46 @@ protected:
         size_t length = 0;
         char c = 0;
         if ((message.Read(amount, c, reader))) {
+            count += amount;
+            if ((chars = message.has_chars(length))) {
+                this->Out(chars, length);
+            }
+            if (0 < (length = message.ContentLength())) {
+                do {
+                    if (0 < (amount = reader.Read(m_chars, sizeof(m_chars)))) {
+                        this->Out(m_chars, amount);
+                        count += amount;
+                        length -= amount;
+                    } else {
+                        success = false;
+                    }
+                } while ((0 < length) && (amount >= sizeof(m_chars)));
+            }
+            success = true;
+        }
+        return success;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual bool ReceiveResponse(rete::network::Socket& sock) {
+        rete::network::SocketReader reader(sock);
+        bool success = false;
+        ssize_t count = 0;
+        if ((ReadResponse(m_responseMessage, count, reader))) {
+            success = true;
+        }
+        return success;
+    }
+    virtual bool ReadResponse
+    (protocol::xttp::response::Message& message,
+     ssize_t& count, rete::io::CharReader& reader) {
+        bool success = false;
+        ssize_t amount = 0;
+        char c = 0;
+        if ((message.Read(amount, c, reader))) {
+            const char* chars = 0;
+            size_t length = 0;
             count += amount;
             if ((chars = message.has_chars(length))) {
                 this->Out(chars, length);
