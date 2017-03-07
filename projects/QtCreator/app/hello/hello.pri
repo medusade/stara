@@ -68,6 +68,7 @@ $${STARA_SRC}/stara/protocol/xttp/request/Method.hpp \
 $${STARA_SRC}/stara/protocol/xttp/request/Parameters.hpp \
 $${STARA_SRC}/stara/protocol/xttp/message/Parts.hpp \
 $${STARA_SRC}/stara/protocol/xttp/message/header/Fields.hpp \
+$${STARA_SRC}/stara/protocol/xttp/message/header/FieldsSignals.hpp \
 $${STARA_SRC}/stara/protocol/xttp/message/header/Field.hpp \
 $${STARA_SRC}/stara/protocol/xttp/message/Line.hpp \
 $${STARA_SRC}/stara/protocol/xttp/message/Part.hpp \
@@ -85,6 +86,7 @@ $${STARA_SRC}/stara/protocol/xttp/request/Method.cpp \
 $${STARA_SRC}/stara/protocol/xttp/request/Parameters.cpp \
 $${STARA_SRC}/stara/protocol/xttp/message/Parts.cpp \
 $${STARA_SRC}/stara/protocol/xttp/message/header/Fields.cpp \
+$${STARA_SRC}/stara/protocol/xttp/message/header/FieldsSignals.cpp \
 $${STARA_SRC}/stara/protocol/xttp/message/header/Field.cpp \
 $${STARA_SRC}/stara/protocol/xttp/message/Part.cpp \
 $${STARA_SRC}/stara/protocol/xttp/protocol/Identifier.cpp \
