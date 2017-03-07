@@ -23,6 +23,7 @@
 
 #include "stara/protocol/xttp/Xttp.hpp"
 #include "stara/io/Reader.hpp"
+#include "stara/io/Writer.hpp"
 #include <algorithm>
 
 namespace stara {
@@ -45,6 +46,9 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
+    PartT(const String& s)
+    : Extends(s) {
+    }
     PartT(const char* chars, size_t length)
     : Extends(chars, length) {
     }
@@ -76,6 +80,10 @@ public:
         bool success = false;
         return success;
     }
+    virtual bool Write(ssize_t& count, io::CharWriter& writer) {
+        bool success = false;
+        return success;
+    }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
@@ -88,6 +96,12 @@ public:
     virtual bool Set(const char* to, size_t length) {
         bool success = true;
         this->assign(to, length);
+        success = Separate();
+        return success;
+    }
+    virtual bool Set(const char* to) {
+        bool success = true;
+        this->assign(to);
         success = Separate();
         return success;
     }
@@ -105,11 +119,25 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual int case_compare(const String& to) const {
-        int unequal = 0;
+    virtual int Compare(const String& to) const {
+        int unequal = Compare(*this, to, Compare);
+        return unequal;
+    }
+    virtual int UncasedCompare(const String& to) const {
+        int unequal = Compare(*this, to, UncasedCompare);
+        return unequal;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    static int Compare
+    (const String& s, const String& to,
+     int compare(const char& c, const char& c2)) {
+        int unequal = 0, compared = 0;
         const char *chars = 0, *toChars = 0, *end = 0;
         size_t length = 0, toLength = 0;
-        if ((chars = this->has_chars(length))) {
+
+        if ((chars = s.has_chars(length))) {
             if ((toChars = to.has_chars(toLength))) {
                 if (((end = (chars + length)) - chars) > toLength) {
                     end = (chars + toLength);
@@ -120,9 +148,8 @@ public:
                     }
                 }
                 for (; chars != end; ++chars, ++toChars) {
-                    char c = std::tolower(*chars), c2 = std::tolower(*toChars);
-                    if (c > c2) { return 1; } else {
-                        if (c < c2) { return -1; }
+                    if ((compared = compare(*chars, *toChars))) {
+                        return compared;
                     }
                 }
             } else {
@@ -134,6 +161,18 @@ public:
             }
         }
         return unequal;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    static int Compare(const char& c, const char& c2) {
+        if (c > c2) { return 1; } else {
+            if (c < c2) { return -1; }
+        }
+        return 0;
+    }
+    static int UncasedCompare(const char& c, const char& c2) {
+        return Compare(std::tolower(c), std::tolower(c2));
     }
 
     ///////////////////////////////////////////////////////////////////////

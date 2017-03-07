@@ -18,7 +18,7 @@
 /// Author: $author$
 ///   Date: 12/12/2016
 ///////////////////////////////////////////////////////////////////////
-#ifndef _STARA_APP_CONSOLE_HELLO_MAINOPT_HPP
+#ifndef _STARA_APP_CONSOLE_HELLO_MAIN_HPP
 #include "stara/app/console/hello/MainOpt.hpp"
 
 namespace stara {
@@ -35,8 +35,7 @@ class _EXPORT_CLASS Main: virtual public MainImplements, public MainExtends {
 public:
     typedef MainImplements Implements;
     typedef MainExtends Extends;
-#undef _STARA_APP_CONSOLE_HELLO_MAINOPT_HPP
-#endif // _STARA_APP_CONSOLE_HELLO_MAINOPT_HPP
+#endif // _STARA_APP_CONSOLE_HELLO_MAIN_HPP
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
@@ -124,13 +123,11 @@ public:
         return _args;
     }
 
-#ifndef _STARA_APP_CONSOLE_HELLO_MAINOPT_HPP
-#define _STARA_APP_CONSOLE_HELLO_MAINOPT_HPP
+#ifndef _STARA_APP_CONSOLE_HELLO_MAIN_HPP
 };
 
 } // namespace hello
 } // namespace console 
 } // namespace app 
 } // namespace stara 
-#undef _STARA_APP_CONSOLE_HELLO_MAINOPT_HPP
-#endif // _STARA_APP_CONSOLE_HELLO_MAINOPT_HPP
+#endif // _STARA_APP_CONSOLE_HELLO_MAIN_HPP

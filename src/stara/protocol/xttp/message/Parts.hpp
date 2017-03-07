@@ -44,6 +44,10 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
+    PartsT(const String& s)
+    : Extends(s) {
+        Separate();
+    }
     PartsT(const char* chars, size_t length)
     : Extends(chars, length) {
         Separate();
@@ -103,7 +107,7 @@ public:
                         if (last) {
                             if (line) {
                                 if ((field = m_headers.AddField(first, (last - first) + 1))) {
-                                    m_headers.OnField(*field);
+                                    m_headers.OnAddField(*field);
                                 } else {
                                     SetDefaults();
                                     return false;
@@ -131,12 +135,35 @@ public:
     ///////////////////////////////////////////////////////////////////////
     virtual bool Read(ssize_t& count, char& c, io::CharReader& reader) {
         bool success = false;
+        ssize_t amount = 0;
         SetDefault();
-        if ((m_line.Read(count, c, reader))) {
-            if ((m_headers.Read(count, c, reader))) {
+
+        CRONO_LOG_DEBUG("m_line.Read(count, c, reader)...");
+        if ((m_line.Read(amount, c, reader))) {
+            CRONO_LOG_DEBUG("...\"" << m_line << "\" = m_line.Read(count, c, reader)");
+
+            count = amount;
+            if ((m_headers.Read(amount, c, reader))) {
+                count += amount;
                 if ((Combine())) {
                     success = true;
                 }
+            }
+        }
+        return success;
+    }
+    virtual bool Write(ssize_t& count, io::CharWriter& writer) {
+        bool success = false;
+        ssize_t amount = 0;
+
+        CRONO_LOG_DEBUG("m_line.Write(amount, writer) with line = \"" << m_line << "\"...");
+        if ((m_line.Write(amount, writer))) {
+            CRONO_LOG_DEBUG("...amount = " << amount << " on m_line.Write(amount, writer) with line = \"" << m_line << "\"...");
+
+            count = amount;
+            if ((m_headers.Write(amount, writer))) {
+                count += amount;
+                success = true;
             }
         }
         return success;

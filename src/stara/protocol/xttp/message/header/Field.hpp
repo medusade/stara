@@ -45,6 +45,10 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
+    FieldT(const String& s)
+    : Extends(s) {
+        Separate();
+    }
     FieldT(const char* chars, size_t length)
     : Extends(chars, length) {
         Separate();

@@ -90,6 +90,22 @@ public:
         } while (0 < amount);
         return success;
     }
+    virtual bool Write(ssize_t& count, io::CharWriter& writer) {
+        bool success = false;
+        const char* chars = 0;
+        size_t length = 0;
+        ssize_t amount = 0;
+        if ((chars = this->has_chars(length))) {
+            if (length <= (amount = writer.Write(chars, length))) {
+                count = amount;
+                if (2 <= (amount = writer.Write("\r\n"))) {
+                    count += amount;
+                    success = true;
+                }
+            }
+        }
+        return success;
+    }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////

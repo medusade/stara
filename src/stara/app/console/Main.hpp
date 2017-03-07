@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////
-/// Copyright (c) 1988-2016 $organization$
+/// Copyright (c) 1988-2017 $organization$
 ///
 /// This software is provided by the author and contributors ``as is'' 
 /// and any express or implied warranties, including, but not limited to, 
@@ -13,62 +13,43 @@
 /// or otherwise) arising in any way out of the use of this software, 
 /// even if advised of the possibility of such damage.
 ///
-///   File: Message.hpp
+///   File: Main.hpp
 ///
 /// Author: $author$
-///   Date: 12/14/2016
+///   Date: 3/4/2017
 ///////////////////////////////////////////////////////////////////////
-#ifndef _STARA_PROTOCOL_XTTP_RESPONSE_MESSAGE_HPP
-#define _STARA_PROTOCOL_XTTP_RESPONSE_MESSAGE_HPP
+#ifndef _STARA_APP_CONSOLE_MAIN_HPP
+#define _STARA_APP_CONSOLE_MAIN_HPP
 
-#include "stara/protocol/xttp/response/status/Line.hpp"
-#include "stara/protocol/xttp/message/Parts.hpp"
+#include "stara/console/getopt/Main.hpp"
 
 namespace stara {
-namespace protocol {
-namespace xttp {
-namespace response {
+namespace app {
+namespace console {
 
-typedef message::PartsTImplements MessageTImplements;
-typedef message::PartsT<status::Line> MessageTExtends;
+typedef stara::console::getopt::MainImplements MainImplements;
+typedef stara::console::getopt::Main MainExtends;
 ///////////////////////////////////////////////////////////////////////
-///  Class: MessageT
+///  Class: Main
 ///////////////////////////////////////////////////////////////////////
-template
-<class TImplements = MessageTImplements, class TExtends = MessageTExtends>
-
-class _EXPORT_CLASS MessageT: virtual public TImplements, public TExtends {
+class _EXPORT_CLASS Main: virtual public MainImplements, public MainExtends {
 public:
-    typedef TImplements Implements;
-    typedef TExtends Extends;
-
+    typedef MainImplements Implements;
+    typedef MainExtends Extends;
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    MessageT(const String& s)
-    : Extends(s) {
+    Main() {
     }
-    MessageT(const char* chars, size_t length)
-    : Extends(chars, length) {
+    virtual ~Main() {
     }
-    MessageT(const char* chars)
-    : Extends(chars) {
-    }
-    MessageT(const MessageT& copy)
-    : Extends(copy) {
-    }
-    MessageT() {
-    }
-    virtual ~MessageT() {
-    }
-
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
 };
-typedef MessageT<> Message;
 
-} // namespace response
-} // namespace xttp 
-} // namespace protocol 
+} // namespace console 
+} // namespace app 
 } // namespace stara 
 
-#endif // _STARA_PROTOCOL_XTTP_RESPONSE_MESSAGE_HPP 
+#endif // _STARA_APP_CONSOLE_MAIN_HPP 
+        
+

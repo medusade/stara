@@ -23,6 +23,7 @@
 
 #include "nadir/base/string.hpp"
 #include "nadir/base/array.hpp"
+#include "nadir/base/chars.hpp"
 #include "nadir/base/base.hpp"
 
 namespace stara {
@@ -41,6 +42,10 @@ typedef ::nadir::wchar_string_implements WStringImplements;
 typedef ::nadir::char_string String;
 typedef ::nadir::tchar_string TString;
 typedef ::nadir::wchar_string WString;
+
+typedef ::nadir::chars_t Chars;
+typedef ::nadir::tchars_t TChars;
+typedef ::nadir::wchars_t WChars;
 
 typedef ::nadir::pointer_t pointer_t;
 typedef ::nadir::unsigned_t unsigned_t;

@@ -21,6 +21,7 @@
 #ifndef _STARA_PROTOCOL_XTTP_MESSAGE_HEADER_FIELDS_HPP
 #define _STARA_PROTOCOL_XTTP_MESSAGE_HEADER_FIELDS_HPP
 
+#include "stara/protocol/xttp/message/header/FieldsSignals.hpp"
 #include "stara/protocol/xttp/message/header/Field.hpp"
 #include "crono/io/Logger.hpp"
 #include <list>
@@ -31,17 +32,22 @@ namespace xttp {
 namespace message {
 namespace header {
 
+typedef FieldsSignals FieldsTSignalsImplements;
 typedef message::PartTImplements FieldsTImplements;
 typedef message::Part FieldsTExtends;
 ///////////////////////////////////////////////////////////////////////
 ///  Class: FieldsT
 ///////////////////////////////////////////////////////////////////////
 template
-<class TImplements = FieldsTImplements,
+<class TSignalsImplements = FieldsTSignalsImplements,
+ class TImplements = FieldsTImplements,
  class TExtends = FieldsTExtends>
 
-class _EXPORT_CLASS FieldsT: virtual public TImplements, public TExtends {
+class _EXPORT_CLASS FieldsT
+: virtual public TSignalsImplements,
+  virtual public TImplements, public TExtends {
 public:
+    typedef TSignalsImplements SignalsImplements;
     typedef TImplements Implements;
     typedef TExtends Extends;
 
@@ -50,18 +56,27 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
+    FieldsT(const String& s)
+    : Extends(s), m_signalsForwardTo(0),
+      m_field(0), m_contentLength(0) {
+        Separate();
+    }
     FieldsT(const char* chars, size_t length)
-    : Extends(chars, length), m_field(0), m_contentLength(0) {
+    : Extends(chars, length), m_signalsForwardTo(0),
+      m_field(0), m_contentLength(0) {
         Separate();
     }
     FieldsT(const char* chars)
-    : Extends(chars), m_field(0), m_contentLength(0) {
+    : Extends(chars), m_signalsForwardTo(0),
+      m_field(0), m_contentLength(0) {
         Separate();
     }
     FieldsT(const FieldsT& copy)
-    : Extends(copy), m_field(0), m_contentLength(0) {
+    : Extends(copy), m_signalsForwardTo(0),
+      m_field(0), m_contentLength(0) {
     }
-    FieldsT(): m_field(0), m_contentLength(0) {
+    FieldsT()
+    : m_signalsForwardTo(0), m_field(0), m_contentLength(0) {
     }
     virtual ~FieldsT() {
         ClearList();
@@ -93,7 +108,7 @@ public:
                     } else {
                         if (last) {
                             if ((field = AddField(first, (last - first) + 1))) {
-                                OnField(*field);
+                                OnAddField(*field);
                             } else {
                                 success = false;
                                 break;
@@ -116,15 +131,48 @@ public:
         const char* chars = 0;
         Field* field = 0;
         SetDefault();
-        while ((field = ReadField(count, c, reader))) {
-            if ((chars = field->has_chars())) {
-                CRONO_LOG_DEBUG("...field = \"" << chars << "\"");
-                m_list.push_back(field);
-                OnField(*field);
-            } else {
-                FreeField(field);
-                break;
+        do {
+            CRONO_LOG_DEBUG("ReadField(count, c, reader)...");
+            if ((field = ReadField(count, c, reader))) {
+                CRONO_LOG_DEBUG("...field = \"" << field->chars() << "\" on ReadField(count, c, reader)");
+
+                if ((chars = field->has_chars())) {
+                    m_list.push_back(field);
+                    OnAddField(*field);
+                } else {
+                    FreeField(field);
+                    break;
+                }
             }
+        } while (field);
+        return success;
+    }
+    virtual bool Write(ssize_t& count, io::CharWriter& writer) {
+        bool success = true;
+        const char* chars = 0;
+        size_t length = 0;
+        ssize_t amount = 0;
+        Field* field = 0;
+        List::const_iterator i, end;
+
+        for (count = 0, end = m_list.end(), i = m_list.begin(); i != end; ++i) {
+            if ((field = (*i))) {
+                if ((chars = field->has_chars(length))) {
+
+                    CRONO_LOG_DEBUG("writer.Write(chars, length) with chars = \"" << chars << "\"");
+                    if (length <= (amount = writer.Write(chars, length))) {
+                        CRONO_LOG_DEBUG("...amount = " << amount << " on writer.Write(chars, length) with chars = \"" << chars << "\"");
+
+                        count += amount;
+                        if (2 <= (amount = writer.Write("\r\n"))) {
+                            count += amount;
+                            continue;
+                        }
+                    }
+                }
+            }
+            success = false;
+            break;
         }
         return success;
     }
@@ -234,22 +282,71 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual void OnField(const Field& field) {
-        if (!(field.Name().case_compare("Content-Length"))) {
-            std::stringstream ss(field.Value());
-            size_t value = 0;
-            if (0 < (ss >> value)) {
-                m_contentLength = value;
+    virtual void OnAddField(const Field& field) {
+        const Part& name = field.Name();
+        this->OnFieldsSignal_AddField(field);
+        if (!(name.UncasedCompare("Content-Length"))) {
+            CRONO_LOG_DEBUG("OnAddFieldContentLength(field)...");
+            OnAddFieldContentLength(field);
+        } else {
+            if (!(name.UncasedCompare("Content-Type"))) {
+                CRONO_LOG_DEBUG("OnAddFieldContentType(field)...");
+                OnAddFieldContentType(field);
+            } else {
+                if (!(name.UncasedCompare("Content-Encoding"))) {
+                    CRONO_LOG_DEBUG("OnAddFieldContentEncoding(field)...");
+                    OnAddFieldContentEncoding(field);
+                } else {
+                }
             }
         }
     }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
+    virtual void OnAddFieldContentLength(const Field& field) {
+        const Part& value = field.Value();
+        std::stringstream ss(value);
+        size_t length = 0;
+        if (0 < (ss >> length)) {
+            m_contentLength = length;
+            this->OnFieldsSignal_AddFieldContentLength(field, value, length);
+        }
+    }
+    virtual void OnAddFieldContentType(const Field& field) {
+        const Part& value = field.Value();
+        if (0 < (value.length())) {
+            m_contentType.Set(value);
+            this->OnFieldsSignal_AddFieldContentType(field, value);
+        }
+    }
+    virtual void OnAddFieldContentEncoding(const Field& field) {
+        const Part& value = field.Value();
+        if (0 < (value.length())) {
+            m_contentEncoding.Set(value);
+            this->OnFieldsSignal_AddFieldContentEncoding(field, value);
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual SignalsImplements* ForwardFieldsSignalsTo(SignalsImplements* to) {
+        SignalsImplements* old_signalsForwardTo = m_signalsForwardTo;
+        m_signalsForwardTo = to;
+        return old_signalsForwardTo;
+    }
+    virtual SignalsImplements* FieldsSignalsForwardTo() const {
+        return m_signalsForwardTo;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
 protected:
+    SignalsImplements* m_signalsForwardTo;
     size_t m_contentLength;
     Field* m_field;
     List m_list;
+    Part m_contentType, m_contentEncoding;
 };
 typedef FieldsT<> Fields;
 
