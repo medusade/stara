@@ -200,13 +200,23 @@ protected:
     virtual bool ReceiveRequest
     (RunAction& action, rete::network::Socket& sock) {
         rete::network::SocketStream stream(sock);
-        bool success = RreadRequest(action, stream);
+        bool success = false;
+        if ((BeforeRreadRequest(action, stream))) {
+            if ((RreadRequest(action, stream))) {
+                success = AfterRreadRequest(action, stream);
+            }
+        }
         return success;
     }
     virtual bool SendResponse
     (RunAction& action, rete::network::Socket& sock) {
         rete::network::SocketStream stream(sock);
-        bool success = WriteResponse(action, stream);
+        bool success = false;
+        if ((BeforeWriteResponse(action, stream))) {
+            if ((WriteResponse(action, stream))) {
+                success = AfterWriteResponse(action, stream);
+            }
+        }
         return success;
     }
 
@@ -217,9 +227,32 @@ protected:
         bool success = false;
         return success;
     }
+    virtual bool BeforeRreadRequest
+    (RunAction& action, stara::io::CharStream& stream) {
+        bool success = true;
+        return success;
+    }
+    virtual bool AfterRreadRequest
+    (RunAction& action, stara::io::CharStream& stream) {
+        bool success = true;
+        return success;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
     virtual bool WriteResponse
     (RunAction& action, stara::io::CharStream& stream) {
         bool success = false;
+        return success;
+    }
+    virtual bool BeforeWriteResponse
+    (RunAction& action, stara::io::CharStream& stream) {
+        bool success = true;
+        return success;
+    }
+    virtual bool AfterWriteResponse
+    (RunAction& action, stara::io::CharStream& stream) {
+        bool success = true;
         return success;
     }
 

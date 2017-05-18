@@ -184,6 +184,20 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
+    virtual header::Field* AddHeaderField
+    (const String& name, const String& value) {
+        header::Field* f = 0;
+        if ((f = m_headers.AddField(name, value))) {
+            return f;
+        }
+        return 0;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual size_t SetContentLength(size_t to) {
+        return m_headers.SetContentLength(to);
+    }
     virtual size_t ContentLength() const {
         return m_headers.ContentLength();
     }

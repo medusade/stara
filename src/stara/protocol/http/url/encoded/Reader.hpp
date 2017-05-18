@@ -18,8 +18,8 @@
 /// Author: $author$
 ///   Date: 3/7/2017
 ///////////////////////////////////////////////////////////////////////
-#ifndef _STARA_PROTOCOL_HTTP_PROTOCOL_URL_ENCODED_READER_HPP
-#define _STARA_PROTOCOL_HTTP_PROTOCOL_URL_ENCODED_READER_HPP
+#ifndef _STARA_PROTOCOL_HTTP_URL_ENCODED_READER_HPP
+#define _STARA_PROTOCOL_HTTP_URL_ENCODED_READER_HPP
 
 #include "stara/io/Reader.hpp"
 
@@ -36,7 +36,6 @@
 namespace stara {
 namespace protocol {
 namespace http {
-namespace protocol {
 namespace url {
 namespace encoded {
 
@@ -66,7 +65,7 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual ssize_t read(what_t* what, size_t size) {
+    virtual ssize_t Read(what_t* what, size_t size) {
         sized_t* sized = 0;
 
         if ((sized = ((sized_t*)what)) && (size)) {
@@ -139,9 +138,8 @@ typedef CharReaderT<> CharReader;
 
 } // namespace encoded 
 } // namespace url 
-} // namespace protocol 
 } // namespace http 
 } // namespace protocol 
 } // namespace stara 
 
-#endif // _STARA_PROTOCOL_HTTP_PROTOCOL_URL_ENCODED_READER_HPP 
+#endif // _STARA_PROTOCOL_HTTP_URL_ENCODED_READER_HPP

@@ -13,25 +13,58 @@
 /// or otherwise) arising in any way out of the use of this software, 
 /// even if advised of the possibility of such damage.
 ///
-///   File: Reader.cpp
+///   File: ContentType.hpp
 ///
 /// Author: $author$
 ///   Date: 3/7/2017
 ///////////////////////////////////////////////////////////////////////
-#include "stara/protocol/http/url/encoded/Reader.hpp"
+#ifndef _STARA_PROTOCOL_HTTP_URL_ENCODED_FORM_CONTENTTYPE_HPP
+#define _STARA_PROTOCOL_HTTP_URL_ENCODED_FORM_CONTENTTYPE_HPP
+
+#include "stara/protocol/xttp/message/Part.hpp"
+
+#define STARA_PROTOCOL_HTTP_URL_ENCODED_FORM_CONTENT_TYPE_NAME \
+    "application/x-www-form-urlencoded"
 
 namespace stara {
 namespace protocol {
 namespace http {
 namespace url {
 namespace encoded {
+namespace form {
 
+typedef stara::protocol::xttp::message::PartTImplements ContentTypeTImplements;
+typedef stara::protocol::xttp::message::Part ContentTypeTExtends;
 ///////////////////////////////////////////////////////////////////////
-///  Class: ReaderT
+///  Class: ContentTypeT
 ///////////////////////////////////////////////////////////////////////
+template
+<class TImplements = ContentTypeTImplements, class TExtends = ContentTypeTExtends>
 
+class _EXPORT_CLASS ContentTypeT: virtual public TImplements, public TExtends {
+public:
+    typedef TImplements Implements;
+    typedef TExtends Extends;
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    ContentTypeT()
+    : Extends(STARA_PROTOCOL_HTTP_URL_ENCODED_FORM_CONTENT_TYPE_NAME) {
+    }
+    ContentTypeT(const ContentTypeT& copy)
+    : Extends(copy) {
+    }
+    virtual ~ContentTypeT() {
+    }
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+};
+typedef ContentTypeT<> ContentType;
+
+} // namespace form
 } // namespace encoded 
 } // namespace url 
 } // namespace http 
 } // namespace protocol 
 } // namespace stara 
+
+#endif // _STARA_PROTOCOL_HTTP_URL_ENCODED_FORM_CONTENTTYPE_HPP 

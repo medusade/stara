@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////
-/// Copyright (c) 1988-2016 $organization$
+/// Copyright (c) 1988-2017 $organization$
 ///
 /// This software is provided by the author and contributors ``as is'' 
 /// and any express or implied warranties, including, but not limited to, 
@@ -16,21 +16,20 @@
 ///   File: Field.hpp
 ///
 /// Author: $author$
-///   Date: 12/14/2016
+///   Date: 3/7/2017
 ///////////////////////////////////////////////////////////////////////
-#ifndef _STARA_PROTOCOL_XTTP_MESSAGE_HEADER_FIELD_HPP
-#define _STARA_PROTOCOL_XTTP_MESSAGE_HEADER_FIELD_HPP
+#ifndef _STARA_PROTOCOL_HTTP_FORM_FIELD_HPP
+#define _STARA_PROTOCOL_HTTP_FORM_FIELD_HPP
 
-#include "stara/protocol/xttp/message/Line.hpp"
+#include "stara/protocol/xttp/message/Part.hpp"
 
 namespace stara {
 namespace protocol {
-namespace xttp {
-namespace message {
-namespace header {
+namespace http {
+namespace form {
 
-typedef message::LineTImplements FieldTImplements;
-typedef message::Line FieldTExtends;
+typedef xttp::message::PartTImplements FieldTImplements;
+typedef xttp::message::Part FieldTExtends;
 ///////////////////////////////////////////////////////////////////////
 ///  Class: FieldT
 ///////////////////////////////////////////////////////////////////////
@@ -42,6 +41,8 @@ class _EXPORT_CLASS FieldT: virtual public TImplements, public TExtends {
 public:
     typedef TImplements Implements;
     typedef TExtends Extends;
+
+    typedef xttp::message::Part Part;
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
@@ -74,7 +75,7 @@ public:
         this->clear();
         if ((m_name.has_chars())) {
             this->assign(m_name);
-            this->append(':');
+            this->append('=');
             this->append(m_value);
         }
         return success;
@@ -91,23 +92,17 @@ public:
             String *part = 0, name, value;
 
             for (part = &name; chars != end; ++chars) {
-                if (':' != (c = *chars)) {
-                    if (' ' != (c)) {
-                        part->append(&c, 1);
-                    } else {
-                        if ((part->has_chars())) {
-                            part->append(&c, 1);
-                        }
-                    }
+                if ('=' != (c = *chars)) {
+                    part->append(&c, 1);
                 } else {
                     if (part != &name) {
                         part->append(&c, 1);
                     } else {
                         if (name.has_chars()) {
-                            // ?':'
+                            // ?'='
                             part = &value;
                         } else {
-                            // ':'
+                            // '='
                             return false;
                         }
                     }
@@ -118,6 +113,47 @@ public:
                 m_value.Set(value);
             } else {
                 return false;
+            }
+        }
+        return success;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual bool Read(ssize_t& count, char& c, io::CharReader& reader) {
+        bool success = false;
+        ssize_t amount = 0;
+        String chars;
+        this->SetDefault();
+        do {
+            if (0 < (amount = reader.Read(&c, 1))) {
+                count += amount;
+                if (('&' != c)) {
+                    chars.append(&c, 1);
+                } else {
+                    success = this->Set(chars);
+                    break;
+                }
+            } else {
+                if (0 > (amount)) {
+                    count = amount;
+                    break;
+                } else {
+                    success = this->Set(chars);
+                }
+            }
+        } while (0 < amount);
+        return success;
+    }
+    virtual bool Write(ssize_t& count, io::CharWriter& writer) {
+        bool success = false;
+        const char* chars = 0;
+        size_t length = 0;
+        ssize_t amount = 0;
+        if ((chars = this->has_chars(length))) {
+            if (length <= (amount = writer.Write(chars, length))) {
+                count = amount;
+                success = true;
             }
         }
         return success;
@@ -138,78 +174,23 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual FieldT& Set(const String& name, const String& value) {
-        const char* chars = 0;
-        size_t length = 0;
-        if ((chars = name.has_chars(length))) {
-            m_name.assign(chars, length);
-            m_value.assign(value);
-            Combine();
-        }
-        return *this;
-    }
-
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-    virtual message::Part& SetName(const String& s) {
-        const char* chars = 0;
-        size_t length = 0;
-        if ((chars = s.has_chars(length))) {
-            m_name.assign(chars, length);
-            Combine();
-        }
+    virtual const Part& Name() const {
         return m_name;
     }
-    virtual message::Part& SetName(const char* chars, size_t length) {
-        if ((chars) && (0 < length)) {
-            m_name.assign(chars, length);
-            Combine();
-        }
-        return m_name;
-    }
-    virtual message::Part& SetName(const char* chars) {
-        if ((chars) && (chars[0])) {
-            m_name.assign(chars);
-            Combine();
-        }
-        return m_name;
-    }
-    virtual const message::Part& Name() const {
-        return m_name;
-    }
-
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-    virtual message::Part& SetValue(const String& s) {
-        m_value.assign(s);
-        Combine();
-        return m_value;
-    }
-    virtual message::Part& SetValue(const char* chars, size_t length) {
-        m_value.assign(chars, length);
-        Combine();
-        return m_value;
-    }
-    virtual message::Part& SetValue(const char* chars) {
-        m_value.assign(chars);
-        Combine();
-        return m_value;
-    }
-    virtual const message::Part& Value() const {
+    virtual const Part& Value() const {
         return m_value;
     }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
 protected:
-    message::Part m_name, m_value;
+    Part m_name, m_value;
 };
 typedef FieldT<> Field;
 
-} // namespace header
-} // namespace message 
-} // namespace xttp 
+} // namespace form
+} // namespace http 
 } // namespace protocol 
 } // namespace stara 
 
-#endif // _STARA_PROTOCOL_XTTP_MESSAGE_HEADER_FIELD_HPP 
+#endif // _STARA_PROTOCOL_HTTP_FORM_FIELD_HPP 

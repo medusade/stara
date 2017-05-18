@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////
-/// Copyright (c) 1988-2016 $organization$
+/// Copyright (c) 1988-2017 $organization$
 ///
 /// This software is provided by the author and contributors ``as is'' 
 /// and any express or implied warranties, including, but not limited to, 
@@ -13,80 +13,74 @@
 /// or otherwise) arising in any way out of the use of this software, 
 /// even if advised of the possibility of such damage.
 ///
-///   File: Reader.hpp
+///   File: Fields.hpp
 ///
 /// Author: $author$
-///   Date: 12/14/2016
+///   Date: 3/7/2017
 ///////////////////////////////////////////////////////////////////////
-#ifndef _STARA_PROTOCOL_XTTP_MESSAGE_BODY_READER_HPP
-#define _STARA_PROTOCOL_XTTP_MESSAGE_BODY_READER_HPP
+#ifndef _STARA_PROTOCOL_HTTP_URL_ENCODED_FORM_FIELDS_HPP
+#define _STARA_PROTOCOL_HTTP_URL_ENCODED_FORM_FIELDS_HPP
 
-#include "stara/io/Reader.hpp"
+#include "stara/protocol/http/url/encoded/Reader.hpp"
+#include "stara/protocol/http/form/Fields.hpp"
 
 namespace stara {
 namespace protocol {
-namespace xttp {
-namespace message {
-namespace body {
+namespace http {
+namespace url {
+namespace encoded {
+namespace form {
 
-typedef io::CharReader CharReaderTImplements;
-typedef Base CharReaderTExtends;
+typedef http::form::FieldsTImplements FieldsTImplements;
+typedef http::form::Fields FieldsTExtends;
 ///////////////////////////////////////////////////////////////////////
-///  Class: CharReaderT
+///  Class: FieldsT
 ///////////////////////////////////////////////////////////////////////
 template
-<class TImplements = CharReaderTImplements, class TExtends = CharReaderTExtends>
+<class TImplements = FieldsTImplements, class TExtends = FieldsTExtends>
 
-class _EXPORT_CLASS CharReaderT: virtual public TImplements, public TExtends {
+class _EXPORT_CLASS FieldsT: virtual public TImplements, public TExtends {
 public:
     typedef TImplements Implements;
     typedef TExtends Extends;
 
-    typedef Implements reader_t;
-    typedef typename Implements::what_t what_t;
-    typedef typename Implements::sized_t sized_t;
-
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    CharReaderT(reader_t& reader, size_t length)
-    : reader_(reader), length_(length), tell_(0) {
+    FieldsT(const String& s)
+    : Extends(s) {
     }
-    virtual ~CharReaderT() {
+    FieldsT(const char* chars, size_t length)
+    : Extends(chars, length) {
     }
-
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-    virtual ssize_t Read(what_t* what, size_t size) {
-        sized_t* sized = 0;
-
-        if ((sized = ((sized_t*)what)) && (size)) {
-            if (length_ < (tell_ + size)) {
-                size = tell_ - length_;
-            }
-            if ((size)) {
-                ssize_t count = 0;
-
-                if (0 < (count = reader_.Read(what, size))) {
-                    tell_ += count;
-                }
-                return count;
-            }
-        }
-        return 0;
+    FieldsT(const char* chars)
+    : Extends(chars) {
+    }
+    FieldsT(const FieldsT& copy)
+    : Extends(copy) {
+    }
+    FieldsT() {
+    }
+    virtual ~FieldsT() {
     }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-protected:
-    reader_t& reader_;
-    size_t length_, tell_;
+    virtual bool Read(ssize_t& count, char& c, io::CharReader& reader) {
+        url::encoded::CharReader encodedReader(reader);
+        bool success = Extends::Read(count, c, encodedReader);
+        return success;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
 };
-typedef CharReaderT<> CharReader;
+typedef FieldsT<> Fields;
 
-} // namespace body
-} // namespace message 
-} // namespace xttp 
+} // namespace form 
+} // namespace encoded 
+} // namespace url 
+} // namespace http 
 } // namespace protocol 
 } // namespace stara 
 
-#endif // _STARA_PROTOCOL_XTTP_MESSAGE_BODY_READER_HPP 
+#endif // _STARA_PROTOCOL_HTTP_URL_ENCODED_FORM_FIELDS_HPP 

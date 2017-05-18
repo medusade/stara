@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////
-/// Copyright (c) 1988-2016 $organization$
+/// Copyright (c) 1988-2017 $organization$
 ///
 /// This software is provided by the author and contributors ``as is'' 
 /// and any express or implied warranties, including, but not limited to, 
@@ -13,80 +13,63 @@
 /// or otherwise) arising in any way out of the use of this software, 
 /// even if advised of the possibility of such damage.
 ///
-///   File: Reader.hpp
+///   File: MethodSignals.hpp
 ///
 /// Author: $author$
-///   Date: 12/14/2016
+///   Date: 3/10/2017
 ///////////////////////////////////////////////////////////////////////
-#ifndef _STARA_PROTOCOL_XTTP_MESSAGE_BODY_READER_HPP
-#define _STARA_PROTOCOL_XTTP_MESSAGE_BODY_READER_HPP
+#ifndef _STARA_PROTOCOL_XTTP_REQUEST_METHODSIGNALS_HPP
+#define _STARA_PROTOCOL_XTTP_REQUEST_METHODSIGNALS_HPP
 
-#include "stara/io/Reader.hpp"
+#include "stara/protocol/xttp/message/Part.hpp"
 
 namespace stara {
 namespace protocol {
 namespace xttp {
-namespace message {
-namespace body {
+namespace request {
 
-typedef io::CharReader CharReaderTImplements;
-typedef Base CharReaderTExtends;
+typedef ImplementBase MethodSignalsTImplements;
 ///////////////////////////////////////////////////////////////////////
-///  Class: CharReaderT
+///  Class: MethodSignalsT
 ///////////////////////////////////////////////////////////////////////
 template
-<class TImplements = CharReaderTImplements, class TExtends = CharReaderTExtends>
+<typename TWhichOf = int, TWhichOf VNone = 0,
+ class TImplements = MethodSignalsTImplements>
 
-class _EXPORT_CLASS CharReaderT: virtual public TImplements, public TExtends {
+class _EXPORT_CLASS MethodSignalsT: virtual public TImplements {
 public:
     typedef TImplements Implements;
-    typedef TExtends Extends;
 
-    typedef Implements reader_t;
-    typedef typename Implements::what_t what_t;
-    typedef typename Implements::sized_t sized_t;
+    typedef TWhichOf WhichOf;
+    enum { None = VNone };
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    CharReaderT(reader_t& reader, size_t length)
-    : reader_(reader), length_(length), tell_(0) {
-    }
-    virtual ~CharReaderT() {
-    }
-
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-    virtual ssize_t Read(what_t* what, size_t size) {
-        sized_t* sized = 0;
-
-        if ((sized = ((sized_t*)what)) && (size)) {
-            if (length_ < (tell_ + size)) {
-                size = tell_ - length_;
-            }
-            if ((size)) {
-                ssize_t count = 0;
-
-                if (0 < (count = reader_.Read(what, size))) {
-                    tell_ += count;
-                }
-                return count;
-            }
+    virtual void OnMethodSignal_SetWhich(const WhichOf& which) {
+        MethodSignalsT* signalsForwardTo = 0;
+        if ((signalsForwardTo = this->MethodSignalsForwardTo())) {
+            signalsForwardTo->OnMethodSignal_SetWhich(which);
         }
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual MethodSignalsT* MethodSignalsForwardTo(MethodSignalsT* to) {
+        MethodSignalsT* signalsForwardTo = 0;
+        return signalsForwardTo;
+    }
+    virtual MethodSignalsT* MethodSignalsForwardTo() const {
         return 0;
     }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-protected:
-    reader_t& reader_;
-    size_t length_, tell_;
 };
-typedef CharReaderT<> CharReader;
+typedef MethodSignalsT<> MethodSignals;
 
-} // namespace body
-} // namespace message 
-} // namespace xttp 
+} // namespace request 
+} // namespace xttp
 } // namespace protocol 
 } // namespace stara 
 
-#endif // _STARA_PROTOCOL_XTTP_MESSAGE_BODY_READER_HPP 
+#endif // _STARA_PROTOCOL_XTTP_REQUEST_METHODSIGNALS_HPP 
