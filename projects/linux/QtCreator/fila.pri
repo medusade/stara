@@ -1,5 +1,5 @@
 ########################################################################
-# Copyright (c) 1988-2016 $organization$
+# Copyright (c) 1988-2017 $organization$
 #
 # This software is provided by the author and contributors ``as is'' 
 # and any express or implied warranties, including, but not limited to, 
@@ -16,20 +16,19 @@
 #   File: fila.pri
 #
 # Author: $author$
-#   Date: 12/12/2016
+#   Date: 3/8/2017
 ########################################################################
 
 ########################################################################
 # fila
-FILA_PKG = $${STARA_PKG}/../fila
-FILA_PRJ = $${STARA_PRO_DIR}$${FILA_PKG}
-FILA_SRC = $${FILA_PRJ}/src
+FILA_BLD = ../$${FILA_PKG}/build/$${STARA_OS}/QtCreator/$${FILA_CONFIG}
+FILA_LIB = $${FILA_BLD}/lib
 
 fila_INCLUDEPATH += \
-$${FILA_SRC} \
 
 fila_DEFINES += \
 
 fila_LIBS += \
 -L$${FILA_LIB}/libfila \
 -lfila \
+

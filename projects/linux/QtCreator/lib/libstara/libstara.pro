@@ -1,5 +1,5 @@
 ########################################################################
-# Copyright (c) 1988-2016 $organization$
+# Copyright (c) 1988-2017 $organization$
 #
 # This software is provided by the author and contributors ``as is'' 
 # and any express or implied warranties, including, but not limited to, 
@@ -13,23 +13,32 @@
 # or otherwise) arising in any way out of the use of this software, 
 # even if advised of the possibility of such damage.
 #
-#   File: fila.pri
+#   File: libstara.pro
 #
 # Author: $author$
-#   Date: 12/12/2016
+#   Date: 3/8/2017
+########################################################################
+include(../../../../QtCreator/stara.pri)
+include(../../stara.pri)
+include(../../../../QtCreator/lib/libstara/libstara.pri)
+
+TARGET = stara
+TEMPLATE = lib
+CONFIG += staticlib
+
+########################################################################
+INCLUDEPATH += \
+$${libstara_INCLUDEPATH} \
+
+DEFINES += \
+$${libstara_DEFINES} \
+
+########################################################################
+HEADERS += \
+$${libstara_HEADERS} \
+
+SOURCES += \
+$${libstara_SOURCES} \
+
 ########################################################################
 
-########################################################################
-# fila
-FILA_PKG = $${STARA_PKG}/../fila
-FILA_PRJ = $${STARA_PRO_DIR}$${FILA_PKG}
-FILA_SRC = $${FILA_PRJ}/src
-
-fila_INCLUDEPATH += \
-$${FILA_SRC} \
-
-fila_DEFINES += \
-
-fila_LIBS += \
--L$${FILA_LIB}/libfila \
--lfila \

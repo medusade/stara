@@ -1,5 +1,5 @@
 ########################################################################
-# Copyright (c) 1988-2016 $organization$
+# Copyright (c) 1988-2017 $organization$
 #
 # This software is provided by the author and contributors ``as is'' 
 # and any express or implied warranties, including, but not limited to, 
@@ -13,23 +13,36 @@
 # or otherwise) arising in any way out of the use of this software, 
 # even if advised of the possibility of such damage.
 #
-#   File: fila.pri
+#   File: hello.pro
 #
 # Author: $author$
-#   Date: 12/12/2016
+#   Date: 3/8/2016
 ########################################################################
+include(../../../../QtCreator/stara.pri)
+include(../../stara.pri)
+include(../../../../QtCreator/rete.pri)
+include(../../rete.pri)
+include(../../../../QtCreator/fila.pri)
+include(../../fila.pri)
+include(../../../../QtCreator/app/hello/hello.pri)
+
+TARGET = stara-hello
 
 ########################################################################
-# fila
-FILA_PKG = $${STARA_PKG}/../fila
-FILA_PRJ = $${STARA_PRO_DIR}$${FILA_PKG}
-FILA_SRC = $${FILA_PRJ}/src
+INCLUDEPATH += \
+$${hello_INCLUDEPATH} \
 
-fila_INCLUDEPATH += \
-$${FILA_SRC} \
+DEFINES += \
+$${hello_DEFINES} \
 
-fila_DEFINES += \
+########################################################################
+HEADERS += \
+$${hello_HEADERS} \
 
-fila_LIBS += \
--L$${FILA_LIB}/libfila \
--lfila \
+SOURCES += \
+$${hello_SOURCES} \
+
+########################################################################
+LIBS += \
+$${hello_LIBS} \
+

@@ -22,8 +22,8 @@
 ########################################################################
 # rete
 RETE_PKG = $${STARA_PKG}/../rete
-RETE_PRJ = $${RETE_PKG}
-RETE_SRC = $${RETE_PKG}/src
+RETE_PRJ = $${STARA_PRO_DIR}$${RETE_PKG}
+RETE_SRC = $${RETE_PRJ}/src
 
 rete_INCLUDEPATH += \
 $${RETE_SRC} \

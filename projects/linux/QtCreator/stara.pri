@@ -1,5 +1,5 @@
 ########################################################################
-# Copyright (c) 1988-2016 $organization$
+# Copyright (c) 1988-2017 $organization$
 #
 # This software is provided by the author and contributors ``as is'' 
 # and any express or implied warranties, including, but not limited to, 
@@ -16,78 +16,46 @@
 #   File: stara.pri
 #
 # Author: $author$
-#   Date: 12/12/2016
+#   Date: 3/8/2017
 ########################################################################
-STARA_PKG = ../../../../..
-STARA_BLD = ../..
 
-STARA_PRJ = $${STARA_PRO_DIR}$${STARA_PKG}
-STARA_BIN = $${STARA_BLD}/bin
-STARA_LIB = $${STARA_BLD}/lib
-STARA_SRC = $${STARA_PRJ}/src
-
-CONFIG(debug, debug|release) {
-STARA_CONFIG = Debug
-stara_DEFINES += DEBUG_BUILD
-} else {
-STARA_CONFIG = Release
-stara_DEFINES += RELEASE_BUILD
-}
-stara_DEFINES += BUILD_CONFIG=$${STARA_CONFIG}
-
-########################################################################
-# NO Qt
-QT -= gui core
-
-########################################################################
-# patrona
-PATRONA_PKG = $${STARA_PKG}/../patrona
-PATRONA_PRJ = $${STARA_PRO_DIR}$${PATRONA_PKG}
-PATRONA_SRC = $${PATRONA_PRJ}/src
-
-patrona_INCLUDEPATH += \
-$${PATRONA_SRC} \
-
-patrona_DEFINES += \
-
-patrona_LIBS += \
+STARA_OS = linux
 
 ########################################################################
 # nadir
-NADIR_PKG = $${STARA_PKG}/../nadir
-NADIR_PRJ = $${STARA_PRO_DIR}$${NADIR_PKG}
-NADIR_SRC = $${NADIR_PRJ}/src
+NADIR_BLD = ../$${NADIR_PKG}/build/$${STARA_OS}/QtCreator/$${STARA_CONFIG}
+NADIR_LIB = $${NADIR_BLD}/lib
 
 nadir_INCLUDEPATH += \
-$${NADIR_SRC} \
 
 nadir_DEFINES += \
 
 nadir_LIBS += \
+-L$${NADIR_LIB}/libnadir \
+-lnadir \
 
 ########################################################################
 # crono
-CRONO_PKG = $${STARA_PKG}/../crono
-CRONO_PRJ = $${STARA_PRO_DIR}$${CRONO_PKG}
-CRONO_SRC = $${CRONO_PRJ}/src
+CRONO_BLD = ../$${CRONO_PKG}/build/$${STARA_OS}/QtCreator/$${STARA_CONFIG}
+CRONO_LIB = $${CRONO_BLD}/lib
 
 crono_INCLUDEPATH += \
-$${CRONO_SRC} \
 
 crono_DEFINES += \
 
 crono_LIBS += \
+-L$${CRONO_LIB}/libcrono \
+-lcrono \
 
 ########################################################################
+# stara
 stara_INCLUDEPATH += \
-$${STARA_SRC} \
-$${crono_INCLUDEPATH} \
-$${nadir_INCLUDEPATH} \
-$${patrona_INCLUDEPATH} \
 
 stara_DEFINES += \
 
-########################################################################
 stara_LIBS += \
--L$${STARA_LIB}/libstara \
--lstara \
+$${nadir_LIBS} \
+-lpthread \
+-ldl \
+-lrt \
+

@@ -16,7 +16,7 @@
 #   File: odbc.pro
 #
 # Author: $author$
-#   Date: 3/4/2017
+#   Date: 3/8/2017
 ########################################################################
 include(../../../../QtCreator/stara.pri)
 include(../../stara.pri)

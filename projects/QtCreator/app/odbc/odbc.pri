@@ -26,9 +26,18 @@ odbc_INCLUDEPATH += \
 $${stara_INCLUDEPATH} \
 $${rete_INCLUDEPATH} \
 $${fila_INCLUDEPATH} \
+$${etiris_INCLUDEPATH} \
 
 odbc_DEFINES += \
 $${stara_DEFINES} \
+$${etiris_DEFINES} \
+
+########################################################################
+odbc_HEADERS += \
+$${NADIR_SRC}/nadir/console/io.hpp \
+
+odbc_SOURCES += \
+$${NADIR_SRC}/nadir/console/io.cpp \
 
 ########################################################################
 odbc_HEADERS += \
@@ -39,19 +48,31 @@ $${STARA_SRC}/stara/base/Base.hpp \
 
 ########################################################################
 odbc_HEADERS += \
+$${STARA_SRC}/stara/protocol/xttp/message/body/Reader.hpp \
+$${STARA_SRC}/stara/protocol/xttp/message/header/Fields.hpp \
 $${STARA_SRC}/stara/protocol/xttp/request/Line.hpp \
 
 odbc_SOURCES += \
+$${STARA_SRC}/stara/protocol/xttp/message/body/Reader.cpp \
 $${STARA_SRC}/stara/protocol/xttp/request/Line.cpp \
 
 ########################################################################
 odbc_HEADERS += \
+$${STARA_SRC}/stara/protocol/http/url/encoded/form/Fields.hpp \
+$${STARA_SRC}/stara/protocol/http/url/encoded/form/ContentType.hpp \
 $${STARA_SRC}/stara/protocol/http/url/encoded/Reader.hpp \
 $${STARA_SRC}/stara/protocol/http/request/Method.hpp \
+$${STARA_SRC}/stara/protocol/http/form/Fields.hpp \
+$${STARA_SRC}/stara/protocol/http/form/FieldsSignals.hpp \
+$${STARA_SRC}/stara/protocol/http/form/Field.hpp \
 
 odbc_SOURCES += \
+$${STARA_SRC}/stara/protocol/http/url/encoded/form/Fields.cpp \
+$${STARA_SRC}/stara/protocol/http/url/encoded/form/ContentType.cpp \
 $${STARA_SRC}/stara/protocol/http/url/encoded/Reader.cpp \
 $${STARA_SRC}/stara/protocol/http/request/Method.cpp \
+$${STARA_SRC}/stara/protocol/http/form/FieldsSignals.cpp \
+$${STARA_SRC}/stara/protocol/http/form/Field.cpp \
 
 ########################################################################
 odbc_HEADERS += \
@@ -82,5 +103,6 @@ $${STARA_SRC}/stara/app/console/Main_main.cpp \
 ########################################################################
 odbc_LIBS += \
 $${stara_LIBS} \
+$${etiris_LIBS} \
 
 
