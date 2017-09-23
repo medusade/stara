@@ -23,6 +23,7 @@
 
 #include "xos/app/console/stara/MainOpt.hpp"
 #include "xos/app/console/rete/Main.hpp"
+#include "xos/protocol/xttp/response/Message.hpp"
 #include "xos/protocol/xttp/response/status/Line.hpp"
 #include "xos/protocol/xttp/request/Message.hpp"
 #include "xos/protocol/xttp/request/Line.hpp"
@@ -66,20 +67,24 @@ public:
         ssize_t count = 0, amount = 0;
         char c = 0;
         //count = this->ReadXttp(in, rs);
-        /*if ((m_requestLine.Read(amount, c, in))) {
-            count += amount;
-            XOS_LOG_DEBUG("...read line method = \"" << m_requestLine.Method() << "\" parameters = \"" << m_requestLine.Parameters() << "\" protocol = \"" << m_requestLine.Protocol() << "\"");
-            if (0 < (amount = ReadXttpHeaders(in, rs, c))) {
-                count += amount;
-            }
-        }*/
+        //count = this->ReadXttpRequestLine(in, rs);
         if ((m_requestMessage.Read(amount, c, in))) {
+            const protocol::xttp::message::header::Fields& headers = m_requestMessage.Headers();
             const protocol::xttp::request::Line& line = m_requestMessage.Line();
             const protocol::xttp::request::Method& method = line.Method();
             const protocol::xttp::request::Parameters& parameters = line.Parameters();
             const protocol::xttp::protocol::Identifier& protocol = line.Protocol();
             count += amount;
-            XOS_LOG_DEBUG("...read method = \"" << method << "\" parameters = \"" << parameters << "\" protocol = \"" << protocol << "\"");
+            XOS_LOG_DEBUG("...line method = \"" << method << "\" parameters = \"" << parameters << "\" protocol = \"" << protocol << "\"");
+            for (protocol::xttp::message::header::Fields::const_iterator
+                 i = headers.Begin(); i != headers.End(); ++i) {
+                const protocol::xttp::message::header::Field* f = 0;
+                if ((f = (*i))) {
+                    const protocol::xttp::message::Part& name = f->Name();
+                    const protocol::xttp::message::Part& value = f->Value();
+                    XOS_LOG_DEBUG("...header name = \"" << name << "\" value = \"" << value << "\" ")
+                }
+            }
         }
         return count;
     }
@@ -93,7 +98,7 @@ public:
             const protocol::xttp::request::Parameters& parameters = line.Parameters();
             const protocol::xttp::protocol::Identifier& protocol = line.Protocol();
             count += amount;
-            XOS_LOG_DEBUG("...read method = \"" << method << "\" parameters = \"" << parameters << "\" protocol = \"" << protocol << "\"");
+            XOS_LOG_DEBUG("...line method = \"" << method << "\" parameters = \"" << parameters << "\" protocol = \"" << protocol << "\"");
             if (0 < (amount = ReadXttpHeaders(in, rs, c))) {
                 count += amount;
             }
@@ -105,7 +110,25 @@ public:
         ssize_t count = 0, amount = 0;
         char c = 0;
         //count = this->ReadXttp(in, rs);
-        count = this->ReadXttpResponseLine(in, rs);
+        //count = this->ReadXttpResponseLine(in, rs);
+        if ((m_responseMessage.Read(amount, c, in))) {
+            const protocol::xttp::message::header::Fields& headers = m_responseMessage.Headers();
+            const protocol::xttp::response::status::Line& line = m_responseMessage.Line();
+            const protocol::xttp::protocol::Identifier& protocol = line.Protocol();
+            const protocol::xttp::response::status::Code& code = line.Code();
+            const protocol::xttp::response::status::Reason& reason = line.Reason();
+            count += amount;
+            XOS_LOG_DEBUG("...line protocol = \"" << protocol << "\" code = \"" << code << "\" reason = \"" << reason << "\" ");
+            for (protocol::xttp::message::header::Fields::const_iterator
+                 i = headers.Begin(); i != headers.End(); ++i) {
+                const protocol::xttp::message::header::Field* f = 0;
+                if ((f = (*i))) {
+                    const protocol::xttp::message::Part& name = f->Name();
+                    const protocol::xttp::message::Part& value = f->Value();
+                    XOS_LOG_DEBUG("...header name = \"" << name << "\" value = \"" << value << "\" ")
+                }
+            }
+        }
         return count;
     }
     virtual ssize_t ReadXttpResponseLine
@@ -114,11 +137,11 @@ public:
         char c = 0;
         if ((m_responseLine.Read(amount, c, in))) {
             const protocol::xttp::response::status::Line& line = m_responseLine;
-            const protocol::xttp::protocol::Identifier& protocol = m_responseLine.Protocol();
-            const protocol::xttp::response::status::Code& code = m_responseLine.Code();
-            const protocol::xttp::response::status::Reason& reason = m_responseLine.Reason();
-            XOS_LOG_DEBUG("...read protocol = \"" << protocol << "\" code = \"" << code << "\" reason = \"" << reason << "\" ");
+            const protocol::xttp::protocol::Identifier& protocol = line.Protocol();
+            const protocol::xttp::response::status::Code& code = line.Code();
+            const protocol::xttp::response::status::Reason& reason = line.Reason();
             count += amount;
+            XOS_LOG_DEBUG("...line protocol = \"" << protocol << "\" code = \"" << code << "\" reason = \"" << reason << "\" ");
             if (0 < (amount = ReadXttpHeaders(in, rs, c))) {
                 count += amount;
             }
@@ -132,7 +155,7 @@ public:
 
         if ((m_line.Read(amount, c, in))) {
             count += amount;
-            XOS_LOG_DEBUG("...read line = \"" << m_line << "\"");
+            XOS_LOG_DEBUG("...line = \"" << m_line << "\"");
             if (0 < (amount = ReadXttpHeaders(in, rs, c))) {
                 count += amount;
             }
@@ -144,6 +167,15 @@ public:
         ssize_t count = 0, amount = 0;
         if ((m_headers.Read(amount, c, in))) {
             count += amount;
+            for (protocol::xttp::message::header::Fields::const_iterator
+                 i = m_headers.Begin(); i != m_headers.End(); ++i) {
+                const protocol::xttp::message::header::Field* f = 0;
+                if ((f = (*i))) {
+                    const protocol::xttp::message::Part& name = f->Name();
+                    const protocol::xttp::message::Part& value = f->Value();
+                    XOS_LOG_DEBUG("...header name = \"" << name << "\" value = \"" << value << "\" ")
+                }
+            }
         }
         return count;
     }
@@ -153,7 +185,7 @@ public:
         do {
             if ((m_line.Read(amount, c, in))) {
                 count += amount;
-                XOS_LOG_DEBUG("...read line = \"" << m_line << "\"");
+                XOS_LOG_DEBUG("...header = \"" << m_line << "\"");
             } else {
                 break;
             }
@@ -164,6 +196,7 @@ public:
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
 protected:
+    protocol::xttp::response::Message m_responseMessage;
     protocol::xttp::response::status::Line m_responseLine;
     protocol::xttp::request::Message m_requestMessage;
     protocol::xttp::request::Line m_requestLine;

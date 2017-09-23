@@ -16,25 +16,24 @@
 ///   File: Fields.hpp
 ///
 /// Author: $author$
-///   Date: 9/17/2017
+///   Date: 9/18/2017
 ///////////////////////////////////////////////////////////////////////
-#ifndef _XOS_PROTOCOL_XTTP_MESSAGE_HEADER_FIELDS_HPP
-#define _XOS_PROTOCOL_XTTP_MESSAGE_HEADER_FIELDS_HPP
+#ifndef _XOS_PROTOCOL_HTTP_FORM_FIELDS_HPP
+#define _XOS_PROTOCOL_HTTP_FORM_FIELDS_HPP
 
-#include "xos/protocol/xttp/message/header/FieldsSignals.hpp"
-#include "xos/protocol/xttp/message/header/Field.hpp"
+#include "xos/protocol/http/form/FieldsSignals.hpp"
+#include "xos/protocol/http/form/Field.hpp"
 #include "xos/logger/Interface.hpp"
 #include <list>
 
 namespace xos {
 namespace protocol {
-namespace xttp {
-namespace message {
-namespace header {
+namespace http {
+namespace form {
 
 typedef FieldsSignals FieldsTSignalsImplements;
-typedef message::PartTImplements FieldsTImplements;
-typedef message::Part FieldsTExtends;
+typedef xttp::message::PartTImplements FieldsTImplements;
+typedef xttp::message::Part FieldsTExtends;
 ///////////////////////////////////////////////////////////////////////
 ///  Class: FieldsT
 ///////////////////////////////////////////////////////////////////////
@@ -53,35 +52,110 @@ public:
 
     typedef ::std::list<Field*> List;
     typedef List::const_iterator const_iterator;
+    typedef List list_t;
+    typedef Field field_t;
+    typedef String string_t;
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
     FieldsT(const String& s)
-    : Extends(s), m_signalsForwardTo(0),
-      m_contentLength(0), m_contentLengthField(0), m_field(0) {
+    : Extends(s), m_signalsForwardTo(0), m_field(0) {
         Separate();
     }
     FieldsT(const char* chars, size_t length)
-    : Extends(chars, length), m_signalsForwardTo(0),
-      m_contentLength(0), m_contentLengthField(0), m_field(0) {
+    : Extends(chars, length), m_signalsForwardTo(0), m_field(0) {
         Separate();
     }
     FieldsT(const char* chars)
-    : Extends(chars), m_signalsForwardTo(0),
-      m_contentLength(0), m_contentLengthField(0), m_field(0) {
+    : Extends(chars), m_signalsForwardTo(0), m_field(0) {
         Separate();
     }
     FieldsT(const FieldsT& copy)
-    : Extends(copy), m_signalsForwardTo(0),
-      m_contentLength(0), m_contentLengthField(0), m_field(0) {
+    : Extends(copy), m_signalsForwardTo(0), m_field(0) {
     }
     FieldsT()
-    : m_signalsForwardTo(0),
-      m_contentLength(0), m_contentLengthField(0), m_field(0) {
+    : m_signalsForwardTo(0), m_field(0) {
     }
     virtual ~FieldsT() {
         ClearList();
         FreeField();
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    const char_t* FindValue
+    (const string_t& name, const field_t* from = 0) const {
+        return FindValue(name.Chars(), from);
+    }
+    const char_t* FindValue
+    (const char_t* name, const field_t* from = 0) const {
+        field_t* f = 0;
+        if ((f = Find(name, from))) {
+            return f->Value().HasChars();
+        }
+        return 0;
+    }
+    const char_t* FindValue
+    (const char_t** names, const field_t* from = 0) const {
+        field_t* f = 0;
+        if ((f = Find(names, from))) {
+            return f->Value().HasChars();
+        }
+        return 0;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    field_t* Find(const string_t& name, const field_t* from = 0) const {
+        return Find(name.Chars(), from);
+    }
+    field_t* Find(const char_t* name, const field_t* from = 0) const {
+        const const_iterator begin = this->Begin();
+        const const_iterator end = this->End();
+
+        for (const_iterator i = begin; i != end; ++i) {
+            const field_t* found = 0;
+
+            if ((found = (*i))) {
+                if ((from)) {
+                    if (from == found) {
+                        from = 0;
+                    }
+                } else {
+                    if (!(found->Name().Compare(name))) {
+                        return ((field_t*)found);
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+    field_t* Find(const char_t** names, const field_t* from = 0) const {
+        if ((names) && (names[0])) {
+            const const_iterator begin = this->Begin();
+            const const_iterator end = this->End();
+
+            for (const_iterator i = begin; i != end; ++i) {
+                const field_t* found = 0;
+
+                if ((found = (*i))) {
+                    if ((from)) {
+                        if (from == found) {
+                            from = 0;
+                        }
+                    } else {
+                        size_t n = 0;
+
+                        for (const char_t* name = names[n]; name; name = names[++n]) {
+                            if (!(found->Name().Compare(name))) {
+                                return ((field_t*)found);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return 0;
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -103,22 +177,22 @@ public:
             char c = 0;
 
             for (; chars != end; ++chars) {
-                if ('\r' != (c = *chars)) {
-                    if ('\n' != (c)) {
-                        last = chars;
-                    } else {
-                        if (last) {
-                            if ((field = AddField(first, (last - first) + 1))) {
-                                OnAddField(*field);
-                            } else {
-                                success = false;
-                                break;
-                            }
+                if ('&' != (c = *chars)) {
+                    last = chars;
+                } else {
+                    if (last) {
+                        if ((field = AddField(first, (last - first) + 1))) {
+                            OnAddField(*field);
+                            first = ++last;
+                            last = 0;
                         } else {
+                            success = false;
                             break;
                         }
+                    } else {
+                        success = false;
+                        break;
                     }
-                } else {
                 }
             }
         }
@@ -128,10 +202,14 @@ public:
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
     virtual bool Read(ssize_t& count, char& c, io::CharReader& reader) {
+        SetDefault();
+        return ReadMore(count, c, reader);
+    }
+    virtual bool ReadMore(ssize_t& count, char& c, io::CharReader& reader) {
         bool success = true;
         const char* chars = 0;
         Field* field = 0;
-        SetDefault();
+
         do {
             XOS_LOG_DEBUG("ReadField(count, c, reader)...");
             if ((field = ReadField(count, c, reader))) {
@@ -145,7 +223,7 @@ public:
                     break;
                 }
             }
-        } while (field);
+        } while ((field) && ('&' == c));
         return success;
     }
     virtual bool Write(ssize_t& count, io::CharWriter& writer) {
@@ -154,33 +232,35 @@ public:
         size_t length = 0;
         ssize_t amount = 0;
         Field* field = 0;
-        List::const_iterator i, end;
+        List::const_iterator i, begin, end;
 
-        for (count = 0, end = m_list.end(), i = m_list.begin(); i != end; ++i) {
+        for (count = 0, begin = m_list.begin(),
+             end = m_list.end(), i = begin; i != end; ++i) {
+
             if ((field = (*i))) {
+
                 if ((chars = field->HasChars(length))) {
 
+                    if (i != begin) {
+                        XOS_LOG_DEBUG("writer.Write(\"&\")...");
+                        if (1 <= (amount = writer.Write("&"))) {
+                            XOS_LOG_DEBUG("...amount = " << amount << " on writer.Write(\"&\")");
+                            count += amount;
+                        } else {
+                            success = false;
+                            break;
+                        }
+                    }
                     XOS_LOG_DEBUG("writer.Write(chars, length) with chars = \"" << chars << "\"");
                     if (length <= (amount = writer.Write(chars, length))) {
                         XOS_LOG_DEBUG("...amount = " << amount << " on writer.Write(chars, length) with chars = \"" << chars << "\"");
-
                         count += amount;
-                        if (2 <= (amount = writer.Write("\r\n"))) {
-                            count += amount;
-                            continue;
-                        }
+                        continue;
                     }
                 }
             }
             success = false;
             break;
-        }
-        if ((success)) {
-            if (2 <= (amount = writer.Write("\r\n"))) {
-                count += amount;
-            } else {
-                success = false;
-            }
         }
         return success;
     }
@@ -224,30 +304,9 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual size_t SetContentLength(size_t to) {
-        m_contentLength = to;
-        return m_contentLength;
-    }
-    virtual size_t ClearContentLength() {
-        m_contentLength = 0;
-        return m_contentLength;
-    }
-    virtual size_t ContentLength() const {
-        return m_contentLength;
-    }
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-    virtual const Part& ContentType() const {
-        return m_contentType;
-    }
-    virtual const Part& ContentEncoding() const {
-        return m_contentEncoding;
-    }
-
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
     virtual Field* ReadField(ssize_t& count, char& c, io::CharReader& reader) {
         Field* field = 0;
+
         if ((field = GetField())) {
             if ((field->Read(count, c, reader))) {
                 return field;
@@ -256,35 +315,12 @@ public:
         }
         return 0;
     }
-
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-    virtual Field* AddField(const String& name, const String& value) {
-        const char *chars = 0;
-        size_t length = 0;
-        if ((chars = name.HasChars(length))) {
-            Field* field = 0;
-            if ((field = GetField())) {
-                field->Set(name, value);
-                m_list.push_back(field);
-                return field;
-            }
-        }
-        return 0;
-    }
-    virtual Field* AddField(const String& s) {
-        const char *chars = 0;
-        size_t length = 0;
-        if ((chars = s.HasChars(length))) {
-            return AddField(chars, length);
-        }
-        return 0;
-    }
     virtual Field* AddField(const char *chars, size_t length) {
         if ((chars) && (length)) {
             Field* field = 0;
+
             if ((field = GetField())) {
-                field->Assign(chars, length);
+                field->assign(chars, length);
                 if ((field->Separate())) {
                     m_list.push_back(field);
                     return field;
@@ -299,6 +335,7 @@ public:
     ///////////////////////////////////////////////////////////////////////
     virtual Field* GetField() {
         Field* field = 0;
+
         if (!(field = m_field)) {
             field = new Field;
         } else {
@@ -317,10 +354,6 @@ public:
                 m_field = field;
             }
         } else {
-            if ((m_contentLengthField)) {
-                delete m_contentLengthField;
-                m_contentLengthField = 0;
-            }
             if ((m_field)) {
                 delete m_field;
                 m_field = 0;
@@ -330,9 +363,6 @@ public:
     virtual void ClearList() {
         for (Field* field = 0; !m_list.empty(); m_list.pop_front()) {
             if ((field = m_list.front())) {
-                if ((field == m_contentLengthField)) {
-                    m_contentLengthField = 0;
-                }
                 delete field;
             }
         }
@@ -340,69 +370,28 @@ public:
     virtual FieldsT& SetDefaults() {
         ClearList();
         FreeField();
-        m_contentLength = 0;
-        m_contentLengthField = 0;
-        m_contentType.clear();
-        m_contentEncoding.clear();
+        return *this;
+    }
+    virtual FieldsT& Clear() {
+        ClearList();
+        FreeField();
         return *this;
     }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
     virtual void OnAddField(const Field& field) {
-        const Part& name = field.Name();
         this->OnFieldsSignal_AddField(field);
-        if (!(name.UncasedCompare("Content-Length"))) {
-            XOS_LOG_DEBUG("OnAddFieldContentLength(field)...");
-            OnAddFieldContentLength(field);
-        } else {
-            if (!(name.UncasedCompare("Content-Type"))) {
-                XOS_LOG_DEBUG("OnAddFieldContentType(field)...");
-                OnAddFieldContentType(field);
-            } else {
-                if (!(name.UncasedCompare("Content-Encoding"))) {
-                    XOS_LOG_DEBUG("OnAddFieldContentEncoding(field)...");
-                    OnAddFieldContentEncoding(field);
-                } else {
-                }
-            }
-        }
     }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual void OnAddFieldContentLength(const Field& field) {
-        const Part& value = field.Value();
-        ::std::stringstream ss(value);
-        size_t length = 0;
-        if (0 < (ss >> length)) {
-            m_contentLength = length;
-            this->OnFieldsSignal_AddFieldContentLength(field, value, length);
-        }
-    }
-    virtual void OnAddFieldContentType(const Field& field) {
-        const Part& value = field.Value();
-        if (0 < (value.length())) {
-            m_contentType.Set(value);
-            this->OnFieldsSignal_AddFieldContentType(field, value);
-        }
-    }
-    virtual void OnAddFieldContentEncoding(const Field& field) {
-        const Part& value = field.Value();
-        if (0 < (value.length())) {
-            m_contentEncoding.Set(value);
-            this->OnFieldsSignal_AddFieldContentEncoding(field, value);
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-    virtual SignalsImplements* ForwardFieldsSignalsTo(SignalsImplements* to) {
+    virtual SignalsImplements* ForwardFormFieldsSignalsTo(SignalsImplements* to) {
         SignalsImplements* old_signalsForwardTo = m_signalsForwardTo;
         m_signalsForwardTo = to;
         return old_signalsForwardTo;
     }
-    virtual SignalsImplements* FieldsSignalsForwardTo() const {
+    virtual SignalsImplements* FormFieldsSignalsForwardTo() const {
         return m_signalsForwardTo;
     }
 
@@ -410,17 +399,14 @@ public:
     ///////////////////////////////////////////////////////////////////////
 protected:
     SignalsImplements* m_signalsForwardTo;
-    size_t m_contentLength;
-    Field *m_contentLengthField, *m_field;
+    Field* m_field;
     List m_list;
-    Part m_contentType, m_contentEncoding;
 };
 typedef FieldsT<> Fields;
 
-} // namespace header
-} // namespace message 
-} // namespace xttp 
+} // namespace form
+} // namespace http 
 } // namespace protocol 
 } // namespace xos 
 
-#endif // _XOS_PROTOCOL_XTTP_MESSAGE_HEADER_FIELDS_HPP 
+#endif // _XOS_PROTOCOL_HTTP_FORM_FIELDS_HPP

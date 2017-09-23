@@ -18,27 +18,57 @@
 /// Author: $author$
 ///   Date: 9/18/2017
 ///////////////////////////////////////////////////////////////////////
-#ifndef _XOS_PROTOCOL_XTTP_RESPONSE_STATUS_MESSAGE_HPP
-#define _XOS_PROTOCOL_XTTP_RESPONSE_STATUS_MESSAGE_HPP
-#include "xos/protocol/xttp/message/Part.hpp"
+#ifndef _XOS_PROTOCOL_XTTP_RESPONSE_MESSAGE_HPP
+#define _XOS_PROTOCOL_XTTP_RESPONSE_MESSAGE_HPP
+
+#include "xos/protocol/xttp/response/status/Line.hpp"
+#include "xos/protocol/xttp/message/Parts.hpp"
 
 namespace xos {
 namespace protocol {
 namespace xttp {
 namespace response {
-namespace status {
 
+typedef message::PartsTImplements MessageTImplements;
+typedef message::PartsT<status::Line> MessageTExtends;
+///////////////////////////////////////////////////////////////////////
+///  Class: MessageT
+///////////////////////////////////////////////////////////////////////
+template
+<class TImplements = MessageTImplements, class TExtends = MessageTExtends>
 
+class _EXPORT_CLASS MessageT: virtual public TImplements, public TExtends {
+public:
+    typedef TImplements Implements;
+    typedef TExtends Extends;
 
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    MessageT(const String& s)
+    : Extends(s) {
+    }
+    MessageT(const char* chars, size_t length)
+    : Extends(chars, length) {
+    }
+    MessageT(const char* chars)
+    : Extends(chars) {
+    }
+    MessageT(const MessageT& copy)
+    : Extends(copy) {
+    }
+    MessageT() {
+    }
+    virtual ~MessageT() {
+    }
 
-} // namespace status 
-} // namespace response 
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+};
+typedef MessageT<> Message;
+
+} // namespace response
 } // namespace xttp 
 } // namespace protocol 
 } // namespace xos 
 
-
-#endif // _XOS_PROTOCOL_XTTP_RESPONSE_STATUS_MESSAGE_HPP 
-
-        
-
+#endif // _XOS_PROTOCOL_XTTP_RESPONSE_MESSAGE_HPP

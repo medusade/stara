@@ -27,17 +27,9 @@ namespace url {
 namespace encoded {
 namespace form {
 
-
-
-
 } // namespace form 
 } // namespace encoded 
 } // namespace url 
 } // namespace http 
 } // namespace protocol 
 } // namespace xos 
-
-
-
-        
-

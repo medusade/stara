@@ -18,24 +18,14 @@
 /// Author: $author$
 ///   Date: 9/18/2017
 ///////////////////////////////////////////////////////////////////////
-#include "xos/protocol/xttp/response/status/Message.hpp"
+#include "xos/protocol/xttp/response/Message.hpp"
 
 namespace xos {
 namespace protocol {
 namespace xttp {
 namespace response {
-namespace status {
 
-
-
-
-} // namespace status 
 } // namespace response 
 } // namespace xttp 
 } // namespace protocol 
 } // namespace xos 
-
-
-
-        
-

@@ -13,21 +13,19 @@
 /// or otherwise) arising in any way out of the use of this software, 
 /// even if advised of the possibility of such damage.
 ///
-///   File: Reader.cpp
+///   File: Field.cpp
 ///
 /// Author: $author$
-///   Date: 9/18/2017
+///   Date: 9/21/2017
 ///////////////////////////////////////////////////////////////////////
-#include "xos/protocol/http/url/encoded/Reader.hpp"
+#include "xos/protocol/http/header/Field.hpp"
 
 namespace xos {
 namespace protocol {
 namespace http {
-namespace url {
-namespace encoded {
+namespace header {
 
-} // namespace encoded 
-} // namespace url 
+} // namespace header 
 } // namespace http 
 } // namespace protocol 
 } // namespace xos 

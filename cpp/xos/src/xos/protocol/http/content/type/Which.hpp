@@ -13,21 +13,46 @@
 /// or otherwise) arising in any way out of the use of this software, 
 /// even if advised of the possibility of such damage.
 ///
-///   File: Reader.cpp
+///   File: Which.hpp
 ///
 /// Author: $author$
-///   Date: 9/18/2017
+///   Date: 9/20/2017
 ///////////////////////////////////////////////////////////////////////
-#include "xos/protocol/http/url/encoded/Reader.hpp"
+#ifndef _XOS_PROTOCOL_HTTP_CONTENT_TYPE_WHICH_HPP
+#define _XOS_PROTOCOL_HTTP_CONTENT_TYPE_WHICH_HPP
+
+#include "xos/base/Base.hpp"
 
 namespace xos {
 namespace protocol {
 namespace http {
-namespace url {
-namespace encoded {
+namespace content {
+namespace type {
 
-} // namespace encoded 
-} // namespace url 
+///////////////////////////////////////////////////////////////////////
+/// Enum: Which
+///////////////////////////////////////////////////////////////////////
+typedef int Which;
+enum {
+    None = 0,
+
+    Text,
+    Html,
+    Xml,
+    OctetStream,
+    UrlEncodedFormData,
+    MultipartFormData,
+
+    Next,
+    First = (None + 1),
+    Last = (Next - 1),
+    Count = ((Last - First) + 1)
+};
+
+} // namespace type
+} // namespace content 
 } // namespace http 
 } // namespace protocol 
 } // namespace xos 
+
+#endif // _XOS_PROTOCOL_HTTP_CONTENT_TYPE_WHICH_HPP 

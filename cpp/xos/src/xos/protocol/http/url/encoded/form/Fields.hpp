@@ -20,7 +20,9 @@
 ///////////////////////////////////////////////////////////////////////
 #ifndef _XOS_PROTOCOL_HTTP_URL_ENCODED_FORM_FIELDS_HPP
 #define _XOS_PROTOCOL_HTTP_URL_ENCODED_FORM_FIELDS_HPP
-#include "xos/protocol/xttp/message/Part.hpp"
+
+#include "xos/protocol/http/url/encoded/Reader.hpp"
+#include "xos/protocol/http/form/Fields.hpp"
 
 namespace xos {
 namespace protocol {
@@ -29,18 +31,56 @@ namespace url {
 namespace encoded {
 namespace form {
 
+typedef http::form::FieldsTImplements FieldsTImplements;
+typedef http::form::Fields FieldsTExtends;
+///////////////////////////////////////////////////////////////////////
+///  Class: FieldsT
+///////////////////////////////////////////////////////////////////////
+template
+<class TImplements = FieldsTImplements, class TExtends = FieldsTExtends>
 
+class _EXPORT_CLASS FieldsT: virtual public TImplements, public TExtends {
+public:
+    typedef TImplements Implements;
+    typedef TExtends Extends;
 
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    FieldsT(const String& s)
+    : Extends(s) {
+    }
+    FieldsT(const char* chars, size_t length)
+    : Extends(chars, length) {
+    }
+    FieldsT(const char* chars)
+    : Extends(chars) {
+    }
+    FieldsT(const FieldsT& copy)
+    : Extends(copy) {
+    }
+    FieldsT() {
+    }
+    virtual ~FieldsT() {
+    }
 
-} // namespace form 
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual bool Read(ssize_t& count, char& c, io::CharReader& reader) {
+        url::encoded::CharReader encodedReader(reader);
+        bool success = Extends::Read(count, c, encodedReader);
+        return success;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+};
+typedef FieldsT<> Fields;
+
+} // namespace form
 } // namespace encoded 
 } // namespace url 
 } // namespace http 
 } // namespace protocol 
 } // namespace xos 
 
-
 #endif // _XOS_PROTOCOL_HTTP_URL_ENCODED_FORM_FIELDS_HPP 
-
-        
-

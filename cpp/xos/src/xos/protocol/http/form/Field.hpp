@@ -16,21 +16,20 @@
 ///   File: Field.hpp
 ///
 /// Author: $author$
-///   Date: 9/17/2017
+///   Date: 9/18/2017
 ///////////////////////////////////////////////////////////////////////
-#ifndef _XOS_PROTOCOL_XTTP_MESSAGE_HEADER_FIELD_HPP
-#define _XOS_PROTOCOL_XTTP_MESSAGE_HEADER_FIELD_HPP
+#ifndef _XOS_PROTOCOL_HTTP_FORM_FIELD_HPP
+#define _XOS_PROTOCOL_HTTP_FORM_FIELD_HPP
 
-#include "xos/protocol/xttp/message/Line.hpp"
+#include "xos/protocol/xttp/message/Part.hpp"
 
 namespace xos {
 namespace protocol {
-namespace xttp {
-namespace message {
-namespace header {
+namespace http {
+namespace form {
 
-typedef message::LineTImplements FieldTImplements;
-typedef message::Line FieldTExtends;
+typedef xttp::message::PartTImplements FieldTImplements;
+typedef xttp::message::Part FieldTExtends;
 ///////////////////////////////////////////////////////////////////////
 ///  Class: FieldT
 ///////////////////////////////////////////////////////////////////////
@@ -43,13 +42,11 @@ public:
     typedef TImplements Implements;
     typedef TExtends Extends;
 
+    typedef xttp::message::Part Part;
+
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
     FieldT(const String& name, const String& value)
-    : m_name(name), m_value(value) {
-        Combine();
-    }
-    FieldT(const char* name, const char* value)
     : m_name(name), m_value(value) {
         Combine();
     }
@@ -82,7 +79,7 @@ public:
         this->clear();
         if ((m_name.HasChars())) {
             this->Assign(m_name);
-            this->Append(":");
+            this->Append("=");
             this->Append(m_value);
         }
         return success;
@@ -99,23 +96,17 @@ public:
             String *part = 0, name, value;
 
             for (part = &name; chars != end; ++chars) {
-                if (':' != (c = *chars)) {
-                    if (' ' != (c)) {
-                        part->Append(&c, 1);
-                    } else {
-                        if ((part->HasChars())) {
-                            part->Append(&c, 1);
-                        }
-                    }
+                if ('=' != (c = *chars)) {
+                    part->Append(&c, 1);
                 } else {
                     if (part != &name) {
                         part->Append(&c, 1);
                     } else {
                         if (name.HasChars()) {
-                            // ?':'
+                            // ?'='
                             part = &value;
                         } else {
-                            // ':'
+                            // '='
                             return false;
                         }
                     }
@@ -126,6 +117,49 @@ public:
                 m_value.Set(value);
             } else {
                 return false;
+            }
+        }
+        return success;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual bool Read(ssize_t& count, char& c, io::CharReader& reader) {
+        bool success = false;
+        ssize_t amount = 0;
+        String chars;
+
+        SetDefault();
+        do {
+            if (0 < (amount = reader.Read(&c, 1))) {
+                count += amount;
+                if (('&' != c)) {
+                    chars.Append(&c, 1);
+                } else {
+                    success = this->Set(chars);
+                    break;
+                }
+            } else {
+                if (0 > (amount)) {
+                    count = amount;
+                    break;
+                } else {
+                    success = this->Set(chars);
+                }
+            }
+        } while (0 < amount);
+        return success;
+    }
+    virtual bool Write(ssize_t& count, io::CharWriter& writer) {
+        bool success = false;
+        const char* chars = 0;
+        size_t length = 0;
+        ssize_t amount = 0;
+
+        if ((chars = this->HasChars(length))) {
+            if (length <= (amount = writer.Write(chars, length))) {
+                count = amount;
+                success = true;
             }
         }
         return success;
@@ -146,78 +180,33 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual FieldT& Set(const String& name, const String& value) {
-        const char* chars = 0;
-        size_t length = 0;
-        if ((chars = name.HasChars(length))) {
-            m_name.Assign(chars, length);
-            m_value.Assign(value);
-            Combine();
-        }
-        return *this;
-    }
-
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-    virtual message::Part& SetName(const String& s) {
-        const char* chars = 0;
-        size_t length = 0;
-        if ((chars = s.HasChars(length))) {
-            m_name.Assign(chars, length);
-            Combine();
-        }
+    virtual Part& SetName(const String& to) {
+        m_name.Set(to);
+        Combine();
         return m_name;
     }
-    virtual message::Part& SetName(const char* chars, size_t length) {
-        if ((chars) && (0 < length)) {
-            m_name.Assign(chars, length);
-            Combine();
-        }
+    virtual const Part& Name() const {
         return m_name;
     }
-    virtual message::Part& SetName(const char* chars) {
-        if ((chars) && (chars[0])) {
-            m_name.Assign(chars);
-            Combine();
-        }
-        return m_name;
-    }
-    virtual const message::Part& Name() const {
-        return m_name;
-    }
-
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-    virtual message::Part& SetValue(const String& s) {
-        m_value.Assign(s);
+    virtual Part& SetValue(const String& to) {
+        m_value.Set(to);
         Combine();
         return m_value;
     }
-    virtual message::Part& SetValue(const char* chars, size_t length) {
-        m_value.Assign(chars, length);
-        Combine();
-        return m_value;
-    }
-    virtual message::Part& SetValue(const char* chars) {
-        m_value.Assign(chars);
-        Combine();
-        return m_value;
-    }
-    virtual const message::Part& Value() const {
+    virtual const Part& Value() const {
         return m_value;
     }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
 protected:
-    message::Part m_name, m_value;
+    Part m_name, m_value;
 };
 typedef FieldT<> Field;
 
-} // namespace header
-} // namespace message 
-} // namespace xttp 
+} // namespace form
+} // namespace http 
 } // namespace protocol 
 } // namespace xos 
 
-#endif // _XOS_PROTOCOL_XTTP_MESSAGE_HEADER_FIELD_HPP 
+#endif // _XOS_PROTOCOL_HTTP_FORM_FIELD_HPP

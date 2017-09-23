@@ -13,58 +13,51 @@
 /// or otherwise) arising in any way out of the use of this software, 
 /// even if advised of the possibility of such damage.
 ///
-///   File: ContentType.hpp
+///   File: FieldsSignals.hpp
 ///
 /// Author: $author$
 ///   Date: 9/18/2017
 ///////////////////////////////////////////////////////////////////////
-#ifndef _XOS_PROTOCOL_HTTP_URL_ENCODED_FORM_CONTENTTYPE_HPP
-#define _XOS_PROTOCOL_HTTP_URL_ENCODED_FORM_CONTENTTYPE_HPP
+#ifndef _XOS_PROTOCOL_HTTP_FORM_FIELDSSIGNALS_HPP
+#define _XOS_PROTOCOL_HTTP_FORM_FIELDSSIGNALS_HPP
 
-#include "xos/protocol/xttp/message/Part.hpp"
-
-#define XOS_PROTOCOL_HTTP_URL_ENCODED_FORM_CONTENT_TYPE_NAME \
-    "application/x-www-form-urlencoded"
+#include "xos/protocol/http/form/Field.hpp"
 
 namespace xos {
 namespace protocol {
 namespace http {
-namespace url {
-namespace encoded {
 namespace form {
 
-typedef protocol::xttp::message::PartTImplements ContentTypeTImplements;
-typedef protocol::xttp::message::Part ContentTypeTExtends;
+typedef ImplementBase FieldsSignalsImplements;
 ///////////////////////////////////////////////////////////////////////
-///  Class: ContentTypeT
+///  Class: FieldsSignals
 ///////////////////////////////////////////////////////////////////////
-template
-<class TImplements = ContentTypeTImplements, class TExtends = ContentTypeTExtends>
-
-class _EXPORT_CLASS ContentTypeT: virtual public TImplements, public TExtends {
+class _EXPORT_CLASS FieldsSignals: virtual public FieldsSignalsImplements {
 public:
-    typedef TImplements Implements;
-    typedef TExtends Extends;
+    typedef FieldsSignalsImplements Implements;
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    ContentTypeT()
-    : Extends(XOS_PROTOCOL_HTTP_URL_ENCODED_FORM_CONTENT_TYPE_NAME) {
+    virtual void OnFieldsSignal_AddField(const Field& field) {
+        FieldsSignals* to = FormFieldsSignalsForwardTo();
+        if (to) {
+            to->OnFieldsSignal_AddField(field);
+        }
     }
-    ContentTypeT(const ContentTypeT& copy)
-    : Extends(copy) {
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual FieldsSignals* ForwardFormFieldsSignalsTo(FieldsSignals* to) {
+        return 0;
     }
-    virtual ~ContentTypeT() {
+    virtual FieldsSignals* FormFieldsSignalsForwardTo() const {
+        return 0;
     }
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
 };
-typedef ContentTypeT<> ContentType;
 
 } // namespace form
-} // namespace encoded 
-} // namespace url 
 } // namespace http 
 } // namespace protocol 
 } // namespace xos 
 
-#endif // _XOS_PROTOCOL_HTTP_URL_ENCODED_FORM_CONTENTTYPE_HPP 
+#endif // _XOS_PROTOCOL_HTTP_FORM_FIELDSSIGNALS_HPP

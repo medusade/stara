@@ -13,58 +13,65 @@
 /// or otherwise) arising in any way out of the use of this software, 
 /// even if advised of the possibility of such damage.
 ///
-///   File: ContentType.hpp
+///   File: Field.hpp
 ///
 /// Author: $author$
-///   Date: 9/18/2017
+///   Date: 9/21/2017
 ///////////////////////////////////////////////////////////////////////
-#ifndef _XOS_PROTOCOL_HTTP_URL_ENCODED_FORM_CONTENTTYPE_HPP
-#define _XOS_PROTOCOL_HTTP_URL_ENCODED_FORM_CONTENTTYPE_HPP
+#ifndef _XOS_PROTOCOL_HTTP_HEADER_FIELD_HPP
+#define _XOS_PROTOCOL_HTTP_HEADER_FIELD_HPP
 
-#include "xos/protocol/xttp/message/Part.hpp"
-
-#define XOS_PROTOCOL_HTTP_URL_ENCODED_FORM_CONTENT_TYPE_NAME \
-    "application/x-www-form-urlencoded"
+#include "xos/protocol/http/message/header/field/Name.hpp"
+#include "xos/protocol/http/message/header/field/Which.hpp"
+#include "xos/protocol/xttp/message/header/Field.hpp"
 
 namespace xos {
 namespace protocol {
 namespace http {
-namespace url {
-namespace encoded {
-namespace form {
+namespace header {
 
-typedef protocol::xttp::message::PartTImplements ContentTypeTImplements;
-typedef protocol::xttp::message::Part ContentTypeTExtends;
+typedef xttp::message::header::FieldTImplements FieldTImplements;
+typedef xttp::message::header::Field FieldTExtends;
 ///////////////////////////////////////////////////////////////////////
-///  Class: ContentTypeT
+///  Class: FieldT
 ///////////////////////////////////////////////////////////////////////
 template
-<class TImplements = ContentTypeTImplements, class TExtends = ContentTypeTExtends>
+<class TImplements = FieldTImplements,
+ class TExtends = FieldTExtends>
 
-class _EXPORT_CLASS ContentTypeT: virtual public TImplements, public TExtends {
+class _EXPORT_CLASS FieldT: virtual public TImplements, public TExtends {
 public:
     typedef TImplements Implements;
     typedef TExtends Extends;
+
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    ContentTypeT()
-    : Extends(XOS_PROTOCOL_HTTP_URL_ENCODED_FORM_CONTENT_TYPE_NAME) {
+    FieldT(message::header::field::Which which, const String& value) {
+        this->SetName(message::header::field::Name::OfWhich(which));
+        this->SetValue(value);
     }
-    ContentTypeT(const ContentTypeT& copy)
-    : Extends(copy) {
+    FieldT(message::header::field::Which which, const char* value) {
+        this->SetName(message::header::field::Name::OfWhich(which));
+        this->SetValue(value);
     }
-    virtual ~ContentTypeT() {
+    FieldT(message::header::field::Which which) {
+        this->SetName(message::header::field::Name::OfWhich(which));
     }
+    FieldT(const FieldT& copy): Extends(copy) {
+    }
+    FieldT() {
+    }
+    virtual ~FieldT() {
+    }
+
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
 };
-typedef ContentTypeT<> ContentType;
+typedef FieldT<> Field;
 
-} // namespace form
-} // namespace encoded 
-} // namespace url 
+} // namespace header
 } // namespace http 
 } // namespace protocol 
 } // namespace xos 
 
-#endif // _XOS_PROTOCOL_HTTP_URL_ENCODED_FORM_CONTENTTYPE_HPP 
+#endif // _XOS_PROTOCOL_HTTP_HEADER_FIELD_HPP 
