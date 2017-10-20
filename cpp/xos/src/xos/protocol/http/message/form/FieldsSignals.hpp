@@ -16,52 +16,50 @@
 ///   File: FieldsSignals.hpp
 ///
 /// Author: $author$
-///   Date: 9/18/2017
+///   Date: 9/25/2017
 ///////////////////////////////////////////////////////////////////////
-#ifndef _XOS_PROTOCOL_HTTP_FORM_FIELDSSIGNALS_HPP
-#define _XOS_PROTOCOL_HTTP_FORM_FIELDSSIGNALS_HPP
+#ifndef _XOS_PROTOCOL_HTTP_MESSAGE_FORM_FIELDSSIGNALS_HPP
+#define _XOS_PROTOCOL_HTTP_MESSAGE_FORM_FIELDSSIGNALS_HPP
 
-#include "xos/protocol/http/form/Field.hpp"
+#include "xos/protocol/http/message/form/Field.hpp"
 
 namespace xos {
 namespace protocol {
 namespace http {
+namespace message {
 namespace form {
 
 typedef ImplementBase FieldsSignalsImplements;
 ///////////////////////////////////////////////////////////////////////
-///  Class: FieldsSignalsT
+///  Class: FieldsSignals
 ///////////////////////////////////////////////////////////////////////
-template
-<class TField = Field, class TImplements = ImplementBase>
-
-class _EXPORT_CLASS FieldsSignalsT: virtual public TImplements {
+class _EXPORT_CLASS FieldsSignals: virtual public FieldsSignalsImplements {
 public:
-    typedef TImplements Implements;
+    typedef FieldsSignalsImplements Implements;
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual void OnFieldsSignal_AddField(const TField& field) {
-        FieldsSignalsT* to = FormFieldsSignalsForwardTo();
+    virtual void OnFieldsSignal_AddField(const Field& field) {
+        FieldsSignals* to = FormFieldsSignalsForwardTo();
         if (to) {
             to->OnFieldsSignal_AddField(field);
         }
     }
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual FieldsSignalsT* ForwardFormFieldsSignalsTo(FieldsSignalsT* to) {
+    virtual FieldsSignals* ForwardFormFieldsSignalsTo(FieldsSignals* to) {
         return 0;
     }
-    virtual FieldsSignalsT* FormFieldsSignalsForwardTo() const {
+    virtual FieldsSignals* FormFieldsSignalsForwardTo() const {
         return 0;
     }
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
 };
-typedef FieldsSignalsT<> FieldsSignals;
 
 } // namespace form
+} // namespace message 
 } // namespace http 
 } // namespace protocol 
 } // namespace xos 
 
-#endif // _XOS_PROTOCOL_HTTP_FORM_FIELDSSIGNALS_HPP
+#endif // _XOS_PROTOCOL_HTTP_MESSAGE_FORM_FIELDSSIGNALS_HPP 

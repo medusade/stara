@@ -29,13 +29,15 @@ namespace http {
 namespace url {
 namespace encoded {
 
+typedef io::CharReadObserver CharReaderTObserver;
 typedef io::CharReader CharReaderTImplements;
 typedef Base CharReaderTExtends;
 ///////////////////////////////////////////////////////////////////////
 ///  Class: CharReaderT
 ///////////////////////////////////////////////////////////////////////
 template
-<class TImplements = CharReaderTImplements, class TExtends = CharReaderTExtends>
+<class TObserver = CharReaderTObserver,
+ class TImplements = CharReaderTImplements, class TExtends = CharReaderTExtends>
 
 class _EXPORT_CLASS CharReaderT: virtual public TImplements, public TExtends {
 public:
@@ -43,6 +45,7 @@ public:
     typedef TExtends Extends;
     typedef CharReaderT Derives;
 
+    typedef TObserver observer_t;
     typedef Implements reader_t;
     typedef typename Implements::char_t char_t;
     typedef typename Implements::what_t what_t;
@@ -52,7 +55,11 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    CharReaderT(reader_t& reader): reader_(reader) {
+    CharReaderT(observer_t& observer, reader_t& reader)
+    : observer_(observer), reader_(reader) {
+    }
+    CharReaderT(reader_t& reader)
+    : observer_(nullObserver_), reader_(reader) {
     }
     virtual ~CharReaderT() {
     }
@@ -69,6 +76,7 @@ public:
 
             while (count < size) {
                 if (0 < (amount = reader_.Read(sized, 1))) {
+                    observer_.OnRead(what, amount);
                     switch (c = ((char)*sized)) {
                     case '%':
                         if (0 >= (amount = ReadX(x1, x2, sized))) {
@@ -116,10 +124,11 @@ protected:
 
         if ((sized = ((sized_t*)what))) {
             ssize_t amount = 0;
+            char c = 0;
 
             if (0 < (amount = reader_.Read(what, 1))) {
-                const char c = ((char)*sized);
-
+                observer_.OnRead(what, amount);
+                c = ((char)*sized);
                 if (CharIsX(c)) {
                     x = CharToX(c);
                 } else {
@@ -147,7 +156,8 @@ protected:
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
 protected:
-    reader_t& reader_;
+    observer_t nullObserver_, &observer_;
+    reader_t &reader_;
 };
 typedef CharReaderT<> CharReader;
 

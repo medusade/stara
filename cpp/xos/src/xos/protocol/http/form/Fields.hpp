@@ -23,7 +23,10 @@
 
 #include "xos/protocol/http/form/FieldsSignals.hpp"
 #include "xos/protocol/http/form/Field.hpp"
+#include "xos/io/Reader.hpp"
+#include "xos/io/Writer.hpp"
 #include "xos/logger/Interface.hpp"
+
 #include <list>
 
 namespace xos {
@@ -31,54 +34,33 @@ namespace protocol {
 namespace http {
 namespace form {
 
-typedef FieldsSignals FieldsTSignalsImplements;
-typedef xttp::message::PartTImplements FieldsTImplements;
-typedef xttp::message::Part FieldsTExtends;
 ///////////////////////////////////////////////////////////////////////
 ///  Class: FieldsT
 ///////////////////////////////////////////////////////////////////////
 template
-<class TSignalsImplements = FieldsTSignalsImplements,
- class TImplements = FieldsTImplements,
- class TExtends = FieldsTExtends>
+<class TField = Field,
+ class TSignals = FieldsSignalsT<TField>,
+ class TList = ::std::list<TField>,
+ class TImplements = TSignals, class TExtends = TList>
 
-class _EXPORT_CLASS FieldsT
-: virtual public TSignalsImplements,
-  virtual public TImplements, public TExtends {
+class _EXPORT_CLASS FieldsT: virtual public TImplements, public TExtends {
 public:
-    typedef TSignalsImplements SignalsImplements;
     typedef TImplements Implements;
     typedef TExtends Extends;
 
-    typedef ::std::list<Field*> List;
-    typedef List::const_iterator const_iterator;
-    typedef List list_t;
-    typedef Field field_t;
-    typedef String string_t;
+    typedef typename Extends::const_iterator const_iterator;
+    typedef typename Extends::iterator iterator;
+    typedef typename TField::string_t string_t;
+    typedef typename string_t::char_t char_t;
+    typedef TField field_t;
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    FieldsT(const String& s)
-    : Extends(s), m_signalsForwardTo(0), m_field(0) {
-        Separate();
+    FieldsT(const FieldsT& copy): Extends(copy) {
     }
-    FieldsT(const char* chars, size_t length)
-    : Extends(chars, length), m_signalsForwardTo(0), m_field(0) {
-        Separate();
-    }
-    FieldsT(const char* chars)
-    : Extends(chars), m_signalsForwardTo(0), m_field(0) {
-        Separate();
-    }
-    FieldsT(const FieldsT& copy)
-    : Extends(copy), m_signalsForwardTo(0), m_field(0) {
-    }
-    FieldsT()
-    : m_signalsForwardTo(0), m_field(0) {
+    FieldsT() {
     }
     virtual ~FieldsT() {
-        ClearList();
-        FreeField();
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -110,21 +92,17 @@ public:
         return Find(name.Chars(), from);
     }
     field_t* Find(const char_t* name, const field_t* from = 0) const {
-        const const_iterator begin = this->Begin();
-        const const_iterator end = this->End();
-
+        const const_iterator begin = this->begin();
+        const const_iterator end = this->end();
         for (const_iterator i = begin; i != end; ++i) {
-            const field_t* found = 0;
-
-            if ((found = (*i))) {
-                if ((from)) {
-                    if (from == found) {
-                        from = 0;
-                    }
-                } else {
-                    if (!(found->Name().Compare(name))) {
-                        return ((field_t*)found);
-                    }
+            const field_t& found = (*i);
+            if ((from)) {
+                if (from == &found) {
+                    from = 0;
+                }
+            } else {
+                if (!(found.Name().compare(name))) {
+                    return ((field_t*)&found);
                 }
             }
         }
@@ -132,24 +110,19 @@ public:
     }
     field_t* Find(const char_t** names, const field_t* from = 0) const {
         if ((names) && (names[0])) {
-            const const_iterator begin = this->Begin();
-            const const_iterator end = this->End();
-
+            const const_iterator begin = this->begin();
+            const const_iterator end = this->end();
             for (const_iterator i = begin; i != end; ++i) {
-                const field_t* found = 0;
-
-                if ((found = (*i))) {
-                    if ((from)) {
-                        if (from == found) {
-                            from = 0;
-                        }
-                    } else {
-                        size_t n = 0;
-
-                        for (const char_t* name = names[n]; name; name = names[++n]) {
-                            if (!(found->Name().Compare(name))) {
-                                return ((field_t*)found);
-                            }
+                const field_t& found = (*i);
+                if ((from)) {
+                    if (from == &found) {
+                        from = 0;
+                    }
+                } else {
+                    size_t n = 0;
+                    for (const char_t* name = names[n]; name; name = names[++n]) {
+                        if (!(found.Name().compare(name))) {
+                            return ((field_t*)&found);
                         }
                     }
                 }
@@ -160,249 +133,240 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual bool Combine() {
-        bool success = true;
-        this->clear();
-        return success;
+};
+typedef FieldsT<> Fields;
+
+///////////////////////////////////////////////////////////////////////
+///  Class: ReaderT
+///////////////////////////////////////////////////////////////////////
+template
+<class TField = Field,
+ class TFields = Fields,
+ class TReader = io::CharReader,
+ class TImplements = ImplementBase, class TExtends = Base>
+
+class _EXPORT_CLASS ReaderT: virtual public TImplements, public TExtends {
+public:
+    typedef TImplements Implements;
+    typedef TExtends Extends;
+    typedef ReaderT Derives;
+
+    typedef TFields fields_t;
+    typedef TField field_t;
+    typedef TReader reader_t;
+    typedef typename TField::string_t string_t;
+    typedef typename TReader::char_t char_t;
+    typedef typename TReader::what_t what_t;
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    ReaderT(): on_(0) {
     }
-    virtual bool Separate() {
-        bool success = true;
-        const char* chars = 0;
-        size_t length = 0;
-
-        SetDefaults();
-        if ((chars = this->HasChars(length))) {
-            const char *end = chars + length, *first = chars, *last = 0;
-            Field* field = 0;
-            char c = 0;
-
-            for (; chars != end; ++chars) {
-                if ('&' != (c = *chars)) {
-                    last = chars;
-                } else {
-                    if (last) {
-                        if ((field = AddField(first, (last - first) + 1))) {
-                            OnAddField(*field);
-                            first = ++last;
-                            last = 0;
-                        } else {
-                            success = false;
-                            break;
-                        }
-                    } else {
-                        success = false;
-                        break;
-                    }
-                }
-            }
-        }
-        return success;
+    virtual ~ReaderT() {
     }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual bool Read(ssize_t& count, char& c, io::CharReader& reader) {
-        SetDefault();
-        return ReadMore(count, c, reader);
+    virtual bool Read(ssize_t& count, reader_t& reader, fields_t& fields) {
+        fields.Free();
+        return ReadMore(count, reader, fields);
     }
-    virtual bool ReadMore(ssize_t& count, char& c, io::CharReader& reader) {
-        bool success = true;
-        const char* chars = 0;
-        Field* field = 0;
+    virtual bool ReadMore
+    (ssize_t& count, reader_t& reader, fields_t& fields) {
+        bool success = false;
 
-        do {
-            XOS_LOG_DEBUG("ReadField(count, c, reader)...");
-            if ((field = ReadField(count, c, reader))) {
-                XOS_LOG_DEBUG("...field = \"" << field->chars() << "\" on ReadField(count, c, reader)");
+        if ((success = on_begin(fields))) {
+            ssize_t amount = 0;
+            char_t c = 0;
 
-                if ((chars = field->HasChars())) {
-                    m_list.push_back(field);
-                    OnAddField(*field);
-                } else {
-                    FreeField(field);
-                    break;
-                }
-            }
-        } while ((field) && ('&' == c));
-        return success;
-    }
-    virtual bool Write(ssize_t& count, io::CharWriter& writer) {
-        bool success = true;
-        const char* chars = 0;
-        size_t length = 0;
-        ssize_t amount = 0;
-        Field* field = 0;
-        List::const_iterator i, begin, end;
-
-        for (count = 0, begin = m_list.begin(),
-             end = m_list.end(), i = begin; i != end; ++i) {
-
-            if ((field = (*i))) {
-
-                if ((chars = field->HasChars(length))) {
-
-                    if (i != begin) {
-                        XOS_LOG_DEBUG("writer.Write(\"&\")...");
-                        if (1 <= (amount = writer.Write("&"))) {
-                            XOS_LOG_DEBUG("...amount = " << amount << " on writer.Write(\"&\")");
-                            count += amount;
-                        } else {
-                            success = false;
-                            break;
-                        }
-                    }
-                    XOS_LOG_DEBUG("writer.Write(chars, length) with chars = \"" << chars << "\"");
-                    if (length <= (amount = writer.Write(chars, length))) {
-                        XOS_LOG_DEBUG("...amount = " << amount << " on writer.Write(chars, length) with chars = \"" << chars << "\"");
+            do {
+                if (0 < (amount = reader.Read(&c,1 ))) {
+                    if ((on(fields, c))) {
                         count += amount;
                         continue;
                     }
+                } else {
+                    count = amount;
+                    success = false;
                 }
+                break;
+            } while (0 < (amount));
+
+            if (!(on_end(fields))) {
+                success = false;
             }
-            success = false;
-            break;
         }
         return success;
     }
 
+protected:
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual FieldsT& SetDefault() {
-        SetDefaults();
-        Combine();
-        return *this;
+    virtual bool on_begin(fields_t& fields) {
+        name_.Clear();
+        value_.Clear();
+        on_ = &Derives::on_name;
+        return true;
+    }
+    virtual bool on_end(fields_t& fields) {
+        name_.Clear();
+        value_.Clear();
+        on_ = 0;
+        return true;
+    }
+    virtual bool on_next(fields_t& fields) {
+        name_.Clear();
+        value_.Clear();
+        on_ = &Derives::on_name;
+        return true;
     }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
-    virtual const Field* First(const_iterator& at) const {
-        if ((at = m_list.begin()) != m_list.end()) {
-            return (*at);
+    virtual bool on(fields_t& fields, const char_t& c) {
+        bool success = false;
+        if ((on_)) {
+            success = (this->*on_)(fields, c);
         }
-        return 0;
+        return success;
     }
-    virtual const Field* Next(const_iterator& at) const {
-        if ((at != m_list.end())) {
-            if ((++at != m_list.end())) {
-                return (*at);
-            }
-        }
-        return 0;
+    virtual bool on_name(fields_t& fields, const char_t& c) {
+        bool success = false;
+        return success;
     }
-    virtual const Field* Prev(const_iterator& at) const {
-        if ((at != m_list.begin())) {
-            return (*--at);
-        }
-        return 0;
+    virtual bool on_value(fields_t& fields, const char_t& c) {
+        bool success = false;
+        return success;
     }
-    virtual const_iterator Begin() const {
-        return m_list.begin();
-    }
-    virtual const_iterator End() const {
-        return m_list.end();
-    }
-
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-    virtual Field* ReadField(ssize_t& count, char& c, io::CharReader& reader) {
-        Field* field = 0;
-
-        if ((field = GetField())) {
-            if ((field->Read(count, c, reader))) {
-                return field;
-            }
-            FreeField(field);
-        }
-        return 0;
-    }
-    virtual Field* AddField(const char *chars, size_t length) {
-        if ((chars) && (length)) {
-            Field* field = 0;
-
-            if ((field = GetField())) {
-                field->assign(chars, length);
-                if ((field->Separate())) {
-                    m_list.push_back(field);
-                    return field;
-                }
-                FreeField(field);
-            }
-        }
-        return 0;
-    }
-
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-    virtual Field* GetField() {
-        Field* field = 0;
-
-        if (!(field = m_field)) {
-            field = new Field;
-        } else {
-            m_field = 0;
-        }
-        return field;
-    }
-    virtual void FreeField(Field* field = 0) {
-        if ((field)) {
-            if ((m_field)) {
-                if ((m_field != field)) {
-                    delete m_field;
-                    m_field = field;
-                }
-            } else {
-                m_field = field;
-            }
-        } else {
-            if ((m_field)) {
-                delete m_field;
-                m_field = 0;
-            }
-        }
-    }
-    virtual void ClearList() {
-        for (Field* field = 0; !m_list.empty(); m_list.pop_front()) {
-            if ((field = m_list.front())) {
-                delete field;
-            }
-        }
-    }
-    virtual FieldsT& SetDefaults() {
-        ClearList();
-        FreeField();
-        return *this;
-    }
-    virtual FieldsT& Clear() {
-        ClearList();
-        FreeField();
-        return *this;
-    }
-
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-    virtual void OnAddField(const Field& field) {
-        this->OnFieldsSignal_AddField(field);
-    }
-
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-    virtual SignalsImplements* ForwardFormFieldsSignalsTo(SignalsImplements* to) {
-        SignalsImplements* old_signalsForwardTo = m_signalsForwardTo;
-        m_signalsForwardTo = to;
-        return old_signalsForwardTo;
-    }
-    virtual SignalsImplements* FormFieldsSignalsForwardTo() const {
-        return m_signalsForwardTo;
+    virtual bool on_no_name(fields_t& fields, const char_t& c) {
+        bool success = false;
+        return success;
     }
 
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
 protected:
-    SignalsImplements* m_signalsForwardTo;
-    Field* m_field;
-    List m_list;
+    static const char_t eq_ = ((char_t)'=');
+    static const char_t cr_ = ((char_t)'\r');
+    static const char_t lf_ = ((char_t)'\n');
+    void (Derives::*on_)(fields_t& fields, const char_t& c);
+    string_t name_, value_;
 };
-typedef FieldsT<> Fields;
+typedef ReaderT<> Reader;
+
+///////////////////////////////////////////////////////////////////////
+///  Class: WriterT
+///////////////////////////////////////////////////////////////////////
+template
+<class TField = Field,
+ class TFields = Fields,
+ class TWriter = io::CharWriter,
+ class TImplements = ImplementBase, class TExtends = Base>
+
+class _EXPORT_CLASS WriterT: virtual public TImplements, public TExtends {
+public:
+    typedef TImplements Implements;
+    typedef TExtends Extends;
+    typedef WriterT Derives;
+
+    typedef TFields fields_t;
+    typedef typename TFields::const_iterator const_iterator;
+
+    typedef TField field_t;
+    typedef TWriter writer_t;
+    typedef typename TWriter::char_t char_t;
+    typedef typename TWriter::what_t what_t;
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    WriterT() {
+    }
+    virtual ~WriterT() {
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    virtual bool Write(ssize_t& count, writer_t& writer, fields_t& fields) {
+        bool success = true;
+        static const char_t eq = ((char_t)'=');
+        const char_t *chars = 0;
+        size_t length = 0;
+        ssize_t amount = 0;
+        const_iterator e, i;
+
+        for (count = 0, e = fields.End(), i = fields.Begin(); i != e; ++i) {
+            const field_t* f = fields.Find(i);
+
+            if ((f) && (chars = f->Name().HasChars(length))) {
+
+                if (0 < (amount = writer.Write(chars, length))) {
+                    count += amount;
+                    if (0 < (amount = writer.Write(&eq, 1))) {
+                        count += amount;
+                    } else {
+                        count = amount;
+                        success = false;
+                        break;
+                    }
+                } else {
+                    count = amount;
+                    success = false;
+                    break;
+                }
+                if ((chars = f->Value().HasChars(length))) {
+                    if (0 < (amount = writer.Write(chars, length))) {
+                        count += amount;
+                    } else {
+                        count = amount;
+                        success = false;
+                        break;
+                    }
+                }
+                if ((WriteLn(amount, writer))) {
+                    count += amount;
+                } else {
+                    count = amount;
+                    success = false;
+                    break;
+                }
+                continue;
+            }
+            success = false;
+            break;
+        }
+        if ((success)) {
+            if ((WriteLn(amount, writer))) {
+                count += amount;
+            } else {
+                count = amount;
+                success = false;
+            }
+        }
+        return success;
+    }
+    virtual bool WriteLn(ssize_t& count, writer_t& writer) {
+        bool success = true;
+        static const char_t cr = ((char_t)'\r');
+        static const char_t lf = ((char_t)'\n');
+        ssize_t amount = 0;
+
+        if (0 < (count = writer.Write(&cr, 1))) {
+
+            if (0 < (amount = writer.Write(&lf, 1))) {
+                count += amount;
+            } else {
+                count = amount;
+                success = false;
+            }
+        } else {
+            success = false;
+        }
+        return success;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+};
 
 } // namespace form
 } // namespace http 
