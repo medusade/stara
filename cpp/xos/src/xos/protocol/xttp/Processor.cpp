@@ -24,14 +24,6 @@ namespace xos {
 namespace protocol {
 namespace xttp {
 
-
-
-
 } // namespace xttp 
 } // namespace protocol 
 } // namespace xos 
-
-
-
-        
-

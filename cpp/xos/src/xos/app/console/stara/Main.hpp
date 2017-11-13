@@ -23,6 +23,7 @@
 
 #include "xos/app/console/stara/MainOpt.hpp"
 #include "xos/app/console/rete/Main.hpp"
+#include "xos/protocol/xttp/Processor.hpp"
 #include "xos/protocol/xttp/response/Message.hpp"
 #include "xos/protocol/xttp/response/status/Line.hpp"
 #include "xos/protocol/xttp/request/Message.hpp"
@@ -66,8 +67,6 @@ public:
     (io::CharReader& in, String& rs) {
         ssize_t count = 0, amount = 0;
         char c = 0;
-        //count = this->ReadXttp(in, rs);
-        //count = this->ReadXttpRequestLine(in, rs);
         if ((m_requestMessage.Read(amount, c, in))) {
             const protocol::xttp::message::header::Fields& headers = m_requestMessage.Headers();
             const protocol::xttp::request::Line& line = m_requestMessage.Line();
@@ -109,8 +108,6 @@ public:
     (io::CharReader& in, String& rs) {
         ssize_t count = 0, amount = 0;
         char c = 0;
-        //count = this->ReadXttp(in, rs);
-        //count = this->ReadXttpResponseLine(in, rs);
         if ((m_responseMessage.Read(amount, c, in))) {
             const protocol::xttp::message::header::Fields& headers = m_responseMessage.Headers();
             const protocol::xttp::response::status::Line& line = m_responseMessage.Line();
