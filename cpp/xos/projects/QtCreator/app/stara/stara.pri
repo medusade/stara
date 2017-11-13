@@ -37,13 +37,23 @@ stara_exe_HEADERS += \
 $${NADIR_SRC}/xos/io/Stream.hpp \
 $${NADIR_SRC}/xos/io/Writer.hpp \
 $${NADIR_SRC}/xos/io/Reader.hpp \
+$${NADIR_SRC}/xos/base/Signal.hpp \
 $${NADIR_SRC}/xos/base/String.hpp \
 
 stara_exe_SOURCES += \
 $${NADIR_SRC}/xos/io/Stream.cpp \
 $${NADIR_SRC}/xos/io/Writer.cpp \
 $${NADIR_SRC}/xos/io/Reader.cpp \
+$${NADIR_SRC}/xos/base/Signal.cpp \
 $${NADIR_SRC}/xos/base/String.cpp \
+
+########################################################################
+# patrona
+stara_exe_HEADERS += \
+$${PATRONA_SRC}/xos/base/Raised.hpp \
+
+stara_exe_SOURCES += \
+$${PATRONA_SRC}/xos/base/Raised.cpp \
 
 ########################################################################
 # fila
@@ -66,6 +76,7 @@ $${RETE_SRC}/xos/network/InterfaceReader.cpp \
 ########################################################################
 # stara
 stara_exe_HEADERS += \
+$${STARA_SRC}/xos/protocol/xttp/Processor.hpp \
 $${STARA_SRC}/xos/protocol/xttp/response/Message.hpp \
 $${STARA_SRC}/xos/protocol/xttp/response/status/Line.hpp \
 $${STARA_SRC}/xos/protocol/xttp/response/status/Reason.hpp \
@@ -87,6 +98,7 @@ $${STARA_SRC}/xos/protocol/xttp/protocol/Name.hpp \
 $${STARA_SRC}/xos/protocol/xttp/Xttp.hpp \
 
 stara_exe_SOURCES += \
+$${STARA_SRC}/xos/protocol/xttp/Processor.cpp \
 $${STARA_SRC}/xos/protocol/xttp/response/Message.cpp \
 $${STARA_SRC}/xos/protocol/xttp/response/status/Line.cpp \
 $${STARA_SRC}/xos/protocol/xttp/response/status/Reason.cpp \

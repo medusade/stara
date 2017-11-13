@@ -88,9 +88,7 @@ stara_LIBS += \
 $${rete_LIBS} \
 $${fila_LIBS} \
 $${crono_LIBS} \
-$${patrona_LIBS} \
 $${nadir_LIBS} \
-$${rostra_LIBS} \
 $${build_stara_LIBS} \
 -lpthread \
 -ldl \
