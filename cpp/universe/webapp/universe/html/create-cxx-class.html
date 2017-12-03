@@ -1,0 +1,119 @@
+<!--========================================================================-->
+<!-- This software is provided by the author and contributors ``as is''     -->
+<!-- and any express or implied warranties, including, but not limited to,  -->
+<!-- the implied warranties of merchantability and fitness for a particular -->
+<!-- purpose are disclaimed. In no event shall the author or contributors   -->
+<!-- be liable for any direct, indirect, incidental, special, exemplary,    -->
+<!-- or consequential damages (including, but not limited to, procurement   -->
+<!-- of substitute goods or services; loss of use, data, or profits; or     -->
+<!-- business interruption) however caused and on any theory of liability,  -->
+<!-- whether in contract, strict liability, or tort (including negligence   -->
+<!-- or otherwise) arising in any way out of the use of this software,      -->
+<!-- even if advised of the possibility of such damage.                     -->
+<!--                                                                        -->
+<!--   File: create-cxx-class.html                                          -->
+<!--                                                                        -->
+<!-- Author: $author$                                                       -->
+<!--   Date: 12/1/2017                                                      -->
+<!--                                                                        -->
+<!-- Copyright (c) 2017 $organization$                                      -->
+<!--========================================================================-->
+<html>
+    <!--========================================================================-->
+    <!-- head                                                                   -->
+    <!--========================================================================-->
+    <head>
+        <title>Create C++ class</title>
+
+        <!--========================================================================-->
+        <!-- style                                                                  -->
+        <!--========================================================================-->
+        <style type="text/css">
+        </style>
+
+        <!--========================================================================-->
+        <!-- script                                                                 -->
+        <!--========================================================================-->
+        <script language="javaScript" src="../js/html-form-js.t"></script>
+        <script language="JavaScript" type="text/JavaScript">
+        </script>
+    </head>
+
+    <!--========================================================================-->
+    <!-- body                                                                   -->
+    <!--========================================================================-->
+    <body>
+        <b>Create C++ class</b>
+        <hr>
+
+        <!--========================================================================-->
+        <!-- form                                                                   -->
+        <!--========================================================================-->
+        <form
+         Action="form-html.t"
+         Method="POST"
+         Name="Form"
+         onSubmit="return setFormSubmit(getFormValue2('FormAction','ActionTemplate','Form'),getFormValue('FormMethod','Form'),'Form')">
+
+            File: <input name="File" value="%Class%"/>
+            <select name="ActionTemplate">
+            <option value="../t/cxx/class-h.t">.h</option>
+            <option value="../t/cxx/class-cpp.t">.cpp</option>
+            </select><br/>
+            #ifndef <input name="Ifndef" value="universe"/><br/><br/>
+            #include "<input name="Include" value="universe/base/Base.h"/>"<br/>
+            #include &lt;<input name="IncludeSystem" value="string"/>&gt;<br/>
+            namespace <input name="Namespace" value="universe"/>{<br/>
+            </br>
+
+            template &lt;<input name="Template" value=""/>&gt;<br/>
+            class <input name="Class" value="c"/><br/>
+
+            : virtual <select name="ImplementsAccess">
+            <option value="public">public</option>
+            <option value="protected">protected</option>
+            <option value="private">private</option>
+            <option value="">no</option>
+            </select><input name="Implements" value="%Class%Implements"/><br/>
+
+            , <select name="ExtendsAccess">
+            <option value="public">public</option>
+            <option value="protected">protected</option>
+            <option value="private">private</option>
+            <option value="">no</option>
+            </select><input name="Extends" value="%Class%Extends"/> {<br/>
+
+            <select name="ClassAccess">
+            <option value="public">public</option>
+            <option value="protected">protected</option>
+            <option value="private">private</option>
+            <option value="">no</option>
+            </select>:<br/><br/>
+            
+            <select name="Constructor">
+            <option value="yes">yes</option>
+            <option value="">no</option>
+            <option value="explicit">explicit</option>
+            <option value="inline">inline</option>
+            </select>class() {}<br/>
+
+            <select name="Destructor">
+            <option value="virtual">virtual</option>
+            <option value="yes">yes</option>
+            <option value="">no</option>
+            </select>~ class() {}<br/><br/>
+            
+            Organization: <input name="Organization" value="$organization$"/><br/>
+            Author: <input name="Author" value="$author$"/><br/>
+            Date: <input name="Date" value=""/><br/>
+            <br/>
+
+            Action: <input name="FormAction" value=""/><br/>
+            Method: <input name="FormMethod" value="POST"/><br/>
+            <input type="hidden" name="Name" value="Form"/>
+            <input type="hidden" name="onSublit" value="return setFormSubmit(getFormValue('%Name%Action','%Name%'),getFormValue('%Name%Method','%Name%'),'%Name%')"/>
+            <hr/>
+            <input type="submit" name="submit" value="submit"/><br/>
+        </form>
+    </body>
+</html>
