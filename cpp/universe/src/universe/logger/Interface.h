@@ -11,22 +11,22 @@
 // or otherwise) arising in any way out of the use of this software, 
 // even if advised of the possibility of such damage.
 //
-//   File: Main.cpp
+//   File: Interface.h
 //
 // Author: $author$
-//   Date: 12/2/2017
+//   Date: 12/4/2017
 //
 // Copyright (c) 2017 $organization$
 //
-#include "universe/console/Main.h"
+#ifndef _UNIVERSE_LOGGER_INTERFACE_H
+#define _UNIVERSE_LOGGER_INTERFACE_H
+
+#include "universe/logger/Output.h"
 
 namespace universe {
-namespace console {
+namespace logger {
 
-//
-// Class: Class
-//
+} // namespace logger 
+} // namespace universe 
 
-} // namespace console 
-} // namespace universe
-
+#endif // _UNIVERSE_LOGGER_INTERFACE_H

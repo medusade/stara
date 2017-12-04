@@ -163,6 +163,24 @@ public:
    {
       return this->toUnsigned();
    }
+   
+   virtual const char_t* hasChars(size_t& length) const {
+      if ((length = this->length())) {
+         return this->c_str();
+      }
+      return 0;
+   }
+   virtual const char_t* hasChars() const {
+      size_t length = 0;
+      return hasChars(length);
+   }
+   virtual const char_t* chars(size_t& length) const {
+      length = this->length();
+      return this->c_str();
+   }
+   virtual const char_t* chars() const {
+      return this->c_str();
+   }
 };
 typedef StringT<char> String;
 typedef StringT<tchar_t> TString;
@@ -206,6 +224,8 @@ class ExceptionT
 public:
    typedef TImplements Implements;
    typedef TExtends Extends;
+   typedef TReason Status;
+   typedef TReason Which;
 
    ExceptionT(TReason reason): _reason(reason)
    {
@@ -215,6 +235,24 @@ public:
    }
    virtual ~ExceptionT()
    {
+   }
+
+   virtual Which setWhich(Which to) 
+   {
+      return setReason(to);
+   }
+   virtual Which which() const 
+   {
+      return reason();
+   }
+
+   virtual Status setStatus(Status to) 
+   {
+      return setReason(to);
+   }
+   virtual Status status() const 
+   {
+      return reason();
    }
 
    virtual TReason setReason(TReason to) 
@@ -248,6 +286,146 @@ public:
 protected:
    TReason _reason;
 };
+typedef ExceptionT<> Exception;
+
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+
+//
+// Enum: LockStatus
+//
+enum LockStatus {
+   UnlockSuccess,
+   LockSuccess = UnlockSuccess,
+
+   LockFailed,
+   LockBusy,
+   LockInterrupted,
+   LockInvalid,
+
+   UnlockFailed,
+   UnlockBusy,
+   UnlockInterrupted,
+   UnlockInvalid
+};
+
+inline const char* lockStatusToChars(LockStatus status) {
+   switch (status) {
+   case LockSuccess: return "LockSuccess";
+   case LockFailed: return "LockFailed";
+   case LockBusy: return "LockBusy";
+   case LockInterrupted: return "LockInterrupted";
+   case LockInvalid: return "LockInvalid";
+
+   case UnlockFailed: return "UnlockFailed";
+   case UnlockBusy: return "UnlockBusy";
+   case UnlockInterrupted: return "UnlockInterrupted";
+   case UnlockInvalid: return "UnlockInvalid";
+   }
+   return "Unknown";
+}
+
+typedef Exception::Implements LockExceptionTImplements;
+typedef ExceptionT<LockStatus> LockExceptionTExtends;
+//
+//  Class: LockExceptionT
+//
+template
+<class TImplements = LockExceptionTImplements,
+ class TExtends = LockExceptionTExtends>
+
+class LockExceptionT: virtual public TImplements, public TExtends {
+public:
+   typedef TImplements Implements;
+   typedef TExtends Extends;
+   typedef typename Extends::char_t char_t;
+
+  LockExceptionT(LockStatus status): Extends(status) {}
+   virtual ~LockExceptionT() {}
+
+  virtual const char_t* reasonToChars() const {
+       return lockStatusToChars(this->reason());
+   }
+};
+typedef LockExceptionT<> LockException;
+
+typedef ImplementBase LockedTImplements;
+//
+//  Class: LockedT
+//
+template
+<class TLockException = LockException,
+ class TImplements = LockedTImplements>
+
+class LockedT: virtual public TImplements {
+public:
+   typedef TImplements Implements;
+   typedef TLockException LockException;
+
+  virtual bool lock() { return false; }
+   virtual LockStatus tryLock() { return LockFailed; }
+   virtual LockStatus timedLock(mseconds_t milliseconds) { return LockFailed; }
+   virtual LockStatus untimedLock() { return LockFailed; }
+   virtual bool unlock() { return false; }
+};
+typedef LockedT<> Locked;
+
+typedef Locked UnlockedTImplements;
+//
+//  Class: UnlockedT
+//
+template
+<class TLockException = LockException,
+ class TImplements = UnlockedTImplements>
+
+class UnlockedT: virtual public TImplements {
+public:
+   typedef TImplements Implements;
+   typedef TLockException LockException;
+
+   virtual bool Lock() { return true; }
+   virtual LockStatus TryLock() { return LockSuccess; }
+   virtual LockStatus TimedLock(mseconds_t milliseconds) { return LockSuccess; }
+   virtual LockStatus UntimedLock() { return LockSuccess; }
+   virtual bool Unlock() { return true; }
+};
+typedef UnlockedT<> Unlocked;
+
+typedef ImplementBase LockTImplements;
+typedef Base LockTExtends;
+//
+// Class: LockT
+//
+template
+<class TLocked = Locked,
+ class TLockException = LockException,
+ class TImplements = LockTImplements,
+ class TExtends = LockTExtends>
+
+class  LockT: virtual public TImplements, public TExtends {
+public:
+   typedef TImplements Implements;
+   typedef TExtends Extends;
+
+   typedef TLocked Locked;
+   typedef TLockException LockException;
+
+   LockT(Locked& locked): _locked(locked) {
+      if (!(_locked.Lock())) {
+         LockException e(LockFailed);
+         throw (e);
+      }
+   }
+   virtual ~LockT() {
+      if (!(_locked.Unlock())) {
+         LockException e(UnlockFailed);
+         throw (e);
+      }
+   }
+protected:
+   Locked& _locked;
+};
+typedef LockT<> Lock;
 
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////

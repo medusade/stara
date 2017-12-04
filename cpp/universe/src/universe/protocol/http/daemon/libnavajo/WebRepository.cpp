@@ -11,22 +11,27 @@
 // or otherwise) arising in any way out of the use of this software, 
 // even if advised of the possibility of such damage.
 //
-//   File: Main.cpp
+//   File: WebRepository.cpp
 //
 // Author: $author$
-//   Date: 12/2/2017
+//   Date: 12/3/2017
 //
 // Copyright (c) 2017 $organization$
 //
-#include "universe/console/Main.h"
+#include "universe/protocol/http/daemon/libnavajo/WebRepository.h"
 
 namespace universe {
-namespace console {
+namespace protocol {
+namespace http {
+namespace daemon {
+namespace libnavajo {
 
 //
-// Class: Class
+// Class: WebRepository
 //
 
-} // namespace console 
-} // namespace universe
-
+} // namespace libnavajo 
+} // namespace daemon 
+} // namespace http 
+} // namespace protocol 
+} // namespace universe 

@@ -11,22 +11,20 @@
 // or otherwise) arising in any way out of the use of this software, 
 // even if advised of the possibility of such damage.
 //
-//   File: Main.cpp
+//   File: Opened.h
 //
 // Author: $author$
-//   Date: 12/2/2017
+//   Date: 12/4/2017
 //
 // Copyright (c) 2017 $organization$
 //
-#include "universe/console/Main.h"
+#ifndef _UNIVERSE_BASE_OPENED_H
+#define _UNIVERSE_BASE_OPENED_H
+
+#include "universe/base/Base.h"
 
 namespace universe {
-namespace console {
 
-//
-// Class: Class
-//
+} // namespace universe 
 
-} // namespace console 
-} // namespace universe
-
+#endif // _UNIVERSE_BASE_OPENED_H

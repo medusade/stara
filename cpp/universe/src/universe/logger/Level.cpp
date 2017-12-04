@@ -11,22 +11,17 @@
 // or otherwise) arising in any way out of the use of this software, 
 // even if advised of the possibility of such damage.
 //
-//   File: Main.cpp
+//   File: Level.cpp
 //
 // Author: $author$
-//   Date: 12/2/2017
+//   Date: 12/4/2017
 //
 // Copyright (c) 2017 $organization$
 //
-#include "universe/console/Main.h"
+#include "universe/logger/Level.h"
 
 namespace universe {
-namespace console {
+namespace logger {
 
-//
-// Class: Class
-//
-
-} // namespace console 
-} // namespace universe
-
+} // namespace logger 
+} // namespace universe 
