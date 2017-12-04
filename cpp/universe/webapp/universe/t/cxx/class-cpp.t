@@ -86,11 +86,13 @@
 //
 #include "%if-then(%Directory%,/)%%File%.h"
 
-namespace %Namespace% {
+%parse(%Namespace%,/,,,,%(namespace %Namespace% {
+)%,Namespace)%
 
 //
-// Class: Class
+// Class: %Class%
 //
 
-} // namespace %Namespace%
+%reverse-parse(%Namespace%,/,,,,%(} // namespace %Namespace% 
+)%,Namespace)%
 )%)%
