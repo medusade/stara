@@ -67,11 +67,11 @@ public:
    typedef typename Extends::char_t char_t;
 
    CreateExceptionT(CreateStatus status): Extends(status) {}
-   CreateExceptionT(const CreateExceptionT& copy): Extends(copy.Status()) {}
+   CreateExceptionT(const CreateExceptionT& copy): Extends(copy.status()) {}
    virtual ~CreateExceptionT() {}
 
    virtual const char_t* reasonToChars() const {
-       return createStatusToChars(this->Status());
+       return createStatusToChars(this->status());
    }
 };
 typedef CreateExceptionT<> CreateException;

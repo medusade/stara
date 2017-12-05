@@ -30,6 +30,31 @@ namespace universe {
 
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
+inline seconds_t mseconds_seconds
+(mseconds_t mseconds) { return mseconds / 1000; }
+
+inline mseconds_t mseconds_mseconds
+(mseconds_t mseconds) { return mseconds % 1000; }
+
+inline useconds_t mseconds_useconds
+(mseconds_t mseconds) { return mseconds_mseconds(mseconds) * 1000; }
+
+inline nseconds_t mseconds_nseconds
+(mseconds_t mseconds) { return mseconds_useconds(mseconds) * 1000; }
+
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+inline mseconds_t seconds_mseconds
+(seconds_t seconds) { return seconds * 1000; }
+
+inline useconds_t nseconds_useconds
+(nseconds_t nseconds) { return nseconds / 1000; }
+
+inline mseconds_t nseconds_mseconds
+(nseconds_t nseconds) { return nseconds_useconds(nseconds) / 1000; }
+
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 
 //
 // Class: ImplementBase
@@ -200,14 +225,12 @@ enum ExceptionReason {
 };
 
 //
-// Function: ExceptionToChars
+// Function: exceptionToChars
 //
-inline const char* ExceptionToChars(ExceptionReason reason) 
+template <typename TReason>
+inline const char* exceptionToChars(TReason reason) 
 {
-   switch (reason) {
-   case ExceptionFailed: return "ExceptionFailed";
-   }
-   return "Unknown";
+   return "ExceptionFailed";
 }
 
 //
@@ -224,8 +247,10 @@ class ExceptionT
 public:
    typedef TImplements Implements;
    typedef TExtends Extends;
+
    typedef TReason Status;
    typedef TReason Which;
+   typedef TChar char_t;
 
    ExceptionT(TReason reason): _reason(reason)
    {
@@ -275,7 +300,7 @@ public:
    }
    virtual const TChar* toChars() const 
    {
-      const TChar& chars = ExceptionToChars(_reason);
+      const TChar* chars = exceptionToChars(_reason);
       return chars;
    }
    virtual operator const TChar*() const 
@@ -287,6 +312,30 @@ protected:
    TReason _reason;
 };
 typedef ExceptionT<> Exception;
+
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+
+//
+// Class: LoggedT
+//
+template 
+<class TImplements = ImplementBase>
+
+class LoggedT
+: virtual public TImplements
+{
+public:
+   typedef TImplements Implements;
+   
+   virtual bool SetIsLogged(bool to) {
+      return false;
+   }
+   virtual bool isLogged() const {
+      return false;
+   }
+};
+typedef LoggedT<> Logged;
 
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
@@ -362,7 +411,7 @@ public:
    typedef TImplements Implements;
    typedef TLockException LockException;
 
-  virtual bool lock() { return false; }
+   virtual bool lock() { return false; }
    virtual LockStatus tryLock() { return LockFailed; }
    virtual LockStatus timedLock(mseconds_t milliseconds) { return LockFailed; }
    virtual LockStatus untimedLock() { return LockFailed; }
@@ -411,13 +460,13 @@ public:
    typedef TLockException LockException;
 
    LockT(Locked& locked): _locked(locked) {
-      if (!(_locked.Lock())) {
+      if (!(_locked.lock())) {
          LockException e(LockFailed);
          throw (e);
       }
    }
    virtual ~LockT() {
-      if (!(_locked.Unlock())) {
+      if (!(_locked.unlock())) {
          LockException e(UnlockFailed);
          throw (e);
       }

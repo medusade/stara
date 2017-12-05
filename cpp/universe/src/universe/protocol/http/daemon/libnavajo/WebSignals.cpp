@@ -11,44 +11,27 @@
 // or otherwise) arising in any way out of the use of this software, 
 // even if advised of the possibility of such damage.
 //
-//   File: Main.cpp
+//   File: WebSignals.cpp
 //
 // Author: $author$
-//   Date: 12/2/2017
+//   Date: 12/5/2017
 //
 // Copyright (c) 2017 $organization$
 //
-#include "universe/console/Main.h"
-#include "universe/mt/posix/Mutex.h"
+#include "universe/protocol/http/daemon/libnavajo/WebSignals.h"
 
 namespace universe {
-namespace console {
+namespace protocol {
+namespace http {
+namespace daemon {
+namespace libnavajo {
 
 //
-// Class: Class
+// Class: WebSignals
 //
 
-} // namespace console 
-} // namespace universe
-
-//
-// Function: main
-//
-int main(int argc, char** argv, char** env) {
-   int err = 1;
-
-   ERR_LOG_DEBUG("try {...");
-   try {
-      universe::mt::posix::Mutex mutex;
-      universe::console::IoInstance io(mutex);
-      universe::console::Logger logger(io);
-
-      ERR_LOG_DEBUG("universe::console::main(argc, argv, env)...");
-      if ((err = universe::console::main(argc, argv, env))) {
-         ERR_LOG_ERROR("...err = " << err << " on universe::console::main(argc, argv, env)...");
-      }
-   } catch (...) {
-      ERR_LOG_ERROR("...} catch(...)");
-   }
-   return err;
-}
+} // namespace libnavajo 
+} // namespace daemon 
+} // namespace http 
+} // namespace protocol 
+} // namespace universe 

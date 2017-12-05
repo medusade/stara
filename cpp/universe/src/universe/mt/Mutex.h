@@ -11,57 +11,43 @@
 // or otherwise) arising in any way out of the use of this software, 
 // even if advised of the possibility of such damage.
 //
-//   File: Logger.h
+//   File: Mutex.h
 //
 // Author: $author$
 //   Date: 12/4/2017
 //
 // Copyright (c) 2017 $organization$
 //
-#ifndef _UNIVERSE_CONSOLE_LOGGER_H
-#define _UNIVERSE_CONSOLE_LOGGER_H
+#ifndef _UNIVERSE_MT_MUTEX_H
+#define _UNIVERSE_MT_MUTEX_H
 
-#include "universe/logger/Interface.h"
-#include "universe/console/Io.h"
+#include "universe/base/Created.h"
 
 namespace universe {
-namespace console {
+namespace mt {
 
-typedef logger::BaseImplements LoggerImplements;
-typedef logger::Base LoggerExtends;
+typedef Logged MutexTLoggedImplements;
+typedef Locked MutexTLockedImplements;
+typedef Create MutexTCreateImplements;
 //
-// Class: Logger
+// Class: MutexT
 //
-class Logger
-: virtual public LoggerImplements, public LoggerExtends
-{
+template
+<class TLoggedImplements = MutexTLoggedImplements,
+ class TLockedImplements = MutexTLockedImplements,
+ class TCreateImplements = MutexTCreateImplements>
+class MutexT
+: virtual public TLockedImplements,
+  virtual public TLoggedImplements,
+  virtual public TCreateImplements {
 public:
-   typedef LoggerImplements Implements;
-   typedef LoggerExtends Extends;
-
-   Logger(Io& io): Extends(io), _io(io)
-   {
-   }
-
-   virtual void log(const char* chars, size_t length) {
-      if ((chars) && (length)) {
-         for (char c = *(chars); length; --length, c = *(++chars)) {
-            _io.err(&c, 1);
-         }
-      }
-   }
-   virtual void log(const char* chars) {
-      _io.err(chars);
-   }
-   virtual void logLn() {
-      _io.errln();
-   }
-   
-protected:
-   Io& _io;
+   typedef TLockedImplements LockedImplements;
+   typedef TLoggedImplements LoggedImplements;
+   typedef TCreateImplements CreateImplements;
 };
+typedef MutexT<> Mutex;
 
-} // namespace console 
+} // namespace mt 
 } // namespace universe 
 
-#endif // _UNIVERSE_CONSOLE_LOGGER_H
+#endif // _UNIVERSE_MT_MUTEX_H

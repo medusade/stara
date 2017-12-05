@@ -21,8 +21,7 @@
 #ifndef _UNIVERSE_PROTOCOL_HTTP_DAEMON_LIBNAVAJO_WEBREPOSITORY_H
 #define _UNIVERSE_PROTOCOL_HTTP_DAEMON_LIBNAVAJO_WEBREPOSITORY_H
 
-#include "universe/base/Base.h"
-#include "libnavajo/libnavajo.hh"
+#include "universe/protocol/http/daemon/libnavajo/WebSignals.h"
 
 namespace universe {
 namespace protocol {
@@ -31,21 +30,24 @@ namespace daemon {
 namespace libnavajo {
 
 typedef ::WebRepository WebRepositoryImplements;
+typedef WebSignals WebSignalsImplements;
 //
 // Class: WebRepository
 //
 class WebRepository
-: virtual public WebRepositoryImplements
+: virtual public WebRepositoryImplements, virtual public WebSignalsImplements
 {
 public:
-   typedef WebRepositoryImplements Implements;
+   typedef WebRepositoryImplements RepositoryImplements;
+   typedef WebSignalsImplements SignalsImplements;
 
    virtual bool getFile(HttpRequest* request, HttpResponse *response) {
+      bool success = false;
       WebRepository* forwardTo = requestsForwardTo();
       if ((forwardTo)) {
-         return forwardTo->getFile(request, response);
+         success = forwardTo->getFile(request, response);
       }
-      return false;
+      return success;
    }
    virtual void freeFile(unsigned char *webpage) {
       WebRepository* forwardTo = requestsForwardTo();
@@ -76,7 +78,8 @@ class ForwardedWebRepository
 public:
    typedef ForwardedWebRepositoryImplements Implements;
 
-   ForwardedWebRepository(): _requestsForwardTo(0)
+   ForwardedWebRepository()
+   : _requestsForwardTo(0), _signalsForwardTo(0)
    {
    }
    virtual ~ForwardedWebRepository()
@@ -84,6 +87,7 @@ public:
    }
 private:
    ForwardedWebRepository(const ForwardedWebRepository& copy)
+   : _requestsForwardTo(0), _signalsForwardTo(0)
    {
    }
 
@@ -97,8 +101,18 @@ public:
       return _requestsForwardTo;
    }
 
+   virtual WebSignals* forwardSignalsTo(WebSignals* to) {
+      WebSignals* forwardedTo = _signalsForwardTo;
+      _signalsForwardTo = to;
+      return forwardedTo;
+   }
+   virtual WebSignals* signalsForwardTo() const {
+      return _signalsForwardTo;
+   }
+
 protected:
    WebRepository* _requestsForwardTo;
+   WebSignals* _signalsForwardTo;
 };
 
 } // namespace libnavajo 

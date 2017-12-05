@@ -35,8 +35,10 @@ namespace console {
 // Class: MainT
 //
 template 
-<typename TChar = char, class TIo = IoT<TChar>, 
- class TImplements = TIo, class TExtends = Base>
+<typename TChar = char, 
+ class TIo = IoT<TChar>, 
+ class TIoExtend = IoExtendT<TChar>,
+ class TImplements = TIo, class TExtends = TIoExtend>
 
 class MainT
 : virtual public TImplements, public TExtends
@@ -48,6 +50,14 @@ public:
    typedef TChar char_t;
    typedef StringT<char_t> string_t;
 
+   MainT(Locked& locked): Extends(locked), _didRun(false)
+   {
+      MainT*& main = MainT::main();
+      if (!(main)) {
+         main = this;
+      } else {
+      }
+   }
    MainT(): _didRun(false)
    {
       MainT*& main = MainT::main();
@@ -320,6 +330,9 @@ public:
    typedef MainImplement Implements;
    typedef MainExtend Extends;
 
+   Main(Locked& locked): Extends(locked), _didUsage(false)
+   {
+   }
    Main(): _didUsage(false)
    {
    }
@@ -425,6 +438,12 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
+
+//
+// Function: main
+//
+int main(int argc, char** argv, char** env);
+
 } // namespace console 
 } // namespace universe 
 

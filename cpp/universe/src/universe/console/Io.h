@@ -43,6 +43,7 @@ class IoT
 {
 public:
    typedef TImplements Implements;
+   typedef IoT IoBase;
 
    typedef TFile file_t;
    typedef int null_file_t;
@@ -205,11 +206,41 @@ public:
        return count;
    }
 
-   virtual bool lock() { return true; }
-   virtual LockStatus tryLock() { return LockSuccess; }
-   virtual LockStatus timedLock(mseconds_t milliseconds) { return LockSuccess; }
-   virtual LockStatus untimedLock() { return LockSuccess; }
-   virtual bool unlock() { return true; }
+   virtual bool lock() {
+      IoT* io = IoT::theIo();
+      if ((io)) {
+         return io->lock();
+      }
+      return true; 
+   }
+   virtual LockStatus tryLock() { 
+      IoT* io = IoT::theIo();
+      if ((io)) {
+         return io->tryLock();
+      }
+      return LockSuccess; 
+   }
+   virtual LockStatus timedLock(mseconds_t milliseconds) { 
+      IoT* io = IoT::theIo();
+      if ((io)) {
+         return io->timedLock(milliseconds);
+      }
+      return LockSuccess; 
+   }
+   virtual LockStatus untimedLock() { 
+      IoT* io = IoT::theIo();
+      if ((io)) {
+         return io->untimedLock();
+      }
+      return LockSuccess; 
+   }
+   virtual bool unlock() { 
+      IoT* io = IoT::theIo();
+      if ((io)) {
+         return io->unlock();         
+      }
+      return true; 
+   }
 
    static IoT* setTheIo(IoT* to) {
       IoT *&ioSet = theIoSet(), *oldIo = ioSet;
@@ -229,7 +260,7 @@ protected:
    virtual ssize_t outfv(file_t f, const char_t* format, va_list va) {
        ssize_t count = 0;
        if ((f != ((file_t)nullFile)) && (format)) {
-           /*count = vfprint(f, format, va);*/
+           count = this->vfPrintf(f, format, va);
        }
        return count;
    }
@@ -265,11 +296,11 @@ protected:
        if ((out) && (f != ((file_t)nullFile))) {
            ssize_t amount = 0;
            if (0 <= (length)) {
-               if (0 < (amount /*= fwrite(out, sizeof(char_t), length, f)*/))
+               if (0 < (amount = this->fWrite(out, sizeof(char_t), length, f)))
                    count += amount;
            } else {
                for (; *out; ++out) {
-                   if (0 < (amount /*= fwrite(out, sizeof(char_t), 1, f)*/)) {
+                   if (0 < (amount = this->fWrite(out, sizeof(char_t), 1, f))) {
                        count += amount;
                        continue;
                    }
@@ -283,7 +314,7 @@ protected:
        ssize_t count = 0;
        if ((f != ((file_t)nullFile))) {
            int err = 0;
-           if ((err /*= fflush(f)*/)) {
+           if ((err = this->fFlush(f))) {
                count = -1;
            }
        }
@@ -293,7 +324,7 @@ protected:
    virtual ssize_t infv(file_t f, const char_t* format, va_list va) {
        ssize_t count = 0;
        if ((f != ((file_t)nullFile)) && (format)) {
-           /*count = vfscanf(f, format, va);*/
+           count = this->vfScanf(f, format, va);
        }
        return count;
    }
@@ -323,7 +354,7 @@ protected:
        ssize_t count = 0;
        if ((in) && (f != ((file_t)nullFile)) && (0 < (size))) {
            ssize_t amount = 0;
-           if (0 < (amount /*= fread(in, sizeof(char_t), size, f)*/)) {
+           if (0 < (amount = this->fRead(in, sizeof(char_t), size, f))) {
                count += amount;
            }
        }
@@ -345,13 +376,29 @@ protected:
    }
 
    virtual file_t stdOut() const {
-       return ((file_t)nullFile)/*stdout*/;
+       return ((file_t)nullFile)/*::stdout*/;
    }
    virtual file_t stdErr() const {
-       return ((file_t)nullFile)/*stderr*/;
+       return ((file_t)nullFile)/*::stderr*/;
    }
    virtual file_t stdIn() const {
-       return ((file_t)nullFile)/*stdin*/;
+       return ((file_t)nullFile)/*::stdin*/;
+   }
+
+   virtual ssize_t vfPrintf(file_t f, const char_t* format, va_list va) const {
+       return -1/*::vfprintf(f, format, va)*/;
+   }
+   virtual ssize_t fWrite(const void* out, size_t size, size_t length, file_t f) const {
+       return -1/*::fwrite(out, size, length, f)*/;
+   }
+   virtual int fFlush(file_t f) const {
+      return -1/*::fflush(f)*/;
+   }
+   virtual ssize_t vfScanf(file_t f, const char_t* format, va_list va) const {
+       return -1/*::vfscanf(f, format, va)*/;
+   }
+   virtual ssize_t fRead(void* in, size_t size, size_t count, file_t f) const {
+       return -1/*::fread(in, sizeof(char_t), size, f)*/;
    }
 };
 
@@ -367,73 +414,129 @@ class Io
 {
 public:
    typedef IoImplements Implements;
+   typedef typename Implements::IoBase IoBase;
 
 protected:
-   virtual ssize_t outfv(file_t f, const char_t* format, va_list va) {
-       ssize_t count = 0;
-       if ((f != ((file_t)nullFile)) && (format)) {
-           count = vfprintf(f, format, va);
-       }
-       return count;
-   }
-   virtual ssize_t out(file_t f, const char_t* out, ssize_t length = -1) {
-       ssize_t count = 0;
-       if ((out) && (f != ((file_t)nullFile))) {
-           ssize_t amount = 0;
-           if (0 <= (length)) {
-               if (0 < (amount = fwrite(out, sizeof(char_t), length, f)))
-                   count += amount;
-           } else {
-               for (; *out; ++out) {
-                   if (0 < (amount = fwrite(out, sizeof(char_t), 1, f))) {
-                       count += amount;
-                       continue;
-                   }
-                   break;
-               }
-           }
-       }
-       return count;
-   }
-   virtual ssize_t outFlush(file_t f) {
-       ssize_t count = 0;
-       if ((f != ((file_t)nullFile))) {
-           int err = 0;
-           if ((err = fflush(f))) {
-               count = -1;
-           }
-       }
-       return count;
-   }
-
-   virtual ssize_t infv(file_t f, const char_t* format, va_list va) {
-       ssize_t count = 0;
-       if ((f != ((file_t)nullFile)) && (format)) {
-           count = vfscanf(f, format, va);
-       }
-       return count;
-   }
-   virtual ssize_t in(file_t f, char_t* in, size_t size) {
-       ssize_t count = 0;
-       if ((in) && (f != ((file_t)nullFile)) && (0 < (size))) {
-           ssize_t amount = 0;
-           if (0 < (amount = fread(in, sizeof(char_t), size, f))) {
-               count += amount;
-           }
-       }
-       return count;
-   }
-
    virtual file_t stdOut() const {
-       return stdout;
+       return ::stdout;
    }
    virtual file_t stdErr() const {
-       return stderr;
+       return ::stderr;
    }
    virtual file_t stdIn() const {
        return stdin;
    }
+   virtual ssize_t vfPrintf(file_t f, const char_t* format, va_list va) const {
+       return ::vfprintf(f, format, va);
+   }
+   virtual ssize_t fWrite(const void* out, size_t size, size_t length, file_t f) const {
+       return ::fwrite(out, size, length, f);
+   }
+   virtual int fFlush(file_t f) const {
+      return ::fflush(f);
+   }
+   virtual ssize_t vfScanf(file_t f, const char_t* format, va_list va) const {
+       return ::vfscanf(f, format, va);
+   }
+   virtual ssize_t fRead(void* in, size_t size, size_t count, file_t f) const {
+       return ::fread(in, sizeof(char_t), size, f);
+   }
 };
+
+//
+// Class: IoExtendT
+//
+template 
+<typename TChar = char, class TIo = IoT<TChar>, 
+ class TImplements = TIo, class TExtends = Base>
+
+class IoExtendT
+: virtual public TImplements, public TExtends
+{
+public:
+   typedef TImplements Implements;
+   typedef TExtends Extends;
+   typedef typename Implements::IoBase IoBase;
+
+   IoExtendT(Locked& locked): _locked(locked)
+   {
+   }
+   IoExtendT(const IoExtendT& copy): _locked(_unlocked)
+   {
+   }
+   IoExtendT(): _locked(_unlocked)
+   {
+   }
+   virtual ~IoExtendT()
+   {
+   }
+   
+   virtual bool lock() { 
+      return _locked.lock(); 
+   }
+   virtual LockStatus tryLock() { 
+      return _locked.tryLock(); 
+   }
+   virtual LockStatus timedLock(mseconds_t milliseconds) { 
+      return _locked.timedLock(milliseconds); 
+   }
+   virtual LockStatus untimedLock() { 
+      return _locked.untimedLock(); 
+   }
+   virtual bool unlock() { 
+      return _locked.unlock(); 
+   }
+
+protected:
+   Unlocked _unlocked;
+   Locked& _locked;
+};
+typedef IoExtendT<char, Io> IoExtend;
+
+//
+// Class: IoInstanceT
+//
+template 
+<typename TChar = char, 
+ class TIo = IoT<TChar>, 
+ class TIoExtend = IoExtendT<TChar, TIo>, 
+ class TImplements = TIo, class TExtends = TIoExtend>
+
+class IoInstanceT
+: virtual public TImplements, public TExtends
+{
+public:
+   typedef TImplements Implements;
+   typedef TExtends Extends;
+   typedef typename Implements::IoBase IoBase;
+
+   IoInstanceT(Locked& locked)
+   : Extends(locked), _theIo(IoBase::theIo())
+   {
+      IoBase*& theIoSet = IoBase::theIoSet();
+      theIoSet = this;
+   }
+   IoInstanceT(): _theIo(IoBase::theIo())
+   {
+      IoBase*& theIoSet = IoBase::theIoSet();
+      theIoSet = this;
+   }
+   virtual ~IoInstanceT()
+   {
+      IoBase*& theIoSet = IoBase::theIoSet();
+      if (this == (theIoSet)) {
+         theIoSet = _theIo;
+      }
+   }
+private:
+   IoInstanceT(const IoInstanceT& copy)
+   {
+   }
+
+protected:
+   IoBase* _theIo;
+};
+typedef IoInstanceT<char, Io, IoExtend> IoInstance;
 
 } // namespace console 
 } // namespace universe 

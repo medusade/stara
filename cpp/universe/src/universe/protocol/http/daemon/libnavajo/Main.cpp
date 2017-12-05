@@ -19,6 +19,7 @@
 // Copyright (c) 2017 $organization$
 //
 #include "universe/protocol/http/daemon/libnavajo/Main.h"
+#include "universe/console/Main.cpp"
 
 namespace universe {
 namespace protocol {
@@ -34,29 +35,18 @@ namespace libnavajo {
 } // namespace daemon 
 } // namespace http 
 } // namespace protocol 
-} // namespace universe 
+
+namespace console {
 
 //
 // Function: main
 //
 int main(int argc, char** argv, char** env) {
    int err = 1;
-
-   ERR_LOG_DEBUG("try {...");
-   try {
-      universe::protocol::http::daemon::libnavajo::Main main;
-
-      ERR_LOG_DEBUG("main.connectSignals()...");
-      main.connectSignals();
-
-      ERR_LOG_DEBUG("universe::console::Main::main(argc, argv, env)...");
-      if ((err = universe::console::Main::main(argc, argv, env))) {
-         ERR_LOG_ERROR("...err = " << err << " on universe::console::Main::main(argc, argv, env)...");
-      }
-      ERR_LOG_DEBUG("main.disconnectSignals()...");
-      main.disconnectSignals();
-   } catch (...) {
-      ERR_LOG_ERROR("...} catch(...)");
-   }
+   protocol::http::daemon::libnavajo::Main main;
+   err = protocol::http::daemon::libnavajo::Main::main(argc, argv, env);
    return err;
 }
+
+} // namespace console
+} // namespace universe 

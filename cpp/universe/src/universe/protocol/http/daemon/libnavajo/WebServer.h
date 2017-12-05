@@ -41,7 +41,7 @@ public:
    typedef WebServerImplements Implements;
    typedef WebServerExtends Extends;
 
-   WebServer()
+   WebServer(): _requestsForwardTo(0), _signalsForwardTo(0)
    {
    }
    virtual ~WebServer()
@@ -49,6 +49,7 @@ public:
    }
 private:
    WebServer(const WebServer& copy)
+   : _requestsForwardTo(0), _signalsForwardTo(0)
    {
    }
 
@@ -68,9 +69,72 @@ public:
    virtual WebRepository* requestsForwardTo() const {
       return _requestsForwardTo;
    }
+   
+   virtual WebSignals* forwardSignalsTo(WebSignals* to) {
+      WebSignals* forwardedTo = _signalsForwardTo;
+      _signalsForwardTo = to;
+      return forwardedTo;
+   }
+   virtual WebSignals* signalsForwardTo() const {
+      return _signalsForwardTo;
+   }
+
+protected:
+   virtual bool processRequest(HttpRequest* request, HttpResponse *response) {
+      bool success = false;
+      WebSignals* forwardTo = signalsForwardTo();
+      if ((forwardTo)) {
+         LOG_DEBUG("forwardTo->processRequest(request, response)...");
+         success = forwardTo->processRequest(request, response);
+      }
+      if (!(success) && (request)) {
+         switch (request->getRequestType()) {
+         case GET_METHOD: 
+            success = process_GET_Request(request, response);
+            break;
+         case PUT_METHOD: 
+            success = process_PUT_Request(request, response);
+            break;
+         case POST_METHOD: 
+            success = process_POST_Request(request, response);
+            break;
+         case DELETE_METHOD: 
+            success = process_DELETE_Request(request, response);
+            break;
+         case UPDATE_METHOD: 
+            success = process_UPDATE_Request(request, response);
+            break;
+         case PATCH_METHOD: 
+            success = process_PATCH_Request(request, response);
+            break;
+         case OPTIONS_METHOD: 
+            success = process_OPTIONS_Request(request, response);
+            break;
+         case HEAD_METHOD: 
+            success = process_HEAD_Request(request, response);
+            break;
+         default:
+            success = process_UNKNOWN_Request(request, response);
+            break;
+         }
+      }
+      return success;
+   }
+   virtual bool getFile(HttpRequest* request, HttpResponse *response) {
+      bool success = false;
+      WebRepository* forwardTo = requestsForwardTo();
+      if ((forwardTo)) {
+         success = forwardTo->getFile(request, response);
+      }
+      if (!(success)) {
+         success = processRequest(request, response);
+      }
+      return success;
+   }
 
 protected:
    WebRepository* _requestsForwardTo;
+   WebSignals* _signalsForwardTo;
 };
 
 } // namespace libnavajo 

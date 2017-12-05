@@ -49,6 +49,10 @@ public:
    typedef MainExtends Extends;
    typedef Main Derives;
 
+   Main(Locked& locked)
+   : Extends(locked), _run(0), _port(8080)
+   {
+   }
    Main(): _run(0), _port(8080)
    {
    }
@@ -95,8 +99,19 @@ protected:
       return err;
    }
 
-   virtual bool getFile(HttpRequest* request, HttpResponse *response) {
-      this->errln("...getFile(HttpRequest* request, HttpResponse *response)");
+   virtual bool processRequest(HttpRequest* request, HttpResponse *response) {
+      LOG_DEBUG("-->processRequest(HttpRequest* request, HttpResponse *response)");
+      LOG_DEBUG("<--processRequest(HttpRequest* request, HttpResponse *response)");
+      return false;
+   }
+   virtual bool process_GET_Request(HttpRequest* request, HttpResponse *response) {
+      LOG_DEBUG("-->process_GET_Request(HttpRequest* request, HttpResponse *response)");
+      LOG_DEBUG("<--process_GETRequest(HttpRequest* request, HttpResponse *response)");
+      return false;
+   }
+   virtual bool process_POST_Request(HttpRequest* request, HttpResponse *response) {
+      LOG_DEBUG("-->process_POST_Request(HttpRequest* request, HttpResponse *response)");
+      LOG_DEBUG("<--process_POSTRequest(HttpRequest* request, HttpResponse *response)");
       return false;
    }
    
@@ -108,37 +123,37 @@ protected:
       return _port;
    }
    
-public:
    typedef void (*Signal)(int signum);
    static void connectSignals() {
-      Signal &sigterm = theSigterm(), &sigint = theSigint();
+      Signal &sigtermConnected = theSigtermConnected(), &sigterm = theSigterm(), 
+             &sigintConnected = theSigintConnected(), &sigint = theSigint();
 
-      if (!(sigterm)) {
+      if (!(sigtermConnected)) {
          ERR_LOG_DEBUG("signal(SIGTERM = " << SIGTERM << ", onSignal)...");
-         sigterm = signal(SIGTERM, onSignal);
+         sigterm = signal(SIGTERM, sigtermConnected = onSignal);
       }
 
-      if (!(sigint)) {
+      if (!(sigintConnected)) {
          ERR_LOG_DEBUG("signal(SIGINT = " << SIGINT << ", onSignal)...");
-         sigint = signal(SIGINT, onSignal);
+         sigint = signal(SIGINT, sigintConnected = onSignal);
       }
    }
    static void disconnectSignals() {
-      Signal &sigterm = theSigterm(), &sigint = theSigint();
+      Signal &sigtermConnected = theSigtermConnected(), &sigterm = theSigterm(), 
+             &sigintConnected = theSigintConnected(), &sigint = theSigint();
 
-      if ((sigint)) {
+      if ((sigintConnected)) {
          ERR_LOG_DEBUG("signal(SIGINT = " << SIGINT << ", sigint)...");
          signal(SIGINT, sigint);
-         sigint = 0;
+         sigintConnected = 0;
       }
       
-      if ((sigterm)) {
+      if ((sigtermConnected)) {
          ERR_LOG_DEBUG("signal(SIGTERM = " << SIGTERM << ", sigterm)...");
          signal(SIGTERM, sigterm);
-         sigterm = 0;
+         sigtermConnected = 0;
       }
    }
-protected:
    static void onSignal(int signum) {
       WebServer* ws = theWebServer();
       ERR_LOG_DEBUG("...onSignal(int signum = " << signum << ")");
@@ -148,7 +163,15 @@ protected:
          ERR_LOG_DEBUG("...ws->stopService()");
       }
    }
+   static Signal& theSigtermConnected() {
+      static Signal s = 0;
+      return s;
+   }
    static Signal& theSigterm() {
+      static Signal s = 0;
+      return s;
+   }
+   static Signal& theSigintConnected() {
       static Signal s = 0;
       return s;
    }
@@ -159,6 +182,20 @@ protected:
    static WebServer*& theWebServer() {
       static WebServer* ws = 0;
       return ws;
+   }
+
+public:
+   static int main(int argc, char_t** argv, char_t** env) {
+      int err = 0;
+
+      ERR_LOG_DEBUG("main.connectSignals()...");
+      connectSignals();
+
+      err = Extends::main(argc, argv, env);
+      
+      ERR_LOG_DEBUG("main.disconnectSignals()...");
+      disconnectSignals();
+      return err;
    }
 
 protected:
