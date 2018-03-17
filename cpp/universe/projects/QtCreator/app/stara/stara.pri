@@ -38,7 +38,7 @@ stara_exe_HEADERS += \
 $${STARA_SRC}/universe/protocol/http/daemon/libnavajo/WebServer.h \
 $${STARA_SRC}/universe/protocol/http/daemon/libnavajo/WebRepository.h \
 $${STARA_SRC}/universe/protocol/http/daemon/libnavajo/WebSignals.h \
-$${STARA_SRC}/universe/protocol/http/daemon/libnavajo/Main.h \
+$${STARA_SRC}/universe/protocol/http/daemon/libnavajo/libnavajo.h \
 $${STARA_SRC}/universe/console/Main.h \
 $${STARA_SRC}/universe/console/Logger.h \
 $${STARA_SRC}/universe/console/Io.h \
@@ -60,6 +60,7 @@ $${STARA_SRC}/universe/protocol/http/daemon/libnavajo/WebServer.cpp \
 $${STARA_SRC}/universe/protocol/http/daemon/libnavajo/WebRepository.cpp \
 $${STARA_SRC}/universe/protocol/http/daemon/libnavajo/WebSignals.cpp \
 $${STARA_SRC}/universe/protocol/http/daemon/libnavajo/Main.cpp \
+$${STARA_SRC}/universe/protocol/http/daemon/libnavajo/libnavajo.cpp \
 $${STARA_SRC}/universe/console/Logger.cpp \
 $${STARA_SRC}/universe/console/Io.cpp \
 $${STARA_SRC}/universe/mt/posix/Mutex.cpp \
