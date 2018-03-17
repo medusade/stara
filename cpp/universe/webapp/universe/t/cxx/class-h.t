@@ -102,24 +102,19 @@ template
 <%parse(%Template%,;,,%(,
  )%,,%(%Template%)%,Template)%>
 )%)%
-class %Class%%if(%or(%Implements%,%Extends%)%,%(
-: )%,)%%then-if(%Implements%,%(virtual %if-then(%ImplementsAccess%, )%)%)%%
+class %Class%%if(%or(%Implements%,%Extends%)%,%(: )%,)%%then-if(%Implements%,%(virtual %if-then(%ImplementsAccess%, )%)%)%%
 %%if(%and(%Implements%,%Extends%)%,%(, )%)%%
-%%then-if(%Extends%,%(%if-then(%ExtendsAccess%, )%)%)%
-{
+%%then-if(%Extends%,%(%if-then(%ExtendsAccess%, )%)%)% {
 public:
 %if(%Implements%,%(   typedef %Implements% Implements;
 )%)%%if(%Extends%,%(   typedef %Extends% Extends;
 )%)%%if(%or(%Implements%,%Extends%)%,
 )%%if(%Constructor%%Destructor%,%(%
-%%if(%Constructor%,%(   %else-yes(%Constructor%,%(%Constructor% )%)%%Class%(const %Class%& copy)
-   {
+%%if(%Constructor%,%(   %else-yes(%Constructor%,%(%Constructor% )%)%%Class%(const %Class%& copy) {
    }
-   %Class%()
-   {
+   %Class%() {
    }
-)%)%%if(%Destructor%,%(   %else-yes(%Destructor%,%(%Destructor% )%)%~%Class%()
-   {
+)%)%%if(%Destructor%,%(   %else-yes(%Destructor%,%(%Destructor% )%)%~%Class%() {
    }
 )%)%)%)%};
 

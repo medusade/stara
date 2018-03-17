@@ -38,8 +38,7 @@ namespace libnavajo {
 //
 // Class: WebSignals
 //
-class WebSignals
-{
+class WebSignals {
 public:%
 %%parse(%methods%,%(, )%,,,,%(%
 %%with(%
@@ -50,23 +49,29 @@ public:%
    // %METHOD%
    //
    virtual bool process_%METHOD%_Request(HttpRequest* request, HttpResponse *response) {
+      bool success = false;
       WebSignals* forwardTo = signalsForwardTo();
       if ((forwardTo)) {
          LOG_DEBUG("forwardTo->process_%METHOD%_Request(request, response)...");
-         return forwardTo->process_%METHOD%_Request(request, response);
+         success = forwardTo->process_%METHOD%_Request(request, response);
+         LOG_DEBUG("..." << BoolToString(success) << " = forwardTo->process_%METHOD%_Request(request, response)");
+      } else {
+        LOG_DEBUG("..." << BoolToString(success) << " = process_%METHOD%_Request(request, response)");
       }
-      LOG_DEBUG("process_%METHOD%_Request(request, response)...");
-      return false;
+      return success;
    })%)%%
 %)%,method)%
    virtual bool processRequest(HttpRequest* request, HttpResponse *response) {
+      bool success = false;
       WebSignals* forwardTo = signalsForwardTo();
       if ((forwardTo)) {
          LOG_DEBUG("forwardTo->processRequest(request, response)...");
-         return forwardTo->processRequest(request, response);
+         success = forwardTo->processRequest(request, response);
+         LOG_DEBUG("..." << BoolToString(success) << " = forwardTo->processRequest(request, response)");
+      } else {
+        LOG_DEBUG("processRequest(request, response)...");
       }
-      LOG_DEBUG("processRequest(request, response)...");
-      return false;
+      return success;
    }
    virtual WebSignals* forwardSignalsTo(WebSignals* to) {
       return 0;
