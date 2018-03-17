@@ -50,18 +50,14 @@ public:
    typedef Main Derives;
 
    Main(Locked& locked)
-   : Extends(locked), _run(0), _port(8080)
-   {
+   : Extends(locked), _run(0), _port(8080) {
    }
-   Main(): _run(0), _port(8080)
-   {
+   Main(): _run(0), _port(8080) {
    }
-   virtual ~Main()
-   {
+   virtual ~Main() {
    }
 private:
-   Main(const Main& copy)
-   {
+   Main(const Main& copy) {
    }
 
 protected:
@@ -78,13 +74,14 @@ protected:
    virtual int runStart(int argc, char_t** argv, char_t** env) {
       int err = 0;
       try {
-         WebServer*& ws = theWebServer();
+         WebServer*& tws = theWebServer();
+         ForwardedWebServer* ws = 0;
 
-         if ((ws = new WebServer)) {
+         if ((tws = (ws = ForwardedWebServer::createInstance()))) {
             WebRepository* wr = 0;
 
-            if ((wr = ws->newWebRepositoryForwardTo(ws))) {
-               ws->forwardRequestsTo(this);
+            if ((wr = ws->createRepositoryForwardTo(ws))) {
+               ws->forwardSignalsTo(this);
                ws->addRepository(wr);
                ws->setServerPort(port());
                ws->startService();
@@ -99,11 +96,6 @@ protected:
       return err;
    }
 
-   virtual bool processRequest(HttpRequest* request, HttpResponse *response) {
-      LOG_DEBUG("-->processRequest(HttpRequest* request, HttpResponse *response)");
-      LOG_DEBUG("<--processRequest(HttpRequest* request, HttpResponse *response)");
-      return false;
-   }
    virtual bool process_GET_Request(HttpRequest* request, HttpResponse *response) {
       LOG_DEBUG("-->process_GET_Request(HttpRequest* request, HttpResponse *response)");
       LOG_DEBUG("<--process_GETRequest(HttpRequest* request, HttpResponse *response)");

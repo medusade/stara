@@ -40,9 +40,7 @@ template
  class TIoExtend = IoExtendT<TChar>,
  class TImplements = TIo, class TExtends = TIoExtend>
 
-class MainT
-: virtual public TImplements, public TExtends
-{
+class MainT: virtual public TImplements, public TExtends {
 public:
    typedef TImplements Implements;
    typedef TExtends Extends;
@@ -50,24 +48,21 @@ public:
    typedef TChar char_t;
    typedef StringT<char_t> string_t;
 
-   MainT(Locked& locked): Extends(locked), _didRun(false)
-   {
+   MainT(Locked& locked): Extends(locked), _didRun(false) {
       MainT*& main = MainT::main();
       if (!(main)) {
          main = this;
       } else {
       }
    }
-   MainT(): _didRun(false)
-   {
+   MainT(): _didRun(false) {
       MainT*& main = MainT::main();
       if (!(main)) {
          main = this;
       } else {
       }
    }
-   virtual ~MainT()
-   {
+   virtual ~MainT() {
       MainT*& main = MainT::main();
       if ((main) && (this == main)) {
          main = 0;
@@ -78,8 +73,7 @@ public:
       }
    }
 private:
-   MainT(const MainT& copy)
-   {
+   MainT(const MainT& copy) {
    }
 
 protected:
@@ -180,9 +174,7 @@ enum {
 //
 // Class: MainOpt
 //
-class MainOpt
-: virtual public ImplementBase
-{
+class MainOpt: virtual public ImplementBase {
 public:
    typedef ImplementBase Implements;
 
@@ -330,18 +322,14 @@ public:
    typedef MainImplement Implements;
    typedef MainExtend Extends;
 
-   Main(Locked& locked): Extends(locked), _didUsage(false)
-   {
+   Main(Locked& locked): Extends(locked), _didUsage(false) {
    }
-   Main(): _didUsage(false)
-   {
+   Main(): _didUsage(false) {
    }
-   virtual ~Main()
-   {
+   virtual ~Main() {
    }
 private:
-   Main(const Main& copy)
-   {
+   Main(const Main& copy) {
    }
 
 protected:

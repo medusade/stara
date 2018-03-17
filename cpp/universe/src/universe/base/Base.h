@@ -59,11 +59,9 @@ inline mseconds_t nseconds_mseconds
 //
 // Class: ImplementBase
 //
-class ImplementBase
-{
+class ImplementBase {
 public:
-   virtual ~ImplementBase()
-   {
+   virtual ~ImplementBase() {
    }
 };
 
@@ -73,20 +71,15 @@ public:
 //
 // Class: Base
 //
-class Base
-: virtual public ImplementBase
-{
+class Base: virtual public ImplementBase {
 public:
    typedef ImplementBase Implements;
 
-   Base(const Base& copy)
-   {
+   Base(const Base& copy) {
    }
-   Base()
-   {
+   Base() {
    }
-   virtual ~Base()
-   {
+   virtual ~Base() {
    }
 };
 
@@ -102,90 +95,85 @@ template
  class TStringStream = ::std::basic_stringstream<TChar>,
  class TImplements = ImplementBase, class TExtends = TString>
 
-class StringT
-: virtual public TImplements, public TExtends
-{
+class StringT: virtual public TImplements, public TExtends {
 public:
    typedef TImplements Implements;
    typedef TExtends Extends;
 
-   StringT(const TChar* chars, size_t length): Extends(chars, length)
-   {
+   StringT(const TChar* chars, size_t length): Extends(chars, length) {
    }
-   StringT(const TChar* chars): Extends(chars)
-   {
+   StringT(const TChar* chars): Extends(chars) {
    }
-   StringT(const Extends& copy): Extends(copy)
-   {
+   StringT(const Extends& copy): Extends(copy) {
    }
-   StringT(const StringT& copy): Extends(copy)
-   {
+   StringT(const StringT& copy): Extends(copy) {
    }
-   StringT()
-   {
+   StringT() {
    }
-   virtual ~StringT()
-   {
+   virtual ~StringT() {
    }
    
-   virtual StringT& assignSigned(signed to) 
-   {
+   virtual StringT& assignBool(bool to) {
+      this->clear();
+      this->appendBool(to);
+      return *this;
+   }
+   virtual StringT& appendBool(bool to) {
+      const char 
+         trueChars[] = {(char_t)'t', (char_t)'r', (char_t)'u', (char_t)'e', 0},
+         falseChars[] = {(char_t)'f', (char_t)'a', (char_t)'l', (char_t)'s', (char_t)'e', 0};
+      this->append((to?trueChars:falseChars));
+      return *this;
+   }
+   
+   virtual StringT& assignSigned(signed to) {
       this->clear();
       this->appendSigned(to);
       return *this;
    }
-   virtual StringT& assignUnsigned(unsigned to) 
-   {
+   virtual StringT& assignUnsigned(unsigned to) {
       this->clear();
       this->appendUnsigned(to);
       return *this;
    }
 
-   virtual StringT& appendSigned(signed to) 
-   {
+   virtual StringT& appendSigned(signed to) {
       TStringStream ss;
       ss << to;
       this->append(ss.str());
       return *this;
    }
-   virtual StringT& appendUnsigned(unsigned to) 
-   {
+   virtual StringT& appendUnsigned(unsigned to) {
       TStringStream ss;
       ss << to;
       this->append(ss.str());
       return *this;
    }
 
-   virtual signed toSigned() const 
-   {
+   virtual signed toSigned() const {
       signed to = 0;      
       TStringStream(*this) >> to;
       return to;
    }
-   virtual unsigned toUnsigned() const 
-   {
+   virtual unsigned toUnsigned() const  {
       unsigned to = 0;      
       TStringStream(*this) >> to;
       return to;
    }
 
-   virtual StringT& operator << (signed to) 
-   {
+   virtual StringT& operator << (signed to) {
       this->appendSigned(to);
       return *this;
    }
-   virtual StringT& operator << (unsigned to) 
-   {
+   virtual StringT& operator << (unsigned to) {
       this->appendUnsigned(to);
       return *this;
    }
    
-   virtual operator signed() const 
-   {
+   virtual operator signed() const {
       return this->toSigned();
    }
-   virtual operator unsigned() const 
-   {
+   virtual operator unsigned() const {
       return this->toUnsigned();
    }
    
@@ -218,6 +206,29 @@ typedef StringT<word_t> WordString;
 ///////////////////////////////////////////////////////////////////////
 
 //
+// Class: BoolToStringT
+//
+template 
+<typename TChar = char, class TString = StringT<TChar>,
+ class TImplements = ImplementBase, class TExtends = TString>
+
+class BoolToStringT: virtual public TImplements, public TExtends {
+public:
+   typedef TImplements Implements;
+   typedef TExtends Extends;
+
+   BoolToStringT(const bool& to) {
+      this->appendBool(to);
+   }
+   BoolToStringT(const BoolToStringT& copy): Extends(copy) {
+   }
+};
+typedef BoolToStringT<char> BoolToString;
+
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+
+//
 // Enum: ExceptionReason
 //
 enum ExceptionReason {
@@ -228,8 +239,7 @@ enum ExceptionReason {
 // Function: exceptionToChars
 //
 template <typename TReason>
-inline const char* exceptionToChars(TReason reason) 
-{
+inline const char* exceptionToChars(TReason reason) {
    return "ExceptionFailed";
 }
 
@@ -241,9 +251,7 @@ template
  typename TChar = char, class TString = ::std::basic_string<TChar>,
  class TImplements = ImplementBase, class TExtends = Base>
 
-class ExceptionT
-: virtual public TImplements, public TExtends
-{
+class ExceptionT: virtual public TImplements, public TExtends {
 public:
    typedef TImplements Implements;
    typedef TExtends Extends;
@@ -252,59 +260,46 @@ public:
    typedef TReason Which;
    typedef TChar char_t;
 
-   ExceptionT(TReason reason): _reason(reason)
-   {
+   ExceptionT(TReason reason): _reason(reason) {
    }
-   ExceptionT(const ExceptionT& copy)
-   {
+   ExceptionT(const ExceptionT& copy) {
    }
-   virtual ~ExceptionT()
-   {
+   virtual ~ExceptionT() {
    }
 
-   virtual Which setWhich(Which to) 
-   {
+   virtual Which setWhich(Which to) {
       return setReason(to);
    }
-   virtual Which which() const 
-   {
+   virtual Which which() const {
       return reason();
    }
 
-   virtual Status setStatus(Status to) 
-   {
+   virtual Status setStatus(Status to) {
       return setReason(to);
    }
-   virtual Status status() const 
-   {
+   virtual Status status() const {
       return reason();
    }
 
-   virtual TReason setReason(TReason to) 
-   {
+   virtual TReason setReason(TReason to) {
       _reason = to;
       return _reason;
    }
-   virtual TReason reason() const 
-   {
+   virtual TReason reason() const {
       return _reason;
    }
-   virtual TString reasonToString() const 
-   {
+   virtual TString reasonToString() const {
       TString to(this->reasonToChars());
       return to;
    }
-   virtual const TChar* reasonToChars() const 
-   {
+   virtual const TChar* reasonToChars() const {
       return this->toChars();
    }
-   virtual const TChar* toChars() const 
-   {
+   virtual const TChar* toChars() const {
       const TChar* chars = exceptionToChars(_reason);
       return chars;
    }
-   virtual operator const TChar*() const 
-   {
+   virtual operator const TChar*() const {
       return this->toChars();
    }
 
@@ -322,9 +317,7 @@ typedef ExceptionT<> Exception;
 template 
 <class TImplements = ImplementBase>
 
-class LoggedT
-: virtual public TImplements
-{
+class LoggedT: virtual public TImplements {
 public:
    typedef TImplements Implements;
    

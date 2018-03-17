@@ -30,34 +30,80 @@ namespace daemon {
 namespace libnavajo {
 
 typedef WebRepository WebServerImplements;
-typedef ::WebServer WebServerExtends;
+typedef ::libnavajo::WebServer WebServerExtends;
 //
 // Class: WebServer
 //
 class WebServer
-: virtual public WebServerImplements, public WebServerExtends
-{
+: virtual public WebServerImplements, public WebServerExtends {
 public:
    typedef WebServerImplements Implements;
    typedef WebServerExtends Extends;
 
-   WebServer(): _requestsForwardTo(0), _signalsForwardTo(0)
-   {
+   WebServer() {
    }
-   virtual ~WebServer()
-   {
+   virtual ~WebServer() {
+   }
+};
+
+typedef WebServerImplements ForwardedWebServerImplements;
+typedef WebServer ForwardedWebServerExtends;
+//
+// Class: ForwardedWebServer
+//
+class ForwardedWebServer
+: virtual public ForwardedWebServerImplements, public ForwardedWebServerExtends {
+public:
+   typedef ForwardedWebServerImplements Implements;
+   typedef ForwardedWebServerExtends Extends;
+
+   ForwardedWebServer
+   (WebRepository* requestsForwardTo, WebSignals* signalsForwardTo)
+   : _requestsForwardTo(requestsForwardTo), 
+     _signalsForwardTo(signalsForwardTo) {
+   }
+   ForwardedWebServer(WebRepository* requestsForwardTo)
+   : _requestsForwardTo(requestsForwardTo), _signalsForwardTo(0) {
+   }
+   ForwardedWebServer(WebSignals* signalsForwardTo)
+   : _requestsForwardTo(0), _signalsForwardTo(signalsForwardTo) {
+   }
+   ForwardedWebServer()
+   : _requestsForwardTo(0), _signalsForwardTo(0) {
+   }
+   virtual ~ForwardedWebServer() {
    }
 private:
-   WebServer(const WebServer& copy)
-   : _requestsForwardTo(0), _signalsForwardTo(0)
-   {
+   ForwardedWebServer(const ForwardedWebServer& copy)
+   : _requestsForwardTo(0), _signalsForwardTo(0) {
    }
 
 public:
-   virtual WebRepository* newWebRepositoryForwardTo(WebRepository* to) {
+   static ForwardedWebServer* createInstance
+   (WebRepository* requestsForwardTo, WebSignals* signalsForwardTo) {
+      ForwardedWebServer* wr = new ForwardedWebServer(requestsForwardTo, signalsForwardTo);
+      return wr;
+   }
+   static ForwardedWebServer* createInstance
+   (WebRepository* requestsForwardTo) {
+      ForwardedWebServer* wr = new ForwardedWebServer(requestsForwardTo);
+      return wr;
+   }
+   static ForwardedWebServer* createInstance
+   (WebSignals* signalsForwardTo) {
+      ForwardedWebServer* wr = new ForwardedWebServer(signalsForwardTo);
+      return wr;
+   }
+   static ForwardedWebServer* createInstance() {
+      ForwardedWebServer* wr = new ForwardedWebServer();
+      return wr;
+   }
+
+   virtual ForwardedWebRepository* createRepositoryForwardTo(WebRepository* to) {
       ForwardedWebRepository* wr = 0;
-      if ((wr = new ForwardedWebRepository)) {
+      if ((wr = ForwardedWebRepository::createInstance())) {
          wr->forwardRequestsTo(to);
+         wr->forwardSignalsTo(to);
       }
       return wr;
    }
@@ -86,6 +132,7 @@ protected:
       if ((forwardTo)) {
          LOG_DEBUG("forwardTo->processRequest(request, response)...");
          success = forwardTo->processRequest(request, response);
+         LOG_DEBUG("..." << BoolToString(success) << " = forwardTo->processRequest(request, response)");
       }
       if (!(success) && (request)) {
          switch (request->getRequestType()) {
@@ -106,6 +153,12 @@ protected:
             break;
          case PATCH_METHOD: 
             success = process_PATCH_Request(request, response);
+            break;
+         case TRACE_METHOD: 
+            success = process_OPTIONS_Request(request, response);
+            break;
+         case CONNECT_METHOD: 
+            success = process_OPTIONS_Request(request, response);
             break;
          case OPTIONS_METHOD: 
             success = process_OPTIONS_Request(request, response);

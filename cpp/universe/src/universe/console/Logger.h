@@ -32,15 +32,12 @@ typedef logger::Base LoggerExtends;
 //
 // Class: Logger
 //
-class Logger
-: virtual public LoggerImplements, public LoggerExtends
-{
+class Logger: virtual public LoggerImplements, public LoggerExtends {
 public:
    typedef LoggerImplements Implements;
    typedef LoggerExtends Extends;
 
-   Logger(Io& io): Extends(io), _io(io)
-   {
+   Logger(Io& io): Extends(io), _io(io) {
    }
 
    virtual void log(const char* chars, size_t length) {

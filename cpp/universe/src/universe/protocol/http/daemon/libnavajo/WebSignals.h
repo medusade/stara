@@ -14,15 +14,14 @@
 //   File: WebSignals.h
 //
 // Author: $author$
-//   Date: 12/5/2017
+//   Date: 12/6/2017
 //
 // Copyright (c) 2017 $organization$
 //
 #ifndef _UNIVERSE_PROTOCOL_HTTP_DAEMON_LIBNAVAJO_WEBSIGNALS_H
 #define _UNIVERSE_PROTOCOL_HTTP_DAEMON_LIBNAVAJO_WEBSIGNALS_H
 
-#include "universe/logger/Interface.h"
-#include "libnavajo/libnavajo.hh"
+#include "universe/protocol/http/daemon/libnavajo/libnavajo.h"
 
 namespace universe {
 namespace protocol {
@@ -33,149 +32,184 @@ namespace libnavajo {
 //
 // Class: WebSignals
 //
-class WebSignals
-{
+class WebSignals {
 public:
    //
    // GET
    //
    virtual bool process_GET_Request(HttpRequest* request, HttpResponse *response) {
+      bool success = false;
       WebSignals* forwardTo = signalsForwardTo();
       if ((forwardTo)) {
          LOG_DEBUG("forwardTo->process_GET_Request(request, response)...");
-         return forwardTo->process_GET_Request(request, response);
+         success = forwardTo->process_GET_Request(request, response);
+         LOG_DEBUG("..." << BoolToString(success) << " = forwardTo->process_GET_Request(request, response)");
+      } else {
+        LOG_DEBUG("..." << BoolToString(success) << " = process_GET_Request(request, response)");
       }
-      LOG_DEBUG("process_GET_Request(request, response)...");
-      return false;
+      return success;
    }
    //
    // POST
    //
    virtual bool process_POST_Request(HttpRequest* request, HttpResponse *response) {
+      bool success = false;
       WebSignals* forwardTo = signalsForwardTo();
       if ((forwardTo)) {
          LOG_DEBUG("forwardTo->process_POST_Request(request, response)...");
-         return forwardTo->process_POST_Request(request, response);
+         success = forwardTo->process_POST_Request(request, response);
+         LOG_DEBUG("..." << BoolToString(success) << " = forwardTo->process_POST_Request(request, response)");
+      } else {
+        LOG_DEBUG("..." << BoolToString(success) << " = process_POST_Request(request, response)");
       }
-      LOG_DEBUG("process_POST_Request(request, response)...");
-      return false;
+      return success;
    }
    //
    // PUT
    //
    virtual bool process_PUT_Request(HttpRequest* request, HttpResponse *response) {
+      bool success = false;
       WebSignals* forwardTo = signalsForwardTo();
       if ((forwardTo)) {
          LOG_DEBUG("forwardTo->process_PUT_Request(request, response)...");
-         return forwardTo->process_PUT_Request(request, response);
+         success = forwardTo->process_PUT_Request(request, response);
+         LOG_DEBUG("..." << BoolToString(success) << " = forwardTo->process_PUT_Request(request, response)");
+      } else {
+        LOG_DEBUG("..." << BoolToString(success) << " = process_PUT_Request(request, response)");
       }
-      LOG_DEBUG("process_PUT_Request(request, response)...");
-      return false;
+      return success;
    }
    //
    // DELETE
    //
    virtual bool process_DELETE_Request(HttpRequest* request, HttpResponse *response) {
+      bool success = false;
       WebSignals* forwardTo = signalsForwardTo();
       if ((forwardTo)) {
          LOG_DEBUG("forwardTo->process_DELETE_Request(request, response)...");
-         return forwardTo->process_DELETE_Request(request, response);
+         success = forwardTo->process_DELETE_Request(request, response);
+         LOG_DEBUG("..." << BoolToString(success) << " = forwardTo->process_DELETE_Request(request, response)");
+      } else {
+        LOG_DEBUG("..." << BoolToString(success) << " = process_DELETE_Request(request, response)");
       }
-      LOG_DEBUG("process_DELETE_Request(request, response)...");
-      return false;
+      return success;
    }
    //
    // UPDATE
    //
    virtual bool process_UPDATE_Request(HttpRequest* request, HttpResponse *response) {
+      bool success = false;
       WebSignals* forwardTo = signalsForwardTo();
       if ((forwardTo)) {
          LOG_DEBUG("forwardTo->process_UPDATE_Request(request, response)...");
-         return forwardTo->process_UPDATE_Request(request, response);
+         success = forwardTo->process_UPDATE_Request(request, response);
+         LOG_DEBUG("..." << BoolToString(success) << " = forwardTo->process_UPDATE_Request(request, response)");
+      } else {
+        LOG_DEBUG("..." << BoolToString(success) << " = process_UPDATE_Request(request, response)");
       }
-      LOG_DEBUG("process_UPDATE_Request(request, response)...");
-      return false;
+      return success;
    }
    //
    // PATCH
    //
    virtual bool process_PATCH_Request(HttpRequest* request, HttpResponse *response) {
+      bool success = false;
       WebSignals* forwardTo = signalsForwardTo();
       if ((forwardTo)) {
          LOG_DEBUG("forwardTo->process_PATCH_Request(request, response)...");
-         return forwardTo->process_PATCH_Request(request, response);
+         success = forwardTo->process_PATCH_Request(request, response);
+         LOG_DEBUG("..." << BoolToString(success) << " = forwardTo->process_PATCH_Request(request, response)");
+      } else {
+        LOG_DEBUG("..." << BoolToString(success) << " = process_PATCH_Request(request, response)");
       }
-      LOG_DEBUG("process_PATCH_Request(request, response)...");
-      return false;
+      return success;
    }
    //
    // TRACE
    //
    virtual bool process_TRACE_Request(HttpRequest* request, HttpResponse *response) {
+      bool success = false;
       WebSignals* forwardTo = signalsForwardTo();
       if ((forwardTo)) {
          LOG_DEBUG("forwardTo->process_TRACE_Request(request, response)...");
-         return forwardTo->process_TRACE_Request(request, response);
+         success = forwardTo->process_TRACE_Request(request, response);
+         LOG_DEBUG("..." << BoolToString(success) << " = forwardTo->process_TRACE_Request(request, response)");
+      } else {
+        LOG_DEBUG("..." << BoolToString(success) << " = process_TRACE_Request(request, response)");
       }
-      LOG_DEBUG("process_TRACE_Request(request, response)...");
-      return false;
+      return success;
    }
    //
    // CONNECT
    //
    virtual bool process_CONNECT_Request(HttpRequest* request, HttpResponse *response) {
+      bool success = false;
       WebSignals* forwardTo = signalsForwardTo();
       if ((forwardTo)) {
          LOG_DEBUG("forwardTo->process_CONNECT_Request(request, response)...");
-         return forwardTo->process_CONNECT_Request(request, response);
+         success = forwardTo->process_CONNECT_Request(request, response);
+         LOG_DEBUG("..." << BoolToString(success) << " = forwardTo->process_CONNECT_Request(request, response)");
+      } else {
+        LOG_DEBUG("..." << BoolToString(success) << " = process_CONNECT_Request(request, response)");
       }
-      LOG_DEBUG("process_CONNECT_Request(request, response)...");
-      return false;
+      return success;
    }
    //
    // OPTIONS
    //
    virtual bool process_OPTIONS_Request(HttpRequest* request, HttpResponse *response) {
+      bool success = false;
       WebSignals* forwardTo = signalsForwardTo();
       if ((forwardTo)) {
          LOG_DEBUG("forwardTo->process_OPTIONS_Request(request, response)...");
-         return forwardTo->process_OPTIONS_Request(request, response);
+         success = forwardTo->process_OPTIONS_Request(request, response);
+         LOG_DEBUG("..." << BoolToString(success) << " = forwardTo->process_OPTIONS_Request(request, response)");
+      } else {
+        LOG_DEBUG("..." << BoolToString(success) << " = process_OPTIONS_Request(request, response)");
       }
-      LOG_DEBUG("process_OPTIONS_Request(request, response)...");
-      return false;
+      return success;
    }
    //
    // HEAD
    //
    virtual bool process_HEAD_Request(HttpRequest* request, HttpResponse *response) {
+      bool success = false;
       WebSignals* forwardTo = signalsForwardTo();
       if ((forwardTo)) {
          LOG_DEBUG("forwardTo->process_HEAD_Request(request, response)...");
-         return forwardTo->process_HEAD_Request(request, response);
+         success = forwardTo->process_HEAD_Request(request, response);
+         LOG_DEBUG("..." << BoolToString(success) << " = forwardTo->process_HEAD_Request(request, response)");
+      } else {
+        LOG_DEBUG("..." << BoolToString(success) << " = process_HEAD_Request(request, response)");
       }
-      LOG_DEBUG("process_HEAD_Request(request, response)...");
-      return false;
+      return success;
    }
    //
    // UNKNOWN
    //
    virtual bool process_UNKNOWN_Request(HttpRequest* request, HttpResponse *response) {
+      bool success = false;
       WebSignals* forwardTo = signalsForwardTo();
       if ((forwardTo)) {
          LOG_DEBUG("forwardTo->process_UNKNOWN_Request(request, response)...");
-         return forwardTo->process_UNKNOWN_Request(request, response);
+         success = forwardTo->process_UNKNOWN_Request(request, response);
+         LOG_DEBUG("..." << BoolToString(success) << " = forwardTo->process_UNKNOWN_Request(request, response)");
+      } else {
+        LOG_DEBUG("..." << BoolToString(success) << " = process_UNKNOWN_Request(request, response)");
       }
-      LOG_DEBUG("process_UNKNOWN_Request(request, response)...");
-      return false;
+      return success;
    }
    virtual bool processRequest(HttpRequest* request, HttpResponse *response) {
+      bool success = false;
       WebSignals* forwardTo = signalsForwardTo();
       if ((forwardTo)) {
          LOG_DEBUG("forwardTo->processRequest(request, response)...");
-         return forwardTo->processRequest(request, response);
+         success = forwardTo->processRequest(request, response);
+         LOG_DEBUG("..." << BoolToString(success) << " = forwardTo->processRequest(request, response)");
+      } else {
+        LOG_DEBUG("processRequest(request, response)...");
       }
-      LOG_DEBUG("processRequest(request, response)...");
-      return false;
+      return success;
    }
    virtual WebSignals* forwardSignalsTo(WebSignals* to) {
       return 0;

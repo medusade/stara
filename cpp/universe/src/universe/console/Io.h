@@ -38,9 +38,7 @@ template
  class TLocked = Locked,
  class TImplements = TLocked>
 
-class IoT
-: virtual public TImplements
-{
+class IoT: virtual public TImplements {
 public:
    typedef TImplements Implements;
    typedef IoT IoBase;
@@ -409,9 +407,7 @@ typedef IoT<char> IoImplements;
 //
 // Class: Io
 //
-class Io
-: virtual public IoImplements
-{
+class Io: virtual public IoImplements {
 public:
    typedef IoImplements Implements;
    typedef typename Implements::IoBase IoBase;
@@ -450,25 +446,19 @@ template
 <typename TChar = char, class TIo = IoT<TChar>, 
  class TImplements = TIo, class TExtends = Base>
 
-class IoExtendT
-: virtual public TImplements, public TExtends
-{
+class IoExtendT: virtual public TImplements, public TExtends {
 public:
    typedef TImplements Implements;
    typedef TExtends Extends;
    typedef typename Implements::IoBase IoBase;
 
-   IoExtendT(Locked& locked): _locked(locked)
-   {
+   IoExtendT(Locked& locked): _locked(locked) {
    }
-   IoExtendT(const IoExtendT& copy): _locked(_unlocked)
-   {
+   IoExtendT(const IoExtendT& copy): _locked(_unlocked) {
    }
-   IoExtendT(): _locked(_unlocked)
-   {
+   IoExtendT(): _locked(_unlocked) {
    }
-   virtual ~IoExtendT()
-   {
+   virtual ~IoExtendT() {
    }
    
    virtual bool lock() { 
@@ -502,35 +492,29 @@ template
  class TIoExtend = IoExtendT<TChar, TIo>, 
  class TImplements = TIo, class TExtends = TIoExtend>
 
-class IoInstanceT
-: virtual public TImplements, public TExtends
-{
+class IoInstanceT: virtual public TImplements, public TExtends {
 public:
    typedef TImplements Implements;
    typedef TExtends Extends;
    typedef typename Implements::IoBase IoBase;
 
    IoInstanceT(Locked& locked)
-   : Extends(locked), _theIo(IoBase::theIo())
-   {
+   : Extends(locked), _theIo(IoBase::theIo()) {
       IoBase*& theIoSet = IoBase::theIoSet();
       theIoSet = this;
    }
-   IoInstanceT(): _theIo(IoBase::theIo())
-   {
+   IoInstanceT(): _theIo(IoBase::theIo()) {
       IoBase*& theIoSet = IoBase::theIoSet();
       theIoSet = this;
    }
-   virtual ~IoInstanceT()
-   {
+   virtual ~IoInstanceT() {
       IoBase*& theIoSet = IoBase::theIoSet();
       if (this == (theIoSet)) {
          theIoSet = _theIo;
       }
    }
 private:
-   IoInstanceT(const IoInstanceT& copy)
-   {
+   IoInstanceT(const IoInstanceT& copy) {
    }
 
 protected:

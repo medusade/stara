@@ -29,14 +29,13 @@ namespace http {
 namespace daemon {
 namespace libnavajo {
 
-typedef ::WebRepository WebRepositoryImplements;
+typedef ::libnavajo::WebRepository WebRepositoryImplements;
 typedef WebSignals WebSignalsImplements;
 //
 // Class: WebRepository
 //
 class WebRepository
-: virtual public WebRepositoryImplements, virtual public WebSignalsImplements
-{
+: virtual public WebRepositoryImplements, virtual public WebSignalsImplements {
 public:
    typedef WebRepositoryImplements RepositoryImplements;
    typedef WebSignalsImplements SignalsImplements;
@@ -73,25 +72,52 @@ typedef WebRepository ForwardedWebRepositoryImplements;
 // Class: ForwardedWebRepository
 //
 class ForwardedWebRepository
-: virtual public ForwardedWebRepositoryImplements
-{
+: virtual public ForwardedWebRepositoryImplements {
 public:
    typedef ForwardedWebRepositoryImplements Implements;
 
-   ForwardedWebRepository()
-   : _requestsForwardTo(0), _signalsForwardTo(0)
-   {
+   ForwardedWebRepository
+   (WebRepository* requestsForwardTo, WebSignals* signalsForwardTo)
+   : _requestsForwardTo(requestsForwardTo), 
+     _signalsForwardTo(signalsForwardTo) {
    }
-   virtual ~ForwardedWebRepository()
-   {
+   ForwardedWebRepository(WebRepository* requestsForwardTo)
+   : _requestsForwardTo(requestsForwardTo), _signalsForwardTo(0) {
+   }
+   ForwardedWebRepository(WebSignals* signalsForwardTo)
+   : _requestsForwardTo(0), _signalsForwardTo(signalsForwardTo) {
+   }
+   ForwardedWebRepository()
+   : _requestsForwardTo(0), _signalsForwardTo(0) {
+   }
+   virtual ~ForwardedWebRepository() {
    }
 private:
    ForwardedWebRepository(const ForwardedWebRepository& copy)
-   : _requestsForwardTo(0), _signalsForwardTo(0)
-   {
+   : _requestsForwardTo(0), _signalsForwardTo(0) {
    }
 
 public:
+   static ForwardedWebRepository* createInstance
+   (WebRepository* requestsForwardTo, WebSignals* signalsForwardTo) {
+      ForwardedWebRepository* wr = new ForwardedWebRepository(requestsForwardTo, signalsForwardTo);
+      return wr;
+   }
+   static ForwardedWebRepository* createInstance
+   (WebRepository* requestsForwardTo) {
+      ForwardedWebRepository* wr = new ForwardedWebRepository(requestsForwardTo);
+      return wr;
+   }
+   static ForwardedWebRepository* createInstance
+   (WebSignals* signalsForwardTo) {
+      ForwardedWebRepository* wr = new ForwardedWebRepository(signalsForwardTo);
+      return wr;
+   }
+   static ForwardedWebRepository* createInstance() {
+      ForwardedWebRepository* wr = new ForwardedWebRepository();
+      return wr;
+   }
+
    virtual WebRepository* forwardRequestsTo(WebRepository* to) {
       WebRepository* forwardedTo = _requestsForwardTo;
       _requestsForwardTo = to;
