@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<!--========================================================================-->
+<!-- Copyright (c) 1988-2019 $organization$                                 -->
+<!--                                                                        -->
+<!-- This software is provided by the author and contributors ``as is''     -->
+<!-- and any express or implied warranties, including, but not limited to,  -->
+<!-- the implied warranties of merchantability and fitness for a particular -->
+<!-- purpose are disclaimed. In no event shall the author or contributors   -->
+<!-- be liable for any direct, indirect, incidental, special, exemplary,    -->
+<!-- or consequential damages (including, but not limited to, procurement   -->
+<!-- of substitute goods or services; loss of use, data, or profits; or     -->
+<!-- business interruption) however caused and on any theory of liability,  -->
+<!-- whether in contract, strict liability, or tort (including negligence   -->
+<!-- or otherwise) arising in any way out of the use of this software,      -->
+<!-- even if advised of the possibility of such damage.                     -->
+<!--                                                                        -->
+<!--   File: stara.vsprops                                                  -->
+<!--                                                                        -->
+<!-- Author: $author$                                                       -->
+<!--   Date: 1/1/2019                                                       -->
+<!--========================================================================-->
+<VisualStudioPropertySheet
+    ProjectType="Visual C++"
+    Version="8.00"
+    Name="stara">
+
+    <!--===============================================-->
+
+    <UserMacro
+        Name="STARA_GROUP"
+        Value=""
+    />
+    <UserMacro
+        Name="STARA_NAME"
+        Value="stara"
+    />
+    <UserMacro
+        Name="STARA_VERSION"
+        Value=""
+    />
+
+    <!--===============================================-->
+
+    <UserMacro
+        Name="STARA_DIR"
+        Value="$(STARA_GROUP)$(STARA_NAME)$(STARA_VERSION)"
+    />
+    <UserMacro
+        Name="STARA_SOURCE_DIR"
+        Value="$(SOURCE_ROOT_DIR)/$(STARA_DIR)/src"
+    />
+    <UserMacro
+        Name="STARA_BUILD_DIR"
+        Value="$(SOURCE_BUILD_DIR)/$(STARA_DIR)/build"
+    />
+
+    <!--===============================================-->
+
+    <UserMacro
+        Name="STARA_BUILD"
+        Value="$(STARA_BUILD_DIR)/$(PlatformName)/$(VCVersion)/$(ConfigurationName)"
+    />
+    <UserMacro
+        Name="STARA_OBJ"
+        Value="$(STARA_BUILD)/obj/$(ProjectName)"
+    />
+    <UserMacro
+        Name="STARA_LIB"
+        Value="$(STARA_BUILD)/lib"
+    />
+    <UserMacro
+        Name="STARA_BIN"
+        Value="$(STARA_BUILD)/bin"
+    />
+
+    <!--===============================================-->
+
+    <UserMacro
+        Name="STARA_DEFINES"
+        Value=""
+    />
+    <UserMacro
+        Name="STARA_DEBUG_DEFINES"
+        Value="$(STARA_DEFINES);$(RETE_DEBUG_DEFINES)"
+    />
+    <UserMacro
+        Name="STARA_RELEASE_DEFINES"
+        Value="$(STARA_DEFINES);$(RETE_RELEASE_DEFINES)"
+    />
+
+    <!--===============================================-->
+  
+    <UserMacro
+        Name="STARA_INCLUDE_DIRS"
+        Value="$(STARA_SOURCE_DIR);$(RETE_INCLUDE_DIRS)"
+    />
+    <UserMacro
+        Name="STARA_LIB_DIRS"
+        Value="$(STARA_LIB);$(RETE_LIB_DIRS)"
+    />
+    <UserMacro
+        Name="STARA_LIBS"
+        Value="libstara.lib $(RETE_LIBS)"
+    />
+
+    <!--===============================================-->
+
+</VisualStudioPropertySheet>
