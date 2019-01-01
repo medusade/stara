@@ -1,0 +1,132 @@
+///////////////////////////////////////////////////////////////////////
+/// Copyright (c) 1988-2018 $organization$
+///
+/// This software is provided by the author and contributors ``as is'' 
+/// and any express or implied warranties, including, but not limited to, 
+/// the implied warranties of merchantability and fitness for a particular 
+/// purpose are disclaimed. In no event shall the author or contributors 
+/// be liable for any direct, indirect, incidental, special, exemplary, 
+/// or consequential damages (including, but not limited to, procurement 
+/// of substitute goods or services; loss of use, data, or profits; or 
+/// business interruption) however caused and on any theory of liability, 
+/// whether in contract, strict liability, or tort (including negligence 
+/// or otherwise) arising in any way out of the use of this software, 
+/// even if advised of the possibility of such damage.
+///
+///   File: MainOpt.hpp
+///
+/// Author: $author$
+///   Date: 12/31/2018
+///////////////////////////////////////////////////////////////////////
+#ifndef _STARA_APP_CONSOLE_HELLO_MAINOPT_HPP
+#define _STARA_APP_CONSOLE_HELLO_MAINOPT_HPP
+
+#include "stara/console/getopt/Main.hpp"
+
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+#define STARA_APP_CONSOLE_HELLO_MAIN_CLIENT_OPT "client"
+#define STARA_APP_CONSOLE_HELLO_MAIN_CLIENT_OPTARG_REQUIRED MAIN_OPT_ARGUMENT_NONE
+#define STARA_APP_CONSOLE_HELLO_MAIN_CLIENT_OPTARG_RESULT 0
+#define STARA_APP_CONSOLE_HELLO_MAIN_CLIENT_OPTARG ""
+#define STARA_APP_CONSOLE_HELLO_MAIN_CLIENT_OPTUSE "Run as client"
+#define STARA_APP_CONSOLE_HELLO_MAIN_CLIENT_OPTVAL_S "c"
+#define STARA_APP_CONSOLE_HELLO_MAIN_CLIENT_OPTVAL_C 'c'
+#define STARA_APP_CONSOLE_HELLO_MAIN_CLIENT_OPTION \
+   {STARA_APP_CONSOLE_HELLO_MAIN_CLIENT_OPT, \
+    STARA_APP_CONSOLE_HELLO_MAIN_CLIENT_OPTARG_REQUIRED, \
+    STARA_APP_CONSOLE_HELLO_MAIN_CLIENT_OPTARG_RESULT, \
+    STARA_APP_CONSOLE_HELLO_MAIN_CLIENT_OPTVAL_C}, \
+
+#define STARA_APP_CONSOLE_HELLO_MAIN_SERVER_OPT "server"
+#define STARA_APP_CONSOLE_HELLO_MAIN_SERVER_OPTARG_REQUIRED MAIN_OPT_ARGUMENT_NONE
+#define STARA_APP_CONSOLE_HELLO_MAIN_SERVER_OPTARG_RESULT 0
+#define STARA_APP_CONSOLE_HELLO_MAIN_SERVER_OPTARG ""
+#define STARA_APP_CONSOLE_HELLO_MAIN_SERVER_OPTUSE "Run as server"
+#define STARA_APP_CONSOLE_HELLO_MAIN_SERVER_OPTVAL_S "s"
+#define STARA_APP_CONSOLE_HELLO_MAIN_SERVER_OPTVAL_C 's'
+#define STARA_APP_CONSOLE_HELLO_MAIN_SERVER_OPTION \
+   {STARA_APP_CONSOLE_HELLO_MAIN_SERVER_OPT, \
+    STARA_APP_CONSOLE_HELLO_MAIN_SERVER_OPTARG_REQUIRED, \
+    STARA_APP_CONSOLE_HELLO_MAIN_SERVER_OPTARG_RESULT, \
+    STARA_APP_CONSOLE_HELLO_MAIN_SERVER_OPTVAL_C}, \
+
+#define STARA_APP_CONSOLE_HELLO_MAIN_HOST_OPT "host"
+#define STARA_APP_CONSOLE_HELLO_MAIN_HOST_OPTARG_REQUIRED MAIN_OPT_ARGUMENT_REQUIRED
+#define STARA_APP_CONSOLE_HELLO_MAIN_HOST_OPTARG_RESULT 0
+#define STARA_APP_CONSOLE_HELLO_MAIN_HOST_OPTARG "string"
+#define STARA_APP_CONSOLE_HELLO_MAIN_HOST_OPTUSE "Host name or address"
+#define STARA_APP_CONSOLE_HELLO_MAIN_HOST_OPTVAL_S "o:"
+#define STARA_APP_CONSOLE_HELLO_MAIN_HOST_OPTVAL_C 'o'
+#define STARA_APP_CONSOLE_HELLO_MAIN_HOST_OPTION \
+   {STARA_APP_CONSOLE_HELLO_MAIN_HOST_OPT, \
+    STARA_APP_CONSOLE_HELLO_MAIN_HOST_OPTARG_REQUIRED, \
+    STARA_APP_CONSOLE_HELLO_MAIN_HOST_OPTARG_RESULT, \
+    STARA_APP_CONSOLE_HELLO_MAIN_HOST_OPTVAL_C}, \
+
+#define STARA_APP_CONSOLE_HELLO_MAIN_PORT_OPT "port"
+#define STARA_APP_CONSOLE_HELLO_MAIN_PORT_OPTARG_REQUIRED MAIN_OPT_ARGUMENT_REQUIRED
+#define STARA_APP_CONSOLE_HELLO_MAIN_PORT_OPTARG_RESULT 0
+#define STARA_APP_CONSOLE_HELLO_MAIN_PORT_OPTARG "number"
+#define STARA_APP_CONSOLE_HELLO_MAIN_PORT_OPTUSE "Port number"
+#define STARA_APP_CONSOLE_HELLO_MAIN_PORT_OPTVAL_S "p:"
+#define STARA_APP_CONSOLE_HELLO_MAIN_PORT_OPTVAL_C 'p'
+#define STARA_APP_CONSOLE_HELLO_MAIN_PORT_OPTION \
+   {STARA_APP_CONSOLE_HELLO_MAIN_PORT_OPT, \
+    STARA_APP_CONSOLE_HELLO_MAIN_PORT_OPTARG_REQUIRED, \
+    STARA_APP_CONSOLE_HELLO_MAIN_PORT_OPTARG_RESULT, \
+    STARA_APP_CONSOLE_HELLO_MAIN_PORT_OPTVAL_C}, \
+
+#define STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPT "family"
+#define STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPTARG_REQUIRED MAIN_OPT_ARGUMENT_REQUIRED
+#define STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPTARG_RESULT 0
+#define STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPTARG_LOCAL "local"
+#define STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPTARG_IPV4 "ipv4"
+#define STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPTARG_IPV6 "ipv6"
+#define STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPTARG "{ "\
+    STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPTARG_LOCAL " | " \
+    STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPTARG_IPV4 " | " \
+    STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPTARG_IPV6 " }"
+#define STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPTUSE "Address family"
+#define STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPTVAL_S "f:"
+#define STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPTVAL_C 'f'
+#define STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPTION \
+   {STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPT, \
+    STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPTARG_REQUIRED, \
+    STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPTARG_RESULT, \
+    STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPTVAL_C}, \
+
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+#define STARA_APP_CONSOLE_HELLO_MAIN_OPTIONS_CHARS \
+   STARA_APP_CONSOLE_HELLO_MAIN_CLIENT_OPTVAL_S \
+   STARA_APP_CONSOLE_HELLO_MAIN_SERVER_OPTVAL_S \
+   STARA_APP_CONSOLE_HELLO_MAIN_HOST_OPTVAL_S \
+   STARA_APP_CONSOLE_HELLO_MAIN_PORT_OPTVAL_S \
+   STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPTVAL_S \
+   STARA_CONSOLE_GETOPT_MAIN_OPTIONS_CHARS
+
+#define STARA_APP_CONSOLE_HELLO_MAIN_OPTIONS_OPTIONS \
+   STARA_APP_CONSOLE_HELLO_MAIN_CLIENT_OPTION \
+   STARA_APP_CONSOLE_HELLO_MAIN_SERVER_OPTION \
+   STARA_APP_CONSOLE_HELLO_MAIN_HOST_OPTION \
+   STARA_APP_CONSOLE_HELLO_MAIN_PORT_OPTION \
+   STARA_APP_CONSOLE_HELLO_MAIN_FAMILY_OPTION \
+   STARA_CONSOLE_GETOPT_MAIN_OPTIONS_OPTIONS
+
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+#define STARA_APP_CONSOLE_HELLO_MAIN_ARGS 0
+#define STARA_APP_CONSOLE_HELLO_MAIN_ARGV
+
+namespace stara {
+namespace app {
+namespace console {
+namespace hello {
+
+} // namespace hello 
+} // namespace console 
+} // namespace app 
+} // namespace stara 
+
+#endif // _STARA_APP_CONSOLE_HELLO_MAINOPT_HPP 
