@@ -369,7 +369,8 @@ public:
         const Part& value = field.Value();
         std::stringstream ss(value);
         size_t length = 0;
-        if (0 < (ss >> length)) {
+        ss >> length;
+        if (0 < (length)) {
             m_contentLength = length;
             this->OnFieldsSignal_AddFieldContentLength(field, value, length);
         }
