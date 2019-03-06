@@ -53,11 +53,14 @@ $${stara_DEFINES} \
 # stara_exe HEADERS
 #
 stara_exe_HEADERS += \
+$${STARA_SRC}/stara/console/lib/stara/version/Main.hpp \
+$${STARA_SRC}/stara/app/console/stara/MainOpt.hpp \
 $${STARA_SRC}/stara/app/console/stara/Main.hpp \
 
 # stara_exe SOURCES
 #
 stara_exe_SOURCES += \
+$${STARA_SRC}/stara/app/console/stara/MainOpt.cpp \
 $${STARA_SRC}/stara/app/console/stara/Main.cpp \
 
 ########################################################################

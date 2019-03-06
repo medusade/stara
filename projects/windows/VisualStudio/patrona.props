@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<!--========================================================================-->
+<!-- Copyright (c) 1988-2019 $organization$                                 -->
+<!--                                                                        -->
+<!-- This software is provided by the author and contributors ``as is''     -->
+<!-- and any express or implied warranties, including, but not limited to,  -->
+<!-- the implied warranties of merchantability and fitness for a particular -->
+<!-- purpose are disclaimed. In no event shall the author or contributors   -->
+<!-- be liable for any direct, indirect, incidental, special, exemplary,    -->
+<!-- or consequential damages (including, but not limited to, procurement   -->
+<!-- of substitute goods or services; loss of use, data, or profits; or     -->
+<!-- business interruption) however caused and on any theory of liability,  -->
+<!-- whether in contract, strict liability, or tort (including negligence   -->
+<!-- or otherwise) arising in any way out of the use of this software,      -->
+<!-- even if advised of the possibility of such damage.                     -->
+<!--                                                                        -->
+<!--   File: patrona.props                                                  -->
+<!--                                                                        -->
+<!-- Author: $author$                                                       -->
+<!--   Date: 3/3/2019                                                       -->
+<!--========================================================================-->
+<Project
+  ToolsVersion="4.0"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!--===============================================-->
+
+  <PropertyGroup Label="UserMacros">
+      <PATRONA_GROUP></PATRONA_GROUP>
+      <PATRONA_NAME>patrona</PATRONA_NAME>
+      <PATRONA_VERSION></PATRONA_VERSION>
+
+      <PATRONA_DIR>$(PATRONA_GROUP)$(PATRONA_NAME)$(PATRONA_VERSION)</PATRONA_DIR>
+      <PATRONA_SOURCE_DIR>$(SOURCE_ROOT_DIR)/$(PATRONA_DIR)/src</PATRONA_SOURCE_DIR>
+      <PATRONA_BUILD_DIR>$(SOURCE_BUILD_DIR)/$(PATRONA_DIR)/build</PATRONA_BUILD_DIR>
+      <PATRONA_BUILD>$(PATRONA_BUILD_DIR)/$(PlatformName)/$(VCVersion)/$(Configuration)</PATRONA_BUILD>
+      <PATRONA_OBJ>$(PATRONA_BUILD)/obj/$(ProjectName)</PATRONA_OBJ>
+      <PATRONA_LIB>$(PATRONA_BUILD)/lib</PATRONA_LIB>
+      <PATRONA_BIN>$(PATRONA_BUILD)/bin</PATRONA_BIN>
+
+      <PATRONA_DEFINES>USE_NADIR_LOGGER</PATRONA_DEFINES>
+      <PATRONA_DEBUG_DEFINES>$(PATRONA_DEFINES);$(NADIR_DEBUG_DEFINES)</PATRONA_DEBUG_DEFINES>
+      <PATRONA_RELEASE_DEFINES>$(PATRONA_DEFINES);$(NADIR_RELEASE_DEFINES)</PATRONA_RELEASE_DEFINES>
+      <PATRONA_INCLUDE_DIRS>$(PATRONA_SOURCE_DIR)</PATRONA_INCLUDE_DIRS>
+      <VC10_PATRONA_INCLUDE_DIRS>$(PATRONA_INCLUDE_DIRS);$(VC10_NADIR_INCLUDE_DIRS)</VC10_PATRONA_INCLUDE_DIRS>
+      <VC14_PATRONA_INCLUDE_DIRS>$(PATRONA_INCLUDE_DIRS);$(VC14_NADIR_INCLUDE_DIRS)</VC14_PATRONA_INCLUDE_DIRS>
+      <PATRONA_LIB_DIRS>$(PATRONA_LIB);$(NADIR_LIB_DIRS)</PATRONA_LIB_DIRS>
+      <PATRONA_LIBS>libpatrona.lib;$(NADIR_LIBS)</PATRONA_LIBS>
+  </PropertyGroup>
+
+  <!--===============================================-->
+
+  <ItemGroup>
+      <BuildMacro Include="PATRONA_GROUP">
+          <Value>$(PATRONA_GROUP)</Value>
+      </BuildMacro>
+      <BuildMacro Include="PATRONA_NAME">
+          <Value>$(PATRONA_NAME)</Value>
+      </BuildMacro>
+      <BuildMacro Include="PATRONA_VERSION">
+          <Value>$(PATRONA_VERSION)</Value>
+      </BuildMacro>
+      
+      <BuildMacro Include="PATRONA_DIR">
+          <Value>$(PATRONA_DIR)</Value>
+      </BuildMacro>
+      <BuildMacro Include="PATRONA_SOURCE_DIR">
+          <Value>$(PATRONA_SOURCE_DIR)</Value>
+      </BuildMacro>
+      <BuildMacro Include="PATRONA_BUILD_DIR">
+          <Value>$(PATRONA_BUILD_DIR)</Value>
+      </BuildMacro>
+      <BuildMacro Include="PATRONA_BUILD">
+          <Value>$(PATRONA_BUILD)</Value>
+      </BuildMacro>
+      <BuildMacro Include="PATRONA_OBJ">
+          <Value>$(PATRONA_OBJ)</Value>
+      </BuildMacro>
+      <BuildMacro Include="PATRONA_LIB">
+          <Value>$(PATRONA_LIB)</Value>
+      </BuildMacro>
+      <BuildMacro Include="PATRONA_BIN">
+          <Value>$(PATRONA_BIN)</Value>
+      </BuildMacro>
+      
+      <BuildMacro Include="PATRONA_DEFINES">
+          <Value>$(PATRONA_DEFINES)</Value>
+      </BuildMacro>
+      <BuildMacro Include="PATRONA_DEBUG_DEFINES">
+          <Value>$(PATRONA_DEBUG_DEFINES)</Value>
+      </BuildMacro>
+      <BuildMacro Include="PATRONA_RELEASE_DEFINES">
+          <Value>$(PATRONA_RELEASE_DEFINES)</Value>
+      </BuildMacro>
+      <BuildMacro Include="PATRONA_INCLUDE_DIRS">
+          <Value>$(PATRONA_INCLUDE_DIRS)</Value>
+      </BuildMacro>
+      <BuildMacro Include="VC10_PATRONA_INCLUDE_DIRS">
+          <Value>$(VC10_PATRONA_INCLUDE_DIRS)</Value>
+      </BuildMacro>
+      <BuildMacro Include="VC14_PATRONA_INCLUDE_DIRS">
+          <Value>$(VC14_PATRONA_INCLUDE_DIRS)</Value>
+      </BuildMacro>
+      <BuildMacro Include="PATRONA_LIB_DIRS">
+          <Value>$(PATRONA_LIB_DIRS)</Value>
+      </BuildMacro>
+      <BuildMacro Include="PATRONA_LIBS">
+          <Value>$(PATRONA_LIBS)</Value>
+      </BuildMacro>
+  </ItemGroup>
+
+  <!--===============================================-->
+
+</Project>

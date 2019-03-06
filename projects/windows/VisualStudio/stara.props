@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<!--========================================================================-->
+<!-- Copyright (c) 1988-2019 $organization$                                 -->
+<!--                                                                        -->
+<!-- This software is provided by the author and contributors ``as is''     -->
+<!-- and any express or implied warranties, including, but not limited to,  -->
+<!-- the implied warranties of merchantability and fitness for a particular -->
+<!-- purpose are disclaimed. In no event shall the author or contributors   -->
+<!-- be liable for any direct, indirect, incidental, special, exemplary,    -->
+<!-- or consequential damages (including, but not limited to, procurement   -->
+<!-- of substitute goods or services; loss of use, data, or profits; or     -->
+<!-- business interruption) however caused and on any theory of liability,  -->
+<!-- whether in contract, strict liability, or tort (including negligence   -->
+<!-- or otherwise) arising in any way out of the use of this software,      -->
+<!-- even if advised of the possibility of such damage.                     -->
+<!--                                                                        -->
+<!--   File: stara.props                                                    -->
+<!--                                                                        -->
+<!-- Author: $author$                                                       -->
+<!--   Date: 3/6/2019                                                       -->
+<!--========================================================================-->
+<Project
+  ToolsVersion="4.0"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!--===============================================-->
+
+  <PropertyGroup Label="UserMacros">
+      <STARA_GROUP></STARA_GROUP>
+      <STARA_NAME>stara</STARA_NAME>
+      <STARA_VERSION></STARA_VERSION>
+
+      <STARA_DIR>$(STARA_GROUP)$(STARA_NAME)$(STARA_VERSION)</STARA_DIR>
+      <STARA_SOURCE_DIR>$(SOURCE_ROOT_DIR)/$(STARA_DIR)/src</STARA_SOURCE_DIR>
+      <STARA_BUILD_DIR>$(SOURCE_BUILD_DIR)/$(STARA_DIR)/build</STARA_BUILD_DIR>
+      <STARA_BUILD>$(STARA_BUILD_DIR)/$(PlatformName)/$(VCVersion)/$(Configuration)</STARA_BUILD>
+      <STARA_OBJ>$(STARA_BUILD)/obj/$(ProjectName)</STARA_OBJ>
+      <STARA_LIB>$(STARA_BUILD)/lib</STARA_LIB>
+      <STARA_BIN>$(STARA_BUILD)/bin</STARA_BIN>
+
+      <STARA_DEFINES></STARA_DEFINES>
+      <STARA_DEBUG_DEFINES>$(STARA_DEFINES);$(RETE_DEBUG_DEFINES)</STARA_DEBUG_DEFINES>
+      <STARA_RELEASE_DEFINES>$(STARA_DEFINES);$(RETE_RELEASE_DEFINES)</STARA_RELEASE_DEFINES>
+      <STARA_INCLUDE_DIRS>$(STARA_SOURCE_DIR)</STARA_INCLUDE_DIRS>
+      <VC10_STARA_INCLUDE_DIRS>$(STARA_INCLUDE_DIRS);$(VC10_RETE_INCLUDE_DIRS)</VC10_STARA_INCLUDE_DIRS>
+      <VC14_STARA_INCLUDE_DIRS>$(STARA_INCLUDE_DIRS);$(VC14_RETE_INCLUDE_DIRS)</VC14_STARA_INCLUDE_DIRS>
+      <STARA_LIB_DIRS>$(STARA_LIB);$(RETE_LIB_DIRS)</STARA_LIB_DIRS>
+      <STARA_LIBS>libstara.lib;$(RETE_LIBS)</STARA_LIBS>
+  </PropertyGroup>
+
+  <!--===============================================-->
+
+  <ItemGroup>
+      <BuildMacro Include="STARA_GROUP">
+          <Value>$(STARA_GROUP)</Value>
+      </BuildMacro>
+      <BuildMacro Include="STARA_NAME">
+          <Value>$(STARA_NAME)</Value>
+      </BuildMacro>
+      <BuildMacro Include="STARA_VERSION">
+          <Value>$(STARA_VERSION)</Value>
+      </BuildMacro>
+      
+      <BuildMacro Include="STARA_DIR">
+          <Value>$(STARA_DIR)</Value>
+      </BuildMacro>
+      <BuildMacro Include="STARA_SOURCE_DIR">
+          <Value>$(STARA_SOURCE_DIR)</Value>
+      </BuildMacro>
+      <BuildMacro Include="STARA_BUILD_DIR">
+          <Value>$(STARA_BUILD_DIR)</Value>
+      </BuildMacro>
+      <BuildMacro Include="STARA_BUILD">
+          <Value>$(STARA_BUILD)</Value>
+      </BuildMacro>
+      <BuildMacro Include="STARA_OBJ">
+          <Value>$(STARA_OBJ)</Value>
+      </BuildMacro>
+      <BuildMacro Include="STARA_LIB">
+          <Value>$(STARA_LIB)</Value>
+      </BuildMacro>
+      <BuildMacro Include="STARA_BIN">
+          <Value>$(STARA_BIN)</Value>
+      </BuildMacro>
+      
+      <BuildMacro Include="STARA_DEFINES">
+          <Value>$(STARA_DEFINES)</Value>
+      </BuildMacro>
+      <BuildMacro Include="STARA_DEBUG_DEFINES">
+          <Value>$(STARA_DEBUG_DEFINES)</Value>
+      </BuildMacro>
+      <BuildMacro Include="STARA_RELEASE_DEFINES">
+          <Value>$(STARA_RELEASE_DEFINES)</Value>
+      </BuildMacro>
+      <BuildMacro Include="STARA_INCLUDE_DIRS">
+          <Value>$(STARA_INCLUDE_DIRS)</Value>
+      </BuildMacro>
+      <BuildMacro Include="VC10_STARA_INCLUDE_DIRS">
+          <Value>$(VC10_STARA_INCLUDE_DIRS)</Value>
+      </BuildMacro>
+      <BuildMacro Include="VC14_STARA_INCLUDE_DIRS">
+          <Value>$(VC14_STARA_INCLUDE_DIRS)</Value>
+      </BuildMacro>
+      <BuildMacro Include="STARA_LIB_DIRS">
+          <Value>$(STARA_LIB_DIRS)</Value>
+      </BuildMacro>
+      <BuildMacro Include="STARA_LIBS">
+          <Value>$(STARA_LIBS)</Value>
+      </BuildMacro>
+  </ItemGroup>
+
+  <!--===============================================-->
+
+</Project>

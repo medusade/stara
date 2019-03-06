@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<!--========================================================================-->
+<!-- Copyright (c) 1988-2019 $organization$                                 -->
+<!--                                                                        -->
+<!-- This software is provided by the author and contributors ``as is''     -->
+<!-- and any express or implied warranties, including, but not limited to,  -->
+<!-- the implied warranties of merchantability and fitness for a particular -->
+<!-- purpose are disclaimed. In no event shall the author or contributors   -->
+<!-- be liable for any direct, indirect, incidental, special, exemplary,    -->
+<!-- or consequential damages (including, but not limited to, procurement   -->
+<!-- of substitute goods or services; loss of use, data, or profits; or     -->
+<!-- business interruption) however caused and on any theory of liability,  -->
+<!-- whether in contract, strict liability, or tort (including negligence   -->
+<!-- or otherwise) arising in any way out of the use of this software,      -->
+<!-- even if advised of the possibility of such damage.                     -->
+<!--                                                                        -->
+<!--   File: rete.props                                                     -->
+<!--                                                                        -->
+<!-- Author: $author$                                                       -->
+<!--   Date: 3/4/2019                                                       -->
+<!--========================================================================-->
+<Project
+  ToolsVersion="4.0"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!--===============================================-->
+
+  <PropertyGroup Label="UserMacros">
+      <RETE_GROUP></RETE_GROUP>
+      <RETE_NAME>rete</RETE_NAME>
+      <RETE_VERSION></RETE_VERSION>
+
+      <RETE_DIR>$(RETE_GROUP)$(RETE_NAME)$(RETE_VERSION)</RETE_DIR>
+      <RETE_SOURCE_DIR>$(SOURCE_ROOT_DIR)/$(RETE_DIR)/src</RETE_SOURCE_DIR>
+      <RETE_BUILD_DIR>$(SOURCE_BUILD_DIR)/$(RETE_DIR)/build</RETE_BUILD_DIR>
+      <RETE_BUILD>$(RETE_BUILD_DIR)/$(PlatformName)/$(VCVersion)/$(Configuration)</RETE_BUILD>
+      <RETE_OBJ>$(RETE_BUILD)/obj/$(ProjectName)</RETE_OBJ>
+      <RETE_LIB>$(RETE_BUILD)/lib</RETE_LIB>
+      <RETE_BIN>$(RETE_BUILD)/bin</RETE_BIN>
+
+      <RETE_DEFINES></RETE_DEFINES>
+      <RETE_DEBUG_DEFINES>$(RETE_DEFINES);$(FILA_DEBUG_DEFINES)</RETE_DEBUG_DEFINES>
+      <RETE_RELEASE_DEFINES>$(RETE_DEFINES);$(FILA_RELEASE_DEFINES)</RETE_RELEASE_DEFINES>
+      <RETE_INCLUDE_DIRS>$(RETE_SOURCE_DIR)</RETE_INCLUDE_DIRS>
+      <VC10_RETE_INCLUDE_DIRS>$(RETE_INCLUDE_DIRS);$(VC10_FILA_INCLUDE_DIRS)</VC10_RETE_INCLUDE_DIRS>
+      <VC14_RETE_INCLUDE_DIRS>$(RETE_INCLUDE_DIRS);$(VC14_FILA_INCLUDE_DIRS)</VC14_RETE_INCLUDE_DIRS>
+      <RETE_LIB_DIRS>$(RETE_LIB);$(FILA_LIB_DIRS)</RETE_LIB_DIRS>
+      <RETE_LIBS>librete.lib;$(FILA_LIBS)</RETE_LIBS>
+  </PropertyGroup>
+
+  <!--===============================================-->
+
+  <ItemGroup>
+      <BuildMacro Include="RETE_GROUP">
+          <Value>$(RETE_GROUP)</Value>
+      </BuildMacro>
+      <BuildMacro Include="RETE_NAME">
+          <Value>$(RETE_NAME)</Value>
+      </BuildMacro>
+      <BuildMacro Include="RETE_VERSION">
+          <Value>$(RETE_VERSION)</Value>
+      </BuildMacro>
+      
+      <BuildMacro Include="RETE_DIR">
+          <Value>$(RETE_DIR)</Value>
+      </BuildMacro>
+      <BuildMacro Include="RETE_SOURCE_DIR">
+          <Value>$(RETE_SOURCE_DIR)</Value>
+      </BuildMacro>
+      <BuildMacro Include="RETE_BUILD_DIR">
+          <Value>$(RETE_BUILD_DIR)</Value>
+      </BuildMacro>
+      <BuildMacro Include="RETE_BUILD">
+          <Value>$(RETE_BUILD)</Value>
+      </BuildMacro>
+      <BuildMacro Include="RETE_OBJ">
+          <Value>$(RETE_OBJ)</Value>
+      </BuildMacro>
+      <BuildMacro Include="RETE_LIB">
+          <Value>$(RETE_LIB)</Value>
+      </BuildMacro>
+      <BuildMacro Include="RETE_BIN">
+          <Value>$(RETE_BIN)</Value>
+      </BuildMacro>
+      
+      <BuildMacro Include="RETE_DEFINES">
+          <Value>$(RETE_DEFINES)</Value>
+      </BuildMacro>
+      <BuildMacro Include="RETE_DEBUG_DEFINES">
+          <Value>$(RETE_DEBUG_DEFINES)</Value>
+      </BuildMacro>
+      <BuildMacro Include="RETE_RELEASE_DEFINES">
+          <Value>$(RETE_RELEASE_DEFINES)</Value>
+      </BuildMacro>
+      <BuildMacro Include="RETE_INCLUDE_DIRS">
+          <Value>$(RETE_INCLUDE_DIRS)</Value>
+      </BuildMacro>
+      <BuildMacro Include="VC10_RETE_INCLUDE_DIRS">
+          <Value>$(VC10_RETE_INCLUDE_DIRS)</Value>
+      </BuildMacro>
+      <BuildMacro Include="VC14_RETE_INCLUDE_DIRS">
+          <Value>$(VC14_RETE_INCLUDE_DIRS)</Value>
+      </BuildMacro>
+      <BuildMacro Include="RETE_LIB_DIRS">
+          <Value>$(RETE_LIB_DIRS)</Value>
+      </BuildMacro>
+      <BuildMacro Include="RETE_LIBS">
+          <Value>$(RETE_LIBS)</Value>
+      </BuildMacro>
+  </ItemGroup>
+
+  <!--===============================================-->
+
+</Project>
