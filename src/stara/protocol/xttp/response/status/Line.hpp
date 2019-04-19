@@ -119,7 +119,7 @@ public:
                             }
                         } else {
                             // ?' '?'/'*' '
-                            return false;
+                            part->append(&c, 1);
                         }
                     }
                 }
